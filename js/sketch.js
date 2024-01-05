@@ -1,40 +1,13 @@
-﻿var Sketch = (function () {
+﻿(function () {
+
     var context;
     var canvas;
     var currentColor;
 
-    var onMouseMoveOnCanvas = function (event) {
-        if (canvas.drawing) {
-            var mouseX = event.clientX;
-            var mouseY = event.clientY;
+    WinJS.Namespace.define("Sketch", {
 
-            if (!canvas.pathBegun) {
-                context.lineJoin = "round";
-                context.lineCap = "round";
-                context.lineWidth = 6;
-                context.strokeStyle = currentColor;
-                context.beginPath();
-                canvas.pathBegun = true;
-            } else {
-                context.lineTo(mouseX, mouseY);
-                context.stroke();
-            }
-        }
-    };
-
-    var onMouseDownOnCanvas = function (event) {
-        canvas.drawing = true;
-        canvas.pathBegun = false;
-    };
-
-    var onMouseUpOnCanvas = function (event) {
-        canvas.drawing = false;
-        // Config.saveCanvas(); // Necesitas reemplazar esta línea con tu lógica de guardado
-    };
-
-    return {
         initialize: function (idcanvas) {
-            if (typeof idcanvas === 'undefined') {
+            if (typeof (idcanvas) == 'undefined') {
                 idcanvas = "canvas";
             }
             canvas = document.getElementById(idcanvas);
@@ -45,9 +18,7 @@
             canvas.addEventListener('mousemove', onMouseMoveOnCanvas, false);
             canvas.addEventListener('mousedown', onMouseDownOnCanvas, false);
             canvas.addEventListener('mouseup', onMouseUpOnCanvas, false);
-            if (!currentColor) {
-                currentColor = "blue";
-            }
+            if (!currentColor) currentColor = "blue";
         },
 
         setColor: function (color) {
@@ -65,7 +36,38 @@
         clearCanvas: function() {
             context.clearRect(0, 0, canvas.width, canvas.height);
         }
+    
+    });
+
+    var onMouseMoveOnCanvas = function (event) {
+        if (canvas.drawing) {
+            var mouseX = event.clientX;
+            var mouseY = event.clientY;
+
+            if (canvas.pathBegun == false) {
+                context.lineJoin = "round";
+                context.lineCap = "round";
+                context.lineWidth = 6;
+                context.strokeStyle = currentColor;
+                context.beginPath();
+                canvas.pathBegun = true;
+            }
+            else {
+                context.lineTo(mouseX, mouseY);
+                context.stroke();
+            }
+        }
     };
 
-})();
+    var onMouseDownOnCanvas = function (event) {
+        canvas.drawing = true;
+        canvas.pathBegun = false;
+    };
 
+    var onMouseUpOnCanvas = function (event) {
+        canvas.drawing = false;
+        Config.saveCanvas();
+    };
+
+
+})();

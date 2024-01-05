@@ -2,14 +2,14 @@
     "use strict";
 
     function hideappbar() {
-        var appbar = document.getElementById("appbar");
-        if (appbar.style.display !== 'none') {
-            appbar.style.display = 'none';
-        }
+        var appbar = document.getElementById("appbar").winControl;
+        appbar.hide();
     }
 
-    window.Controls = {
+    WinJS.Namespace.define("Controls", {
         hideappbar: hideappbar
-    };
+    });
+
+
 
 })();

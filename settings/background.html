@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Background settings flyout</title>
+            <!-- WinJS references -->
+    <link href="//Microsoft.WinJS.1.0/css/ui-light.css" rel="stylesheet">
+    <script src="//Microsoft.WinJS.1.0/js/base.js"></script>
+    <script src="//Microsoft.WinJS.1.0/js/ui.js"></script>
+
+         <script src="/Scripts/jquery-1.8.1.js"></script>
+         <script src="/js/background.js"></script>
+    </head>
+    <body>
+        <!-- BEGINTEMPLATE: Template code for an empty Settings Flyout. -->
+        <!-- Each settings flyout should be defined in its own HTML file. -->
+        <!-- Set the width to 'narrow' for a narrow settings flyout. -->
+        <!-- Set the background color for the header to the background color defined for your
+             app tile in the manifest. -->
+        <div id="backgroundDiv" data-win-control="WinJS.UI.SettingsFlyout" aria-label="App defaults settings flyout"
+                data-win-options="{width:'narrow'}" >
+            <div class="win-header" style="background-color:#FFA300">
+                <button type="button" onclick="WinJS.UI.SettingsFlyout.show()" class="win-backbutton"></button>
+                <div class="win-label">Background</div>
+                <img src="/images/smalllogo.png" style="position: absolute; right: 40px;"/>
+            </div>
+              <div id="mediumListIconTextTemplate" data-win-control="WinJS.Binding.Template">
+        <div style="width: 250px; height: 100px;">
+            <!-- Displays the "picture" field. -->
+            <div style="overflow: hidden; width: 250px; height: 100px;">
+                <img src="#" data-win-bind="alt: title; src: picture" />
+            </div>
+            <div>
+                <!-- Displays the "title" field. -->
+              <!--  <h4 data-win-bind="innerText: title"></h4>-->
+            </div>
+        </div>
+    </div>       
+            <div class="win-content">
+                Select a background
+               <div id="basicListView"
+    data-win-control="WinJS.UI.ListView"
+    data-win-options="{ itemDataSource : DataExample.itemList.dataSource, itemTemplate: select('#mediumListIconTextTemplate')}">
+</div>  
+               
+            </div>
+        </div>
+        <!-- ENDTEMPLATE -->
+    </body>
+</html>

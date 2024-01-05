@@ -1,11 +1,16 @@
-﻿var Taskboard = (function () {
+﻿(function () {
     "use strict";
     var maxnotes = 30;
     var z = -maxnotes - 1;
     var screenwidth;
 
+    WinJS.Namespace.define("Taskboard", {
+        init: init
+    });
+
     function init(notes) {
-        if (notes.length < 1) {
+
+        if (notes.length == 0) {
             showHelp();
         }
 
@@ -49,20 +54,18 @@
         starthandlers(".note");
 
         checkminNotes();
-        
-        $(".new").on("mousedown", onnew);
+
+        $("#newbuttons .new").mousedown(onnew);
 
         updateTile();
     }
 
     function showHelp() {
-        
-        const textHelp = "Create a note by selecting a color on the left of the screen.<br/>Edit a note by double-clicking on it.<br/>Remove a note by dragging it to the top of the screen.<br/>If you have any questions, ideas, or suggestions, please feel free to contact me at X @acasquetenotes.";
-
         $(".tomato").remove();
-        createNote("300px", "170px", "note tomato", textHelp);
+        createNote("300px", "170px", "note tomato", WinJS.Resources.getString('helpNote').value);
         starthandlers(".tomato");
         Controls.hideappbar();
+
     }
 
     function saveTaskboardAndUpdateTile() {
@@ -115,33 +118,6 @@
 
     }
 
-    function toStaticHTML(input) {
-        // Create an empty div element
-        var tempDiv = document.createElement('div');
-    
-        // Assign the input HTML to the div's innerHTML
-        tempDiv.innerHTML = input;
-    
-        // Remove script elements and event handlers
-        var scripts = tempDiv.getElementsByTagName('script');
-        for (var i = scripts.length - 1; i >= 0; i--) {
-            scripts[i].parentNode.removeChild(scripts[i]);
-        }
-    
-        var allElements = tempDiv.getElementsByTagName('*');
-        for (var i = 0; i < allElements.length; i++) {
-            var attributes = allElements[i].attributes;
-            for (var j = attributes.length - 1; j >= 0; j--) {
-                if (/^on/i.test(attributes[j].name)) {
-                    allElements[i].removeAttribute(attributes[j].name);
-                }
-            }
-        }
-    
-        // Return the sanitized HTML
-        return tempDiv.innerHTML;
-    }
-
     function applyRandomRotate(element) {
         var angle = getRandomAngle();
         element.style.transform = 'rotate(' + angle + 'deg)';
@@ -152,18 +128,26 @@
     }
 
     function starthandlers(element) {
-        $(element).on("dragstart", ondragstart);
-        $(element).on("drag", ondrag);
-        $(element).on("dragend", ondragend);
+        var viewStates = Windows.UI.ViewManagement.ApplicationViewState;
+        if (Windows.UI.ViewManagement.ApplicationView.value != viewStates.snapped) {
+            $(element).on("dragstart", ondragstart);
+            $(element).on("drag", ondrag);
+            $(element).on("dragend", ondragend);
+        }
+
         $(element).on('keyup', function (e) { checkCharcount(this, 140, e); });
         $(element).on('keydown', function (e) { checkCharcount(this, 140, e); });
+
         $(element).on('dblclick', onclickNote);
+
         $(element).on('focus', function () { $(this).addClass("selected"); });
         $(element).on('blur', function () {
             $(this).removeClass("selected");
             saveTaskboardAndUpdateTile();
         });
     }
+
+
 
     function onclickNote(event) {
         var el = $(this);
@@ -176,6 +160,7 @@
         } else {
             return false;
         }
+
     }
 
     function checkCharcount(content_id, max, e) {
@@ -241,7 +226,7 @@
     }
 
     function updateTile() {
-        //Notifications.sendUpdate(getNotesInProgress());
+        Notifications.sendUpdate(getNotesInProgress());
     }
 
     function saveTaskboard() {
@@ -255,32 +240,26 @@
     }
 
     function recalcposition() {
-        
-        console.log('wi' + window.innerWidth);
-        console.log('sw' + screenwidth);
-
         $(".note").each(function (el) {
-            
             var posnote = $(this).position().left;
-            console.log('p -'+posnote + $(this).position());
-            console.log($(this).position());
             var newpos = window.innerWidth * posnote / screenwidth;
-            console.log('n'+newpos);
-
-            //$(this).css('left', newpos);
+            $(this).css('left', newpos);
         });
         screenwidth = window.innerWidth;
-        saveTaskboard();
     }
 
     function onViewStateChanged(eventArgs) {
-        recalcposition();
-        starthandlers(".note");
-    }
 
-    return {
-        init: init
-    };
+        var viewStates = Windows.UI.ViewManagement.ApplicationViewState;
+
+        var newViewState = Windows.UI.ViewManagement.ApplicationView.value;
+        if (newViewState === viewStates.snapped) {
+            removehandlers(".note");
+        } else {
+            recalcposition();
+            starthandlers(".note");
+        }
+    }
 
 })();
 
@@ -298,8 +277,4 @@ jQuery.fn.selectText = function () {
         selection.addRange(range);
     }
 };
-
-
-
-
 

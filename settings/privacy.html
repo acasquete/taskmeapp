@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <title>Background settings flyout</title>
+            <!-- WinJS references -->
+    <link href="//Microsoft.WinJS.1.0/css/ui-light.css" rel="stylesheet">
+    <script src="//Microsoft.WinJS.1.0/js/base.js"></script>
+    <script src="//Microsoft.WinJS.1.0/js/ui.js"></script>
+
+         <script src="/Scripts/jquery-1.8.1.js"></script>
+         <script src="/js/background.js"></script>
+    </head>
+    <body>
+        <div id="privacyPref" data-win-control="WinJS.UI.SettingsFlyout" aria-label="App defaults settings flyout"
+                data-win-options="{width:'wide'}" >
+            <div class="win-header" style="background-color:#FFA300">
+                <button type="button" onclick="WinJS.UI.SettingsFlyout.show()" class="win-backbutton"></button>
+                <div class="win-label">Privacy Policy</div>
+                <img src="/images/smalllogo.png" style="position: absolute; right: 40px;"/>
+            </div>
+              <div id="mediumListIconTextTemplate" data-win-control="WinJS.Binding.Template">
+        <div style="width: 250px; height: 100px;">
+            <!-- Displays the "picture" field. -->
+            <div style="overflow: hidden; width: 250px; height: 100px;">
+                <img src="#" data-win-bind="alt: title; src: picture" />
+            </div>
+            <div>
+                <!-- Displays the "title" field. -->
+              <!--  <h4 data-win-bind="innerText: title"></h4>-->
+            </div>
+        </div>
+    </div>       
+            <div class="win-content">
+               
+               
+            </div>
+        </div>
+        <!-- ENDTEMPLATE -->
+    </body>
+</html>

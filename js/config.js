@@ -1,40 +1,55 @@
 ﻿(function () {
     "use strict";
 
+    var applicationData = Windows.Storage.ApplicationData.current;
+    var roamingSettings = applicationData.roamingSettings;
+    var roamingFolder = applicationData.roamingFolder;
+    
     function savePomodoroState() {
-        localStorage.setItem("pomodoroState", JSON.stringify(Pomodoro.getState()));
+        roamingSettings.values["pomodoroState"] = JSON.stringify(Pomodoro.getState());
     }
     
     function saveTaskboard(notes, screenwidth) {
+        
         try {
             saveNotes(notes, screenwidth);
             saveCanvas();
-        } catch (ex) {
-            console.error("Error saving settings: ", ex);
+        }
+        catch (ex) {
+            new Windows.UI.Popups.MessageDialog("Error saving settings.").showAsync();
         }
     }
     
     function saveNotes(notes, screenwidth) {
-        localStorage.setItem("total", notes.length);
-        localStorage.setItem("screenwidth", screenwidth);
+        roamingSettings.values["total"] = notes.length;
+        roamingSettings.values["screenwidth"] = screenwidth;
         for (var i = 0; i < notes.length; i++) {
-            localStorage.setItem("notes" + i, JSON.stringify(notes[i]));
+            roamingSettings.values["notes" + i] = JSON.stringify(notes[i]);
         }
     }
     
     function saveCanvas() {
-        var canvas = document.getElementById("canvas");
-        canvas.toBlob(function(blob) {
-            var reader = new FileReader();
-            reader.onload = function() { 
-                localStorage.setItem("canvas.png", reader.result);
-            };
-            reader.readAsDataURL(blob);
+        var filename = "canvas.png";
+        var blob = document.getElementById("canvas").msToBlob();
+    
+        roamingFolder.createFileAsync(filename, Windows.Storage.CreationCollisionOption.replaceExisting).then(function (file) {
+        
+            file.openAsync(Windows.Storage.FileAccessMode.readWrite).then(function (output) {
+
+                var input = blob.msDetachStream();
+
+                Windows.Storage.Streams.RandomAccessStream.copyAsync(input, output).then(function () {
+                    output.flushAsync().done(function () {
+                        input.close();
+                        output.close();
+                    });
+                });
+            });
         });
     }
     
     function getScreenWidth() {
-        return localStorage.getItem("screenwidth");
+        return roamingSettings.values["screenwidth"];
     }
     
     function loadCanvas() {
@@ -46,37 +61,40 @@
             ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, img.naturalWidth * scaleFactor, img.naturalHeight * scaleFactor);
         };
 
-        var canvasData = localStorage.getItem("canvas.png");
-        if (canvasData) {
-            img.src = canvasData;
-        }
+        roamingFolder.getFileAsync("canvas.png").then(function(file) {
+            var blobUrl = URL.createObjectURL(file);
+            img.src = blobUrl;
+        });
     }
 
     function getAll() {
-        var total = localStorage.getItem("total");
+        var total = roamingSettings.values["total"];
         var notes = [];
 
-        for (var i = 0; i < total; i++) {
-            var note = localStorage.getItem("notes" + i);
-            if (note) {
-                notes.push(JSON.parse(note));
+        if (total) {
+            for (var i = 0; i < total; i++) {
+                var not = roamingSettings.values["notes" + i];
+                notes.push(JSON.parse(not));
             }
         }
 
-        var pomodoroStateValue = localStorage.getItem("pomodoroState");
-        var pomodoroState = pomodoroStateValue ? JSON.parse(pomodoroStateValue) : null;
+        var pomodoroState;
+        var pomodoroStateValue = roamingSettings.values["pomodoroState"];
+        if (pomodoroStateValue) {
+            pomodoroState = JSON.parse(pomodoroStateValue);
+        }
 
         loadCanvas();
 
         return { notes: notes, pomodoro: pomodoroState };
     }
-
-    window.Config = {
+    
+    WinJS.Namespace.define("Config", {
         getAll: getAll,
         getScreenWidth: getScreenWidth,
         savePomodoroState: savePomodoroState,
         saveTaskboard: saveTaskboard,
         saveCanvas: saveCanvas
-    };
+    });
 
 })();
