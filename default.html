@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>TaskMe</title>
+    
+    <link href="/css/default.css" rel="stylesheet" />
+    <link href="/css/taskboard.css" rel="stylesheet" />
+    <link href="/css/pomodoro.css" rel="stylesheet" />
+    <script src="/Scripts/jquery-1.8.1.min.js"></script>
+    <script src="/Scripts/jquery.event.drag-2.2.js"></script>
+    <!--
+    <script src="js/utils.js"></script>
+    <script src="js/pomodoro.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/license.js"></script> -->
+    <script src="js/controls.js"></script>
+    <script src="js/default.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/taskboard.js"></script>
+    <script src="js/sketch.js"></script>
+</head>
+    <body>
+        <h1 id="apptitle">TaskMe</h1>
+        <div id="container"></div>
+        <div id="newbuttons">
+            <div class="new yellow"></div>
+            <div class="new blue"></div>
+            <div class="new rose"></div>
+            <div class="new violet"></div>
+            <div class="new green"></div>
+            <div class="new orange"></div>
+        </div>
+    
+        <div id="taskboard">
+            <div id="column1">To Do</div>
+            <div id="column2">In Progress</div>
+            <div id="column3">Done</div>
+        </div>
+        <div id="pomodoro">
+            <div id="overlay"></div>
+            <div class="layer">
+                <div class="content">
+                    <h2 id="status" data-win-res="{textContent: 'pomodoroTime'}"></h2> 
+                    <div id="time">25:00</div> 
+                    <div class="buttons">
+                        <button id="butCancel" data-win-res="{textContent: 'cancel'}"></button>
+                        <button id="butHide" data-win-res="{textContent: 'hide'}"></button>
+                    </div>
+                </div> 
+            </div>
+        
+       
+        </div>
+        <div id="appbar">
+            <button data-win-res="{winControl: {'label' : 'removeAllNotes'}}" data-win-options="{id:'cmdRemoveAllNotes', icon:'delete', section:'selection'}" type="button"></button>
+            <button data-win-res="{winControl: {'label' : 'clearCanvas'}}" data-win-options="{id:'cmdClearCanvas', icon:'delete', section:'selection'}" type="button"></button>
+            <button data-win-res="{winControl: {'label' : 'help'}}" data-win-options="{id:'cmdHelp', label:'Help', icon:'help', section:'selection'}" type="button"></button>
+            <button data-win-res="{winControl: {'label' : 'startPomodoro'}}" data-win-options="{id:'cmdStartPomodoro', icon:'url(images/tomato.png)'}" type="button"></button>
+            <button data-win-res="{winControl: {'label' : 'shortBreak'}}" data-win-options="{id:'cmdStartShortBreak', icon:'url(images/shortbreak.png)'}" type="button"></button>
+            <button data-win-res="{winControl: {'label' : 'longBreak'}}" data-win-options="{id:'cmdStartLongBreak', icon:'url(images/longbreak.png)'}" type="button"></button>
+        </div> 
+        <canvas id="canvas"></canvas>
+
+    </body>
+</html>
