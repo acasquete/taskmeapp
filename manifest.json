@@ -1,0 +1,34 @@
+{
+    "name": "TaskMe",
+    "short_name": "TaskMe",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "landscape",
+    "form_factor": "wide",
+    "icons": [
+      {
+        "src": "images/favicon.ico",
+        "sizes": "48x48",
+        "type": "image/webp"
+      },
+      {
+        "src": "images/android-chrome-512x512.png",
+        "sizes": "512x512",
+        "type": "image/x-icon"
+      }
+    ],
+    "background_color": "#FFFFFF",
+    "theme_color": "#FF6142",
+    "description": "TaskMe is a simple Kanban board that can be used to organize many areas of your life. The simplest kanban board consist of three columns. Task Me can also be used as a tool to keep track of your time while using Pomodoro Technique.",
+    "scope": "/",
+    "lang": "en-EN",
+    "dir": "ltr",
+    "screenshots": [
+        {
+          "src": "/images/screenshot1.jpg",
+          "type": "image/png",
+          "sizes": "1366x768",
+          "form_factor": "wide"
+        }
+      ]
+  }
