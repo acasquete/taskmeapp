@@ -1,4 +1,9 @@
-﻿body {
+﻿@font-face {
+    font-family: 'PermanentMarker';
+    src: url('/fonts/PermanentMarker-Regular.ttf') format('truetype');
+}
+
+body {
     background: #efefef;
 }
 
@@ -27,7 +32,7 @@
 
 #newbuttons {
     position: absolute;
-    margin-left: -5px;
+    margin-left: -25px;
     margin-top: 100px;
     z-index: 500;
 }
@@ -100,6 +105,7 @@
     grid-row: 1;
     border-right: rgba(0, 0, 0, 0.2) dashed 6px;
     text-align: center;
+    font-family: PermanentMarker;
 }
 
 #column2 {
@@ -109,6 +115,7 @@
     -ms-grid-row-span: 1;
     border-right: rgba(0, 0, 0, 0.2) dashed 6px;
     text-align: center;
+    font-family: PermanentMarker;
 }
 
 #column3 {
@@ -117,6 +124,7 @@
     -ms-grid-column-span: 1;
     -ms-grid-row-span: 1;
     text-align: center;
+    font-family: PermanentMarker;
 }
 
 @media screen and (-ms-view-state: snapped) {

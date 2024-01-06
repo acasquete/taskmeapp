@@ -1,7 +1,7 @@
 ﻿(function () {
     "use strict";
 
-    var isAppbarVisible = true;
+    var isAppbarVisible = false;
 
     function showappbar() {
         if (!isAppbarVisible) {
