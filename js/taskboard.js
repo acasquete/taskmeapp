@@ -46,6 +46,16 @@
             showHelp();
         });
 
+        $('#toggleNotes').click(function() {
+            $('.note').each(function() {
+                if ($(this).css('display') === 'none') {
+                    $(this).fadeIn(); // Show the note if it's hidden
+                } else {
+                    $(this).fadeOut(); // Hide the note if it's visible
+                }
+            });
+        });
+
         $('#cmdFullscreenButton').click( function() {
             if (!document.fullscreenElement) {
                 if (document.documentElement.requestFullscreen) {
@@ -94,6 +104,7 @@
             `;
 
         $(".tomato").remove();
+        $('.note').fadeIn();
         createNote("300px", "170px", "note tomato", htmlContent);
         starthandlers(".tomato");
         Controls.hideappbar();
@@ -140,6 +151,7 @@
         e.css({ top: event.pageY - 100 });
         starthandlers(t);
         e.trigger(event);
+        $('.note').fadeIn();
 
         if ($('.note').size() > maxnotes - 1) {
             $("#newbuttons").fadeOut(300);
