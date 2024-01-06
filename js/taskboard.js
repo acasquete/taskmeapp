@@ -57,10 +57,20 @@
 
     function showHelp() {
         
-        const textHelp = "Create a note by selecting a color on the left of the screen.<br/>Edit a note by double-clicking on it.<br/>Remove a note by dragging it to the top of the screen.<br/>If you have any questions, ideas, or suggestions, please feel free to contact me at X @acasquetenotes.";
+        const htmlContent = `
+                <u>Thanks for using TaskMe!</u><br/>
+                Create a note by selecting a <strong>color</strong> from the left side of the screen.<br/>
+                Edit a note by <strong>double-clicking</strong> on it.<br/>
+                Remove a note by <strong>dragging</strong> it to the top of the screen.<br/>
+                <br/>
+                If you have any questions, ideas, or suggestions, please don't hesitate to reach out to me at <strong>X @acasquetenotes</strong>.
+                <br/>
+                Please open a new issue if you want to report any errors or provide feedback. You can do this at <a href="https://www.github.com/acasquete/taskmeapp/issues" target="_blank">www.github.com/acasquete/taskmeapp/issues</a>.
+                <br/><br/>Your feedback is greatly appreciated!</p>
+            `;
 
         $(".tomato").remove();
-        createNote("300px", "170px", "note tomato", textHelp);
+        createNote("300px", "170px", "note tomato", htmlContent);
         starthandlers(".tomato");
         Controls.hideappbar();
     }
@@ -256,17 +266,9 @@
 
     function recalcposition() {
         
-        console.log('wi' + window.innerWidth);
-        console.log('sw' + screenwidth);
-
         $(".note").each(function (el) {
-            
             var posnote = $(this).position().left;
-            console.log('p -'+posnote + $(this).position());
-            console.log($(this).position());
             var newpos = window.innerWidth * posnote / screenwidth;
-            console.log('n'+newpos);
-
             //$(this).css('left', newpos);
         });
         screenwidth = window.innerWidth;

@@ -8,6 +8,8 @@
     align-items: center;
     padding: 20px;
     background-color: #FF6142;
+    box-shadow: 0px -5px 5px -5px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
 
 }
 
@@ -36,10 +38,13 @@
     align-items: center;
 }
 
-.appbar-btn i {
-    /* Estilos para los íconos */
+.appbar-btn:hover {
+    background-color: #FFFFFF; /* Fondo blanco */
 }
 
+.appbar-btn:hover i {
+    color: #FF6142; /* Cambia el color del SVG */
+}
 .button-container span {
     margin-top: 4px;
     color: white;

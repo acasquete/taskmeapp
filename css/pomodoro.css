@@ -44,6 +44,8 @@
     #pomodoro .content .buttons {
         float: right;
         margin-top: 40px;
+        
+       
     }
 
         #pomodoro .content .buttons #butHide {
@@ -68,6 +70,10 @@
 
         #pomodoro .content .buttons button {
             margin-left: 10px;
+            font-size: 20px;
+            border-radius: 10px;
+            padding: 8px 50px; 
+            border: 0;
         }
 
 
