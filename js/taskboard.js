@@ -131,9 +131,7 @@
     }
 
     function onnew(event) {
-
         var classattr = $(this).attr("class").replace("new ", "");
-
         var input = toStaticHTML("<div class='note " + classattr + "'></div>");
         var e = $(input).appendTo('#container').hide().fadeIn(300);
         var t = e.get(0);
@@ -146,17 +144,13 @@
         if ($('.note').size() > maxnotes - 1) {
             $("#newbuttons").fadeOut(300);
         }
-
     }
 
     function toStaticHTML(input) {
-        // Create an empty div element
         var tempDiv = document.createElement('div');
     
-        // Assign the input HTML to the div's innerHTML
         tempDiv.innerHTML = input;
     
-        // Remove script elements and event handlers
         var scripts = tempDiv.getElementsByTagName('script');
         for (var i = scripts.length - 1; i >= 0; i--) {
             scripts[i].parentNode.removeChild(scripts[i]);
@@ -172,7 +166,6 @@
             }
         }
     
-        // Return the sanitized HTML
         return tempDiv.innerHTML;
     }
 

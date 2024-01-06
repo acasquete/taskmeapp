@@ -1,6 +1,5 @@
 ﻿body {
     background: #efefef;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
 
 #apptitle {
@@ -18,7 +17,7 @@
     font-size: 1.25em;
     padding: 0.5em;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.1);
-    cursor: pointer !important;
+    cursor: pointer;
     transition: transform 0.3s;
 }
 
@@ -30,7 +29,6 @@
     position: absolute;
     margin-left: -5px;
     margin-top: 100px;
-    
     z-index: 500;
 }
 
@@ -150,7 +148,6 @@
         font-size: 1em;
         padding: 0.5em;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
-       
     }
 
     #newbuttons {
