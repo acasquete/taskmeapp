@@ -3,5 +3,6 @@
 
     Sketch.initialize();
     Taskboard.init(config.notes);
+    Controls.init();
    //Pomodoro.initialize(config.pomodoro);
 });

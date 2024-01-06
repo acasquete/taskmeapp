@@ -1,15 +1,47 @@
 ﻿(function () {
     "use strict";
 
-    function hideappbar() {
-        var appbar = document.getElementById("appbar");
-        if (appbar.style.display !== 'none') {
-            appbar.style.display = 'none';
+    var isAppbarVisible = true;
+
+    function showappbar() {
+        if (!isAppbarVisible) {
+            $("#appbar").css('bottom', '-130px')
+                .show()
+                .animate({bottom: '0px'}, 300); 
+            isAppbarVisible = true;
         }
     }
 
+    function hideappbar() {
+        if (isAppbarVisible) {
+            $("#appbar").animate({bottom: '-130px'}, 500, function() {
+                $(this).hide();
+            });
+            isAppbarVisible = false;
+        }
+    }
+
+    function init () {
+        $("#canvas").on("contextmenu", function(event) {
+            event.preventDefault();
+            if (isAppbarVisible) {
+                Controls.hideappbar();
+            } else {
+                Controls.showappbar();
+            }
+        });
+        
+        $(document).on("click", function(event) {
+            if (isAppbarVisible && !$(event.target).is("#appbar, #appbar *")) {
+                Controls.hideappbar();
+            }
+        });
+    }
+
     window.Controls = {
-        hideappbar: hideappbar
+        init: init,
+        hideappbar: hideappbar,
+        showappbar: showappbar
     };
 
 })();

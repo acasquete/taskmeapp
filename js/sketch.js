@@ -29,7 +29,7 @@
 
     var onMouseUpOnCanvas = function (event) {
         canvas.drawing = false;
-        // Config.saveCanvas(); // Necesitas reemplazar esta línea con tu lógica de guardado
+        Config.saveCanvas(); 
     };
 
     return {

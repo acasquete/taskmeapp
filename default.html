@@ -5,6 +5,7 @@
     <title>TaskMe</title>
     
     <link href="/css/default.css" rel="stylesheet" />
+    <link href="/css/appbar.css" rel="stylesheet" />
     <link href="/css/taskboard.css" rel="stylesheet" />
     <link href="/css/pomodoro.css" rel="stylesheet" />
     <script src="/Scripts/jquery-1.8.1.min.js"></script>
@@ -53,14 +54,52 @@
         
        
         </div>
-        <div id="appbar">
-            <button data-win-res="{winControl: {'label' : 'removeAllNotes'}}" data-win-options="{id:'cmdRemoveAllNotes', icon:'delete', section:'selection'}" type="button"></button>
-            <button data-win-res="{winControl: {'label' : 'clearCanvas'}}" data-win-options="{id:'cmdClearCanvas', icon:'delete', section:'selection'}" type="button"></button>
-            <button data-win-res="{winControl: {'label' : 'help'}}" data-win-options="{id:'cmdHelp', label:'Help', icon:'help', section:'selection'}" type="button"></button>
-            <button data-win-res="{winControl: {'label' : 'startPomodoro'}}" data-win-options="{id:'cmdStartPomodoro', icon:'url(images/tomato.png)'}" type="button"></button>
-            <button data-win-res="{winControl: {'label' : 'shortBreak'}}" data-win-options="{id:'cmdStartShortBreak', icon:'url(images/shortbreak.png)'}" type="button"></button>
-            <button data-win-res="{winControl: {'label' : 'longBreak'}}" data-win-options="{id:'cmdStartLongBreak', icon:'url(images/longbreak.png)'}" type="button"></button>
-        </div> 
+        <div id="appbar" class="win-appbar">
+            <!-- Grupo de botones alineados a la izquierda -->
+            <div class="button-group left">
+                <div class="button-container">
+                    <button id="cmdRemoveAllNotes" class="appbar-btn" type="button">
+                        <i class="icon-remove-notes"></i>
+                    </button>
+                    <span>Remove Notes</span>
+                </div>
+                <div class="button-container">
+                    <button id="cmdClearCanvas" class="appbar-btn" type="button">
+                        <i class="icon-clear-canvas"></i>
+                    </button>
+                    <span>Clear Canvas</span>
+                </div>
+            </div>
+        
+            <!-- Grupo de botones alineados a la derecha -->
+            <div class="button-group right">
+                <div class="button-container">
+                    <button id="Help" class="appbar-btn" type="button">
+                        <i class="icon-help"></i>
+                    </button>
+                    <span>Help</span>
+                </div>
+                <div class="button-container">
+                    <button id="cmdStartPomodoro" class="appbar-btn" type="button">
+                        <i class="icon-start-pomodoro"></i>
+                    </button>
+                    <span>Start</span>
+                </div>
+                <div class="button-container">
+                    <button id="cmdStartShortBreak" class="appbar-btn" type="button">
+                        <i class="icon-short-break"></i>
+                    </button>
+                    <span>Short Break</span>
+                </div>
+                <div class="button-container">
+                    <button id="cmdStartLongBreak" class="appbar-btn" type="button">
+                        <i class="icon-long-break"></i>
+                    </button>
+                    <span>Long Break</span>
+                </div>
+            </div>
+        </div>
+        
         <canvas id="canvas"></canvas>
 
     </body>
