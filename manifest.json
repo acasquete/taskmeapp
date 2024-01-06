@@ -2,7 +2,7 @@
     "name": "TaskMe",
     "short_name": "TaskMe",
     "start_url": "/",
-    "display": "standalone",
+    "display": "fullscreen",
     "orientation": "landscape",
     "icons": [
       {
