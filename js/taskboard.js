@@ -84,7 +84,7 @@
 
         checkminNotes();
         
-        $(".new").on("mousedown", onnew);
+        $(".new").on("mousedown touchstart", onnew);
     }
 
     function showHelp() {
