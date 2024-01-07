@@ -9,7 +9,7 @@
             showHelp();
         }
 
-        createNotes(notes);
+        initNotes(notes);
 
         screenwidth = Config.getScreenWidth();
 
@@ -28,7 +28,7 @@
                 setTimeout(function () {
                     $(".note").remove();
                     checkminNotes();
-                    saveTaskboardAndUpdateTile();
+                    asyncSaveTaskboard();
                 }, 800);
 
             });
@@ -38,7 +38,7 @@
 
         $("#cmdClearCanvas").click(function () {
             Sketch.clearCanvas();
-            saveTaskboardAndUpdateTile();
+            asyncSaveTaskboard();
             Controls.hideappbar();
         });
 
@@ -49,9 +49,9 @@
         $('#toggleNotes').click(function() {
             $('.note').each(function() {
                 if ($(this).css('display') === 'none') {
-                    $(this).fadeIn(); // Show the note if it's hidden
+                    $(this).fadeIn();
                 } else {
-                    $(this).fadeOut(); // Hide the note if it's visible
+                    $(this).fadeOut();
                 }
             });
         });
@@ -60,21 +60,21 @@
             if (!document.fullscreenElement) {
                 if (document.documentElement.requestFullscreen) {
                     document.documentElement.requestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) { /* Firefox */
+                } else if (document.documentElement.mozRequestFullScreen) {
                     document.documentElement.mozRequestFullScreen();
-                } else if (document.documentElement.webkitRequestFullscreen) { /* Chrome, Safari y Opera */
+                } else if (document.documentElement.webkitRequestFullscreen) {
                     document.documentElement.webkitRequestFullscreen();
-                } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
+                } else if (document.documentElement.msRequestFullscreen) {
                     document.documentElement.msRequestFullscreen();
                 }
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) { /* Firefox */
+                } else if (document.mozCancelFullScreen) {
                     document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) { /* Chrome, Safari y Opera */
+                } else if (document.webkitExitFullscreen) {
                     document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { /* IE/Edge */
+                } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
             }
@@ -85,25 +85,23 @@
         checkminNotes();
         
         $(".new").on("mousedown", onnew);
-
-        updateTile();
     }
 
     function showHelp() {
         
         const htmlContent = `
-        <div style="text-align: center;">
-    You're the best!<br/>
-    Thanks for trying <b>TaskMe</b>,<br/>
-    the <em>easiest</em> way to create notes!
-</div>
-<br/>
-- <b>Create</b> a note by selecting a color on the left of the screen.<br/>
-- <b>Edit</b> a note by double-clicking on it.<br/>
-- <b>Remove</b> a note by dragging it to the top of the screen.<br/><br/>
-If you have any questions, ideas or suggestions, please feel free to contact me at <a href='http://www.twitter.com/acasquetenotes'>X@acasquetenotes</a>
-or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp/issues'>www.github.com/acasquete/taskmeapp</a>
-            `;
+            <div style="text-align: center;">
+                You're the best!<br/>
+                Thanks for trying <b>TaskMe</b>,<br/>
+                the <em>easiest</em> way to create notes!
+            </div>
+            <br/>
+            - <b>Create</b> a note by selecting a color on the left of the screen.<br/>
+            - <b>Edit</b> a note by double-clicking on it.<br/>
+            - <b>Remove</b> a note by dragging it to the top of the screen.<br/><br/>
+            If you have any questions, ideas or suggestions, please feel free to contact me at <a href='http://www.twitter.com/acasquetenotes'>X@acasquetenotes</a>
+            or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp/issues'>www.github.com/acasquete/taskmeapp</a>
+        `;
 
         $(".tomato").remove();
         $('.note').fadeIn();
@@ -112,10 +110,9 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
         Controls.hideappbar();
     }
 
-    function saveTaskboardAndUpdateTile() {
+    function asyncSaveTaskboard() {
         window.setTimeout(function () {
             saveTaskboard();
-            updateTile();
         }, 500);
     }
 
@@ -135,8 +132,9 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
         }
     }
 
-    function createNotes(notes) {
+    function initNotes(notes) {
         for (var i = 0; i < notes.length; i++) {
+            console.log(notes[i].l);
             createNote(notes[i].l, notes[i].t, notes[i].cl, notes[i].c);
             if (z < notes[i].i) z = notes[i].i;
         }
@@ -184,12 +182,8 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
     }
 
     function applyRandomRotate(element) {
-        var angle = getRandomAngle();
+        var angle = (Math.floor((Math.random() * 6) + 1)) - 3;
         element.style.transform = 'rotate(' + angle + 'deg)';
-    }
-
-    function getRandomAngle() {
-        return (Math.floor((Math.random() * 6) + 1)) - 3;
     }
 
     function starthandlers(element) {
@@ -202,7 +196,7 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
         $(element).on('focus', function () { $(this).addClass("selected"); });
         $(element).on('blur', function () {
             $(this).removeClass("selected");
-            saveTaskboardAndUpdateTile();
+            asyncSaveTaskboard();
         });
     }
 
@@ -266,27 +260,13 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
         }
 
         applyRandomRotate($(this).get(0));
-        saveTaskboardAndUpdateTile();
+        asyncSaveTaskboard();
         return false;
-    }
-
-    function getNotesInProgress() {
-        var notesinprogress = [];
-        var widthcolumn = screenwidth / 3;
-        $('.note').each(function () {
-            var el = $(this).get(0);
-            var position = $(this).position().left;
-            notesinprogress.push({ status: position > widthcolumn * 2 ? "done" : position > widthcolumn ? "inprogress" : "todo", text: el.innerHTML });
-        });
-        return notesinprogress;
-    }
-
-    function updateTile() {
-        //Notifications.sendUpdate(getNotesInProgress());
     }
 
     function saveTaskboard() {
         var listnotes = [];
+
         $('.note').each(function () {
             var el = $(this).get(0);
             listnotes.push({ c: el.innerHTML, i: el.style.zIndex, l: el.style.left, t: el.style.top, cl: el.className });
@@ -296,11 +276,16 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
     }
 
     function recalcposition() {
-        
-        $(".note").each(function (el) {
-            var posnote = $(this).position().left;
-            var newpos = window.innerWidth * posnote / screenwidth;
-            //$(this).css('left', newpos);
+        $(".note").each(function () {
+            var el = $(this).get(0);
+            el.style.transform = 'rotate(' + 0 + 'deg)';
+
+            var posNote = $(this).position().left;
+            var posRel = posNote * 100 / screenwidth;
+    
+            var newPos = window.innerWidth * posRel / 100;
+            $(this).css('left', newPos);
+            
         });
         screenwidth = window.innerWidth;
         saveTaskboard();
@@ -331,8 +316,3 @@ jQuery.fn.selectText = function () {
         selection.addRange(range);
     }
 };
-
-
-
-
-
