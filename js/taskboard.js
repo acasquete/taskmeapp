@@ -28,7 +28,7 @@
                 setTimeout(function () {
                     $(".note").remove();
                     checkminNotes();
-                    saveTaskboardAndUpdateTile();
+                    asyncSaveTaskboard();
                 }, 800);
 
             });
@@ -38,7 +38,7 @@
 
         $("#cmdClearCanvas").click(function () {
             Sketch.clearCanvas();
-            saveTaskboardAndUpdateTile();
+            asyncSaveTaskboard();
             Controls.hideappbar();
         });
 
@@ -85,8 +85,6 @@
         checkminNotes();
         
         $(".new").on("mousedown", onnew);
-
-        updateTile();
     }
 
     function showHelp() {
@@ -112,10 +110,9 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
         Controls.hideappbar();
     }
 
-    function saveTaskboardAndUpdateTile() {
+    function asyncSaveTaskboard() {
         window.setTimeout(function () {
             saveTaskboard();
-            updateTile();
         }, 500);
     }
 
@@ -202,7 +199,7 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
         $(element).on('focus', function () { $(this).addClass("selected"); });
         $(element).on('blur', function () {
             $(this).removeClass("selected");
-            saveTaskboardAndUpdateTile();
+            asyncSaveTaskboard();
         });
     }
 
@@ -266,7 +263,7 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
         }
 
         applyRandomRotate($(this).get(0));
-        saveTaskboardAndUpdateTile();
+        asyncSaveTaskboard();
         return false;
     }
 
@@ -279,10 +276,6 @@ or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp
             notesinprogress.push({ status: position > widthcolumn * 2 ? "done" : position > widthcolumn ? "inprogress" : "todo", text: el.innerHTML });
         });
         return notesinprogress;
-    }
-
-    function updateTile() {
-        //Notifications.sendUpdate(getNotesInProgress());
     }
 
     function saveTaskboard() {
