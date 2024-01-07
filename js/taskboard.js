@@ -289,8 +289,6 @@
         });
         screenwidth = window.innerWidth;
         saveTaskboard();
-
-        
     }
 
     function onViewStateChanged(eventArgs) {
@@ -318,8 +316,3 @@ jQuery.fn.selectText = function () {
         selection.addRange(range);
     }
 };
-
-
-
-
-
