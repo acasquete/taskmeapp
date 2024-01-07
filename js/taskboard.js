@@ -187,9 +187,9 @@
     }
 
     function starthandlers(element) {
-        $(element).on("dragstart touchstart", ondragstart);
-        $(element).on("drag touchmove", ondrag);
-        $(element).on("dragend touchend", ondragend);
+        $(element).on("dragstart", ondragstart);
+        $(element).on("drag", ondrag);
+        $(element).on("dragend", ondragend);
         $(element).on('keyup', function (e) { checkCharcount(this, 140, e); });
         $(element).on('keydown', function (e) { checkCharcount(this, 140, e); });
         $(element).on('dblclick', onclickNote);
