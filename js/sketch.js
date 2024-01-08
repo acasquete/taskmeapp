@@ -2,10 +2,10 @@
     var context;
     var canvas;
     var currentColor;
-    var lineWidth = 10;
+    var lineWidth = 25;
     var lastX, lastY;
     var startTime;
-    var pathDuration = 900; 
+    var pathDuration = 500; 
 
     var draw = function (x, y) {
         context.lineJoin = "round";
@@ -17,7 +17,7 @@
             context.beginPath();
             context.moveTo(x, y);
             canvas.pathBegun = true;
-            startTime = new Date(); // Inicia el temporizador al comenzar el trazo
+            startTime = new Date();
         } else {
             context.lineTo(x, y);
             context.stroke();
@@ -39,8 +39,8 @@
 
     var checkPathDuration = function () {
         if (new Date() - startTime > pathDuration) {
-            canvas.pathBegun = false; // Reinicia el trazo si se superan los 2 segundos
-            startTime = new Date(); // Reinicia el contador de tiempo
+            canvas.pathBegun = false; 
+            startTime = new Date();
         }
     };
 
@@ -64,8 +64,8 @@
     var onStart = function (event) {
         canvas.drawing = true;
         canvas.pathBegun = false;
-        lastX = lastY = undefined; // Reset last positions
-        onMove(event); // Start drawing immediately
+        //lastX = lastY = undefined; 
+        onMove(event);
     };
 
     var onEnd = function (event) {
