@@ -2,19 +2,45 @@
     var context;
     var canvas;
     var currentColor;
+    var lineWidth = 10;
+    var lastX, lastY;
+    var startTime;
+    var pathDuration = 900; 
 
     var draw = function (x, y) {
+        context.lineJoin = "round";
+        context.lineCap = "round";
+        context.strokeStyle = currentColor;
+        context.lineWidth = lineWidth;
+
         if (!canvas.pathBegun) {
-            context.lineJoin = "round";
-            context.lineCap = "round";
-            context.lineWidth = 6;
-            context.strokeStyle = currentColor;
             context.beginPath();
             context.moveTo(x, y);
             canvas.pathBegun = true;
+            startTime = new Date(); // Inicia el temporizador al comenzar el trazo
         } else {
             context.lineTo(x, y);
             context.stroke();
+        }
+    };
+
+    var updateLineWidth = function (x, y) {
+        if (lastX !== undefined && lastY !== undefined) {
+            const dx = x - lastX;
+            const dy = y - lastY;
+            lineWidth = Math.sqrt(dx * dx + dy * dy) * 0.2;
+
+            if (lineWidth > 20) lineWidth = 20;
+        }
+
+        lastX = x;
+        lastY = y;
+    };
+
+    var checkPathDuration = function () {
+        if (new Date() - startTime > pathDuration) {
+            canvas.pathBegun = false; // Reinicia el trazo si se superan los 2 segundos
+            startTime = new Date(); // Reinicia el contador de tiempo
         }
     };
 
@@ -28,7 +54,9 @@
                 x = event.clientX;
                 y = event.clientY;
             }
+            updateLineWidth(x, y);
             draw(x, y);
+            checkPathDuration();
             event.preventDefault();
         }
     };
@@ -36,12 +64,14 @@
     var onStart = function (event) {
         canvas.drawing = true;
         canvas.pathBegun = false;
+        lastX = lastY = undefined; // Reset last positions
         onMove(event); // Start drawing immediately
     };
 
     var onEnd = function (event) {
         canvas.drawing = false;
         canvas.pathBegun = false;
+        //lastX = lastY = undefined; // Reset last positions
         Config.saveCanvas(); 
     };
 
@@ -64,7 +94,7 @@
             canvas.addEventListener('touchend', onEnd, false);
 
             if (!currentColor) {
-                currentColor = "blue";
+                currentColor = "black";
             }
         },
 

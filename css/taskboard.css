@@ -105,7 +105,6 @@ body {
 #column1 {
     grid-column: 1;
     grid-row: 1;
-    border-right: rgba(0, 0, 0, 0.2) dashed 6px;
     text-align: center;
     font-family: PermanentMarker;
 }
@@ -115,7 +114,9 @@ body {
     grid-row: 1;
     -ms-grid-column-span: 1;
     -ms-grid-row-span: 1;
-    border-right: rgba(0, 0, 0, 0.2) dashed 6px;
+    border-right:solid 5px rgba(0, 0, 0, 0.2);
+    border-left: rgba(0, 0, 0, 0.2) solid 5px;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
     text-align: center;
     font-family: PermanentMarker;
 }
@@ -127,6 +128,10 @@ body {
     -ms-grid-row-span: 1;
     text-align: center;
     font-family: PermanentMarker;
+}
+
+#canvas {
+    cursor: crosshair;
 }
 
 @media screen and (-ms-view-state: snapped) {
