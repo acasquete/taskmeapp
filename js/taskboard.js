@@ -107,9 +107,10 @@
             }
         });
 
-        $('#column1').text('To Do - ' + columnCounters[0] + '');
-        $('#column2').text('In Progress - ' + columnCounters[1] + '');
-        $('#column3').text('Done - ' + columnCounters[2] + '');
+        $('#column1').text('To Do' + (columnCounters[0] > 0 ? ' - ' + columnCounters[0] : ''));
+        $('#column2').text('In Progress' + (columnCounters[1] > 0 ? ' - ' + columnCounters[1] : ''));
+        $('#column3').text('Done' + (columnCounters[2] > 0 ? ' - ' + columnCounters[2] : ''));
+        
     }
 
     function showHelp() {
@@ -267,16 +268,20 @@
             top: dd.offsetY,
             left: dd.offsetX,
         });
+        updateNoteCounters();
     }
 
     function checkminNotes() {
         if ($('.note').size() < maxnotes) {
             $("#newbuttons").fadeIn(300);
         }
+        updateNoteCounters();
+        
+        
     }
 
     function ondragend() {
-        if ($(this).position().top < 0) {
+        if ($(this).position().top < -5) {
             $(this).animate({ opacity: 0.25, top: -200 }, 100, 'linear', function () {
                 $(this).remove();
                 checkminNotes();

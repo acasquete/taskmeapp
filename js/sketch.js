@@ -5,7 +5,7 @@
     var lineWidth = 25;
     var lastX, lastY;
     var startTime;
-    var pathDuration = 500; 
+    var pathDuration = 800; 
 
     var colors = ['black', 'blue', 'red', 'green'];
     var currentColorIndex = 0;
@@ -19,11 +19,12 @@
     var toggleEraserMode = function () {
         isEraserMode = !isEraserMode;
         if (isEraserMode) {
-            cursorCircle.style.width = eraserSize + 'px';
+            cursorCircle.style.width = (eraserSize + 20) + 'px';
             cursorCircle.style.height = eraserSize + 'px';
+            cursorCircle.style.borderRadius = '30px';
             cursorCircle.style.backgroundColor = 'white';
             cursorCircle.style.border = '2px solid black';
-            cursorCircle.style.marginLeft = -(eraserSize / 2) + 'px';
+            cursorCircle.style.marginLeft = -((eraserSize + 20) / 2) + 'px';
             cursorCircle.style.marginTop = -(eraserSize / 2) + 'px';
             lineWidth = eraserSize; // Establecer el ancho del trazo para el modo borrador
         } else {
@@ -49,8 +50,8 @@
         cursorCircle.style.borderRadius = '5px';
         cursorCircle.style.position = 'absolute';
         cursorCircle.style.backgroundColor = currentColor;
-        cursorCircle.style.marginLeft = '-5px'; // Centra el círculo en el cursor
-        cursorCircle.style.marginTop = '-5px'; // Centra el círculo en el cursor
+        cursorCircle.style.marginLeft = '-5px';
+        cursorCircle.style.marginTop = '-5px'; 
         cursorCircle.style.pointerEvents = 'none'; 
         document.body.appendChild(cursorCircle);
 
@@ -65,7 +66,7 @@
             currentColorIndex = (currentColorIndex + 1) % colors.length;
             currentColor = colors[currentColorIndex];
             if (isEraserMode) {
-                toggleEraserMode(); // Desactiva el modo borrador al cambiar el color
+                toggleEraserMode(); 
             }
             resetCursorCircle();
         } else if (e.key === 'e') {
@@ -157,6 +158,9 @@
 
     var clearCanvas = function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        if (isEraserMode) {
+            toggleEraserMode(); 
+        }
     };
 
     return {

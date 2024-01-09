@@ -1,4 +1,5 @@
-﻿@font-face {
+﻿@import url('https://fonts.googleapis.com/css2?family=Kalam&display=swap');
+@font-face {
     font-family: 'PermanentMarker';
     src: url('/fonts/PermanentMarker-Regular.ttf') format('truetype');
 }
@@ -15,17 +16,25 @@ body {
 }
 
 .note {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     position: absolute;
-    height: 9em;
-    width: 9em;
+    height: 184px;
+    width: 184px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     text-align: center;
     overflow: auto;
-    font-size: 1.25em;
+    font-size: 1.45em;
     padding: 0.5em;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.3s;
+    font-family: Kalam;
+    vertical-align: middle;
+    word-wrap: break-word;
+    
 }
 
 .selected {
@@ -68,12 +77,12 @@ body {
 
 .blue {
     background-color: #00A3C2;
-    color: #fff;
+    color: #000;
 }
 
 .rose {
     background-color: #EF3090;
-    color: #fff;
+    color: #000;
 }
 
 .violet {
