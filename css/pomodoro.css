@@ -12,16 +12,15 @@
     z-index: 999;
 }
 
-
 #pomodoro .layer {
     position: absolute;
     width: 100%;
     background-color: #fff;
     text-align: center;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), 0 0 50px rgba(0, 0, 0, 0.1);
-    margin-top: 15%;
+    margin-top: 10%;
     opacity: 0;
-    padding: 2em;
+    padding: 0;
     z-index: 1000;
 }
 
@@ -29,54 +28,62 @@
     text-align: center;
     width: 50%;
     margin: auto;
+    padding: 2em;
 }
 
-    #pomodoro .content #status {
-        text-align: left;
-    }
+#pomodoro .content h2 {
+    margin: 0;
+}
 
-    #pomodoro .content #time {
-        font-size: 10em;
-        margin: auto;
-        line-height: 1em;
-    }
+#pomodoro .content #status {
+    text-align: center;
+    font-family: "PermanentMarker" ;
+    font-size: 3em;
+    color:tomato;
+}
 
-    #pomodoro .content .buttons {
-        float: right;
-        margin-top: 40px;
-        
-       
-    }
+#pomodoro .content #time {
+    font-size: 10em;
+    margin: auto;
+    line-height: 1em;
+    color: gray;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        #pomodoro .content .buttons #butHide {
-            border-color: tomato;
-            background-color: tomato;
-        }
+#pomodoro .content .buttons {
+    margin-top: 30px;
+  
+}
 
-            #pomodoro .content .buttons #butHide:hover {
-                background-color: #FF8A75;
-                border-color: #FF4A2B;
-            }
+#pomodoro .content .buttons #butHide {
+    border-color: tomato;
+    background-color: tomato;
+}
 
-        #pomodoro .content .buttons #butCancel {
-            border-color: gray;
-            background-color: gray;
-        }
+#pomodoro .content .buttons #butHide:hover {
+    background-color: #FF8A75;
+    border-color: #FF4A2B;
+}
 
-            #pomodoro .content .buttons #butCancel:hover {
-                background-color: lightgray;
-                border-color: darkgray;
-            }
+#pomodoro .content .buttons #butCancel {
+    border-color: gray;
+    background-color: gray;
+}
 
-        #pomodoro .content .buttons button {
-            margin-left: 10px;
-            font-size: 20px;
-            border-radius: 10px;
-            padding: 8px 50px; 
-            border: 0;
-        }
+#pomodoro .content .buttons #butCancel:hover {
+    background-color: lightgray;
+    border-color: darkgray;
+}
 
+#pomodoro .content .buttons button {
+    margin-left: 10px;
+    font-size: 20px;
+    border-radius: 10px;
+    padding: 8px 50px; 
+    border: 0;
+}
 
+/*
 @media screen and (-ms-view-state: snapped) {
     #pomodoro #overlay {
    
@@ -106,4 +113,4 @@
             margin: auto;
         }
 
-}
+}*/
