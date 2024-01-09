@@ -1,4 +1,5 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Kalam&display=swap');
+
 @font-face {
     font-family: 'PermanentMarker';
     src: url('/fonts/PermanentMarker-Regular.ttf') format('truetype');
@@ -8,21 +9,16 @@ body {
     margin: 0;
     overflow: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #efefef;
+    background-color: #efefef;
 }
-  
+
 #apptitle {
     display: none;
 }
 
 .note {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
     position: absolute;
-    height: 184px;
-    width: 184px;
     border: 1px solid rgba(0, 0, 0, 0.1);
     text-align: center;
     overflow: auto;
@@ -31,74 +27,65 @@ body {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.3s;
-    font-family: Kalam;
-    vertical-align: middle;
+    font-family: 'Kalam', sans-serif;
     word-wrap: break-word;
-    
+    line-height: 1.25em;
+}
+
+.note-normal {
+    height: 184px;
+    width: 184px;
+}
+
+.note-small {
+    height: 92px;
+    width: 184px;
 }
 
 .selected {
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7) !important;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
 }
 
 #newbuttons {
     position: absolute;
     margin-left: -25px;
-    margin-top: 100px;
+    margin-top: 80px;
     z-index: 500;
 }
 
-#newbuttons .new {
+#newbuttons .new-normal {
     width: 80px;
-    height: 50px;
-    margin-bottom: 20px;
+    height: 35px;
+    margin-top: 20px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     transform: rotate(3deg);
 }
 
-.tomato {
-    background-color: #FF6142;
-    color: #fff;
+#newbuttons .new-small {
+    width: 70px;
+    height: 25px;
+    margin-top: 10px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
+    transform: rotate(3deg);
+}
+
+.help {
     width: 30em;
     text-align: left;
     height: 15em;
 }
 
-    .tomato a {
-        color: #fff;
-        text-decoration: underline;
-    }
-
-
-.yellow {
-    background-color: #FEE100;
-    color: #000;
-}
-
-.blue {
-    background-color: #00A3C2;
-    color: #ddd;
-}
-
-.rose {
-    background-color: #EF3090;
-    color: #000;
-}
-
-.violet {
-    background-color: #8F3A8D;
+.help a {
     color: #fff;
 }
 
-.green {
-    background-color: #B5CB42;
-    color: #000;
-}
-
-.orange {
-    background-color: #FFA300;
-    color: #000;
-}
+.tomato { background-color: #FF6142; color: #fff; }
+.yellow { background-color: #FEE100; color: #000; }
+.blue { background-color: #00A3C2; color: #ddd; }
+.rose { background-color: #EF3090; color: #000; }
+.violet { background-color: #8F3A8D; color: #fff; }
+.green { background-color: #B5CB42; color: #000; }
+.orange { background-color: #FFA300; color: #000; }
 
 #taskboard {
     position: absolute;
@@ -110,66 +97,17 @@ body {
     width: 100%;
 }
 
-#column1 {
-    grid-column: 1;
-    grid-row: 1;
+#column1, #column2, #column3 {
     text-align: center;
-    font-family: PermanentMarker;
+    font-family: 'PermanentMarker', sans-serif;
 }
 
 #column2 {
-    grid-column: 2;
-    grid-row: 1;
-    border-right:solid 5px rgba(0, 0, 0, 0.2);
-    border-left: rgba(0, 0, 0, 0.2) solid 5px;
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    text-align: center;
-    font-family: PermanentMarker;
-}
-
-#column3 {
-    grid-column: 3;
-    grid-row: 1;
-    text-align: center;
-    font-family: PermanentMarker;
+    border-right: solid 5px rgba(0, 0, 0, 0.2);
+    border-left: solid 5px rgba(0, 0, 0, 0.2);
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
 
 #canvas {
     cursor: crosshair;
-}
-
-@media screen and (-ms-view-state: snapped) {
-    #taskboard {
-        display: none;
-    }
-
-    #container {
-        overflow-y: scroll;
-        height: 90%;
-    }
-
-    #apptitle {
-        margin-top: 1em;
-        margin-bottom: 1em;
-        margin-left: 1em;
-        display: block;
-    }
-
-    .note {
-        position: static;
-        height: 3em;
-        width: 80%;
-        text-align: center;
-        overflow: auto;
-        margin-bottom: 0.5em;
-        margin-left: auto;
-        margin-right: auto;
-        font-size: 1em;
-        padding: 0.5em;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(0, 0, 0, 0.1);
-    }
-
-    #newbuttons {
-        display: none !important;
-    }
 }

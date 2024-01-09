@@ -23,6 +23,9 @@
     }
     
     function saveCanvas() {
+        var currentColor = Sketch.getColor();
+        localStorage.setItem("color", currentColor);
+
         var canvas = document.getElementById("canvas");
         canvas.toBlob(function(blob) {
             var reader = new FileReader();
@@ -35,6 +38,10 @@
     
     function getScreenWidth() {
         return localStorage.getItem("screenwidth");
+    }
+
+    function getColor() {
+        return localStorage.getItem("color");
     }
     
     function loadCanvas() {
@@ -74,6 +81,7 @@
     window.Config = {
         getAll: getAll,
         getScreenWidth: getScreenWidth,
+        getColor: getColor,
         savePomodoroState: savePomodoroState,
         saveTaskboard: saveTaskboard,
         saveCanvas: saveCanvas

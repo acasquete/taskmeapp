@@ -6,15 +6,13 @@
     var lastX, lastY;
     var startTime;
     var pathDuration = 800; 
-
     var colors = ['black', 'blue', 'red', 'green'];
     var currentColorIndex = 0;
     var cursorCircle;
-
     var isEraserMode = false; // Variable para el modo borrador
-
     var eraserSize = 80; // Tamaño del borrador
     var defaultLineWidth = 25; // Ancho de línea por defecto
+    var hideCursorTimeout;
 
     var onEndDrawing = function () {
         canvas.drawing = false;
@@ -24,6 +22,8 @@
     var toggleEraserMode = function () {
         isEraserMode = !isEraserMode;
         if (isEraserMode) {
+            sCursorVisible = true;
+            cursorCircle.style.display = 'block';
             cursorCircle.style.width = (eraserSize + 20) + 'px';
             cursorCircle.style.height = eraserSize + 'px';
             cursorCircle.style.borderRadius = '30px';
@@ -38,28 +38,39 @@
         }
     };
 
+    function hideCursor() {
+        cursorCircle.style.display = 'none';
+        isCursorVisible = false;
+    }
+
     var resetCursorCircle = function() {
-        cursorCircle.style.width = '20px';
-        cursorCircle.style.height = '20px';
-        cursorCircle.style.borderRadius = '10px';
+        cursorCircle.style.display = 'block';
+        cursorCircle.style.width = '30px';
+        cursorCircle.style.height = '30px';
+        cursorCircle.style.borderRadius = '15px';
         cursorCircle.style.backgroundColor = colors[currentColorIndex];
         cursorCircle.style.border = 'none';
-        cursorCircle.style.marginLeft = '-10px';
-        cursorCircle.style.marginTop = '-10px';
+        cursorCircle.style.marginLeft = '-15px';
+        cursorCircle.style.marginTop = '-15px';
+
+        clearTimeout(hideCursorTimeout);
+        hideCursorTimeout = setTimeout(hideCursor, 2000);
     };
 
     var createCursorCircle = function () {
         cursorCircle = document.createElement('div');
-        cursorCircle.style.width = '10px';
-        cursorCircle.style.height = '10px';
-        cursorCircle.style.borderRadius = '5px';
+        isCursorVisible = true;
+        cursorCircle.style.width = '30px';
+        cursorCircle.style.height = '30px';
+        cursorCircle.style.borderRadius = '15px';
         cursorCircle.style.position = 'absolute';
         cursorCircle.style.backgroundColor = currentColor;
-        cursorCircle.style.marginLeft = '-5px';
-        cursorCircle.style.marginTop = '-5px'; 
+        cursorCircle.style.marginLeft = '-15px';
+        cursorCircle.style.marginTop = '-15px'; 
         cursorCircle.style.pointerEvents = 'none'; 
+        
         document.body.appendChild(cursorCircle);
-
+        hideCursorTimeout = setTimeout(hideCursor, 2000);
         document.onmousemove = function (e) {
             cursorCircle.style.left = e.clientX + 'px';
             cursorCircle.style.top = e.clientY + 'px';
@@ -73,6 +84,7 @@
         if (e.key === 'c') {
             currentColorIndex = (currentColorIndex + 1) % colors.length;
             currentColor = colors[currentColorIndex];
+            Config.saveCanvas(); 
             if (isEraserMode) {
                 toggleEraserMode(); 
             }
@@ -80,10 +92,13 @@
         } else if (e.key === 'e') {
             toggleEraserMode();
         } else if (e.key === 'a') {
-            clearCanvas(); // All Clear or Annihilate
+            clearCanvas(); 
         } else if (e.key === 'h') {
             Taskboard.toggleNotes(); 
+         } else if (e.key === 'f') {
+            Taskboard.toggleFullscreen(); 
         }
+
     };
 
     var draw = function (x, y) {
@@ -160,10 +175,11 @@
     };
 
     var showCursorCircle = function () {
-        cursorCircle.style.display = 'block';
+        if (isCursorVisible) cursorCircle.style.display = 'block';
     };
 
     var hideCursorCircle = function () {
+        isEraserMode = false;
         cursorCircle.style.display = 'none';
     };
 
@@ -187,30 +203,25 @@
             context = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            
             canvas.addEventListener('click', onCanvasClick);
-
             canvas.addEventListener('mousemove', onMove, false);
             canvas.addEventListener('mousedown', onStart, false);
             canvas.addEventListener('mouseup', onEnd, false);
-
             canvas.addEventListener('touchmove', onMove, false);
             canvas.addEventListener('touchstart', onStart, false);
             canvas.addEventListener('touchend', onEnd, false);
-
-            createCursorCircle();
-
-            canvas = document.getElementById(idcanvas);
             canvas.addEventListener('mouseenter', showCursorCircle);
             canvas.addEventListener('mouseleave', hideCursorCircle);
-
+            canvas.addEventListener('mouseout', onEndDrawing);
             document.addEventListener('keypress', onKeyPress);
 
-            canvas.addEventListener('mouseout', onEndDrawing);
+            currentColor = Config.getColor();
 
             if (!currentColor) {
                 currentColor = "black";
             }
+
+            createCursorCircle();
         },
 
         setColor: function (color) {

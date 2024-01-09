@@ -51,27 +51,7 @@
         });
 
         $('#cmdFullscreenButton').click( function() {
-            if (!document.fullscreenElement) {
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                } else if (document.documentElement.mozRequestFullScreen) {
-                    document.documentElement.mozRequestFullScreen();
-                } else if (document.documentElement.webkitRequestFullscreen) {
-                    document.documentElement.webkitRequestFullscreen();
-                } else if (document.documentElement.msRequestFullscreen) {
-                    document.documentElement.msRequestFullscreen();
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.mozCancelFullScreen) {
-                    document.mozCancelFullScreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
-                }
-            }
+            toggleFullscreen();
         });
 
         starthandlers(".note");
@@ -79,7 +59,33 @@
         checkminNotes();
         updateNoteCounters(); 
 
-        $(".new").on("mousedown touchstart", onnew);
+        $(".new-normal").on("mousedown touchstart", onnew);
+        $(".new-small").on("mousedown touchstart", onnew);
+    }
+
+    function toggleFullscreen ()
+    {
+        if (!document.fullscreenElement) {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+                document.documentElement.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
     }
 
     function toggleNotes () {
@@ -123,22 +129,19 @@
     function showHelp() {
         
         const htmlContent = `
-            <div style="text-align: center;">
-                You're the best!<br/>
-                Thanks for trying <b>TaskMe</b>,<br/>
-                the <em>easiest</em> way to create notes!
-            </div>
-            <br/>
-            - <b>Create</b> a note by selecting a color on the left of the screen.<br/>
-            - <b>Edit</b> a note by double-clicking on it.<br/>
-            - <b>Remove</b> a note by dragging it to the top of the screen.<br/><br/>
-            If you have any questions, ideas or suggestions, please feel free to contact me at <a href='http://www.twitter.com/acasquetenotes'>X@acasquetenotes</a>
-            or open an issue on GitHub at <a href='http://www.github.com/acasquete/taskmeapp/issues'>www.github.com/acasquete/taskmeapp</a>
+        <p>You're the best! Thanks for trying <b>TaskMe</b>, <em>The Sim Kanban Board!</em></p>
+        <p><ul>
+        <li><u>Create</u> a note by selecting a color on the left of the screen.</li>
+        <li><u>Edit</u> a note by double-clicking on it.</li>
+        <li><u>Remove</u> a note by dragging it to the top of the screen.</li></ul>
+            <p>(c)hange color (e)raser clear (a)ll (h)ide notes (f)ull screen</p>
+            <p>If you have any questions, ideas or suggestions, please feel free to contact me at <a target='_blank' href='http://www.x.com/acasquetenotes'>X@acasquetenotes</a>
+            or open an issue on GitHub at <a target='_blank' href='http://www.github.com/acasquete/taskmeapp/issues'>www.github.com/acasquete/taskmeapp</a></p>
         `;
 
-        $(".tomato").remove();
+        $(".help").remove();
         $('.note').fadeIn();
-        createNote("300px", "170px", "note tomato", htmlContent);
+        createNote("300px", "170px", 50, "note note-normal tomato help", htmlContent, false);
         starthandlers(".tomato");
         Controls.hideappbar();
     }
@@ -149,72 +152,75 @@
         }, 500);
     }
 
-    function createNote(left, top, color, content) {
+    function createNote(left, top, index, style, content, editable) {
         try {
-            var input = toStaticHTML("<div class='" + color + "'></div>");
-            var el = $(input);
-            var t = el.get(0);
-            t.contentEditable = true;
-            t.innerHTML = content;
-            t.style.left = left;
-            t.style.top = top;
-            el.appendTo('#container');
-            applyRandomRotate(t);
-        } catch(ex) {
-            
+
+            if (!style.includes('note-normal') && !style.includes('note-small')) {
+                style += ' note-normal ';
+            }
+
+            $('<div></div>')
+                .addClass(style)
+                .html(content) 
+                .css({
+                    'left': left,
+                    'top': top,
+                    'z-index': index,
+                    'position': 'absolute', 
+                    'transform': 'rotate(' + getRandomAngle() + 'deg)'
+                })
+                .prop('contentEditable', editable)
+                .appendTo('#container');
+        } catch (ex) {
+            console.error('Error creating note:', ex);
         }
+    }
+    
+    function getRandomAngle() {
+        return Math.floor((Math.random() * 6) + 1) - 3; 
     }
 
     function initNotes(notes) {
         for (var i = 0; i < notes.length; i++) {
-            createNote(notes[i].l, notes[i].t, notes[i].cl, notes[i].c);
+            createNote(notes[i].l, notes[i].t, notes[i].i, notes[i].cl, notes[i].c, true);
             if (z < notes[i].i) z = notes[i].i;
         }
         z++;
     }
 
+    function extractSizeFromClass(className) {
+        var parts = className.split('-');
+        return parts.length > 1 ? parts[1] : null;
+    }
+
     function onnew(event) {
-        var classattr = $(this).attr("class").replace("new ", "");
-        var input = toStaticHTML("<div class='note " + classattr + "'></div>");
-        var e = $(input).appendTo('#container').hide().fadeIn(300);
+        
+        var noteSize = extractSizeFromClass($(this).attr("class"));
+        var noteColor = $(this).attr("class").replace("new-" + noteSize, "");
+
+        var e = $("<div></div>").addClass('note').addClass('note-' + noteSize).addClass(noteColor)
+            .appendTo('#container')
+            .hide()
+            .fadeIn(300);
+    
         var t = e.get(0);
-        //t.style.zIndex = z++;
+
         t.contentEditable = true;
-        e.css({ top: event.pageY - 100 });
+
+        var heightNote = noteSize === 'normal' ? 100 : 46;
+        
+        e.css({ top: event.pageY - heightNote });
         starthandlers(t);
         e.trigger(event);
         $('.note').fadeIn();
-
-        if ($('.note').size() > maxnotes - 1) {
+    
+        if ($('.note').length > maxnotes - 1) {
             $("#newbuttons").fadeOut(300);
         }
     }
 
-    function toStaticHTML(input) {
-        var tempDiv = document.createElement('div');
-    
-        tempDiv.innerHTML = input;
-    
-        var scripts = tempDiv.getElementsByTagName('script');
-        for (var i = scripts.length - 1; i >= 0; i--) {
-            scripts[i].parentNode.removeChild(scripts[i]);
-        }
-    
-        var allElements = tempDiv.getElementsByTagName('*');
-        for (var i = 0; i < allElements.length; i++) {
-            var attributes = allElements[i].attributes;
-            for (var j = attributes.length - 1; j >= 0; j--) {
-                if (/^on/i.test(attributes[j].name)) {
-                    allElements[i].removeAttribute(attributes[j].name);
-                }
-            }
-        }
-    
-        return tempDiv.innerHTML;
-    }
-
     function applyRandomRotate(element) {
-        var angle = (Math.floor((Math.random() * 6) + 1)) - 3;
+        var angle = getRandomAngle();
         element.style.transform = 'rotate(' + angle + 'deg)';
     }
 
@@ -224,8 +230,13 @@
         $(element).on("dragend", ondragend);
         $(element).on('keyup', function (e) { checkCharcount(this, 140, e); });
         $(element).on('keydown', function (e) { checkCharcount(this, 140, e); });
-        $(element).on('dblclick', onclickNote);
-        $(element).on('focus', function () { $(this).addClass("selected"); });
+        if (!$(element).hasClass('help')) {
+            $(element).on('dblclick', onclickNote);
+        }
+        $(element).on('focus', function () { 
+            $(this).addClass("selected"); 
+           
+        });
         $(element).on('blur', function () {
             $(this).removeClass("selected");
             asyncSaveTaskboard();
@@ -237,7 +248,7 @@
         event.stopPropagation();
         event.preventDefault();
         if (event.handled !== true) {
-            resetNotes();
+            deselectAllNotes();
             el.selectText();
             event.handled = true;
         } else {
@@ -249,12 +260,6 @@
         if (e.which != 8 && $(content_id).text().length > max) {
             e.preventDefault();
         }
-    }
-
-    function resetNotes() {
-        $(".note").each(function () {
-            $(this).removeClass("selected");
-        });
     }
 
     function removehandlers(element) {
@@ -272,6 +277,9 @@
     }
 
     function ondrag(ev, dd) {
+        $(this).css('z-index', 1000);
+
+        normalizeZIndexes();
         $(this).css({
             top: dd.offsetY,
             left: dd.offsetX,
@@ -284,8 +292,6 @@
             $("#newbuttons").fadeIn(300);
         }
         updateNoteCounters();
-        
-        
     }
 
     function ondragend() {
@@ -302,6 +308,15 @@
         return false;
     }
 
+    function normalizeZIndexes() {
+        var zIndex = 1; 
+        $('.note').sort(function(a, b) { 
+            return parseInt($(a).css('z-index')) - parseInt($(b).css('z-index'));
+        }).each(function() {
+            $(this).css('z-index', zIndex++); 
+        });
+    }
+
     function saveTaskboard() {
         var listnotes = [];
 
@@ -315,16 +330,18 @@
 
     function recalcposition() {
         $(".note").each(function () {
-            var el = $(this).get(0);
-            el.style.transform = 'rotate(' + 0 + 'deg)';
-
-            var posNote = $(this).position().left;
+            var el = $(this);
+            var originalVisibility = el.css('visibility');
+            var originalDisplay = el.css('display');
+            el.css({ 'visibility': 'hidden', 'display': 'block' });
+            var posNote = el.position().left;
             var posRel = posNote * 100 / screenwidth;
-    
             var newPos = window.innerWidth * posRel / 100;
-            $(this).css('left', newPos);
-            
+    
+            el.css({ 'left': newPos, 'visibility': originalVisibility, 'display': originalDisplay });
+            el.get(0).style.transform = 'rotate(0deg)';
         });
+    
         screenwidth = window.innerWidth;
         saveTaskboard();
     }
@@ -359,7 +376,8 @@
         init: init,
         isAnyNoteSelected: isAnyNoteSelected,
         deselectAllNotes: deselectAllNotes,
-        toggleNotes: toggleNotes
+        toggleNotes: toggleNotes,
+        toggleFullscreen: toggleFullscreen
     };
 
 })();
