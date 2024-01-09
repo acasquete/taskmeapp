@@ -83,8 +83,33 @@
         starthandlers(".note");
 
         checkminNotes();
+        updateNoteCounters(); 
         
         $(".new").on("mousedown touchstart", onnew);
+    }
+
+    function updateNoteCounters() {
+        let columnCounters = [0, 0, 0]; // For 3 columns
+
+        let totalWidth = $('#taskboard').width();
+        let columnWidths = [(3 / 8) * totalWidth, (3 / 8) * totalWidth, (2 / 8) * totalWidth];
+
+        $('.note').each(function() {
+            let notePosition = $(this).position().left;
+            let cumulativeWidth = 0;
+
+            for (let i = 0; i < columnWidths.length; i++) {
+                cumulativeWidth += columnWidths[i];
+                if (notePosition < cumulativeWidth) {
+                    columnCounters[i]++;
+                    break;
+                }
+            }
+        });
+
+        $('#column1').text('Todo (' + columnCounters[0] + ')');
+        $('#column2').text('In Progress (' + columnCounters[1] + ')');
+        $('#column3').text('Done (' + columnCounters[2] + ')');
     }
 
     function showHelp() {
@@ -134,7 +159,6 @@
 
     function initNotes(notes) {
         for (var i = 0; i < notes.length; i++) {
-            console.log(notes[i].l);
             createNote(notes[i].l, notes[i].t, notes[i].cl, notes[i].c);
             if (z < notes[i].i) z = notes[i].i;
         }
@@ -260,6 +284,7 @@
         }
 
         applyRandomRotate($(this).get(0));
+        updateNoteCounters();
         asyncSaveTaskboard();
         return false;
     }
