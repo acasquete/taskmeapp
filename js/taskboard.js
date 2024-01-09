@@ -84,7 +84,7 @@
 
         checkminNotes();
         updateNoteCounters(); 
-        
+
         $(".new").on("mousedown touchstart", onnew);
     }
 
@@ -107,9 +107,9 @@
             }
         });
 
-        $('#column1').text('Todo (' + columnCounters[0] + ')');
-        $('#column2').text('In Progress (' + columnCounters[1] + ')');
-        $('#column3').text('Done (' + columnCounters[2] + ')');
+        $('#column1').text('To Do - ' + columnCounters[0] + '');
+        $('#column2').text('In Progress - ' + columnCounters[1] + '');
+        $('#column3').text('Done - ' + columnCounters[2] + '');
     }
 
     function showHelp() {
