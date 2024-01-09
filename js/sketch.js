@@ -16,6 +16,11 @@
     var eraserSize = 80; // Tamaño del borrador
     var defaultLineWidth = 25; // Ancho de línea por defecto
 
+    var onEndDrawing = function () {
+        canvas.drawing = false;
+        canvas.pathBegun = false;
+    };
+
     var toggleEraserMode = function () {
         isEraserMode = !isEraserMode;
         if (isEraserMode) {
@@ -62,6 +67,9 @@
     };
 
     var onKeyPress = function (e) {
+        if (Taskboard.isAnyNoteSelected()) {
+            return;
+        }
         if (e.key === 'c') {
             currentColorIndex = (currentColorIndex + 1) % colors.length;
             currentColor = colors[currentColorIndex];
@@ -73,6 +81,8 @@
             toggleEraserMode();
         } else if (e.key === 'a') {
             clearCanvas(); // All Clear or Annihilate
+        } else if (e.key === 'h') {
+            Taskboard.toggleNotes(); 
         }
     };
 
@@ -135,6 +145,7 @@
     };
 
     var onStart = function (event) {
+        $('.note').removeClass('selected');
         canvas.drawing = true;
         canvas.pathBegun = false;
         //lastX = lastY = undefined; 
@@ -163,6 +174,10 @@
         }
     };
 
+    var onCanvasClick = function () {
+        Taskboard.deselectAllNotes();
+    };
+
     return {
         initialize: function (idcanvas) {
             if (typeof idcanvas === 'undefined') {
@@ -173,6 +188,8 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             
+            canvas.addEventListener('click', onCanvasClick);
+
             canvas.addEventListener('mousemove', onMove, false);
             canvas.addEventListener('mousedown', onStart, false);
             canvas.addEventListener('mouseup', onEnd, false);
@@ -188,6 +205,8 @@
             canvas.addEventListener('mouseleave', hideCursorCircle);
 
             document.addEventListener('keypress', onKeyPress);
+
+            canvas.addEventListener('mouseout', onEndDrawing);
 
             if (!currentColor) {
                 currentColor = "black";

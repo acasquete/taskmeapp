@@ -47,13 +47,7 @@
         });
 
         $('#toggleNotes').click(function() {
-            $('.note').each(function() {
-                if ($(this).css('display') === 'none') {
-                    $(this).fadeIn();
-                } else {
-                    $(this).fadeOut();
-                }
-            });
+            toggleNotes();
         });
 
         $('#cmdFullscreenButton').click( function() {
@@ -86,6 +80,19 @@
         updateNoteCounters(); 
 
         $(".new").on("mousedown touchstart", onnew);
+    }
+
+    function toggleNotes () {
+        $('.note').each(function() {
+            if ($(this).css('display') === 'none') {
+                $(this).fadeIn();
+            } else {
+                $(this).fadeOut();
+            }
+        });
+    }
+    function isAnyNoteSelected() {
+        return $('.note.selected').length > 0;
     }
 
     function updateNoteCounters() {
@@ -260,6 +267,7 @@
     }
 
     function ondragstart(ev, dd) {
+        deselectAllNotes();
         applyRandomRotate($(this).get(0));
     }
 
@@ -326,8 +334,32 @@
         starthandlers(".note");
     }
 
+    function deselectAllNotes() {
+        $('.note').each(function () {
+            $(this).removeClass('selected');
+            if (this === document.activeElement) {
+                this.blur(); // Quita el foco del elemento si está enfocado
+            }
+            
+        });
+
+        // Deseleccionar cualquier texto seleccionado en el documento
+        if (window.getSelection) {
+            if (window.getSelection().empty) {  // Chrome
+                window.getSelection().empty();
+            } else if (window.getSelection().removeAllRanges) {  // Firefox y otros
+                window.getSelection().removeAllRanges();
+            }
+        } else if (document.selection) {  // IE?
+            document.selection.empty();
+        }
+    }
+
     return {
-        init: init
+        init: init,
+        isAnyNoteSelected: isAnyNoteSelected,
+        deselectAllNotes: deselectAllNotes,
+        toggleNotes: toggleNotes
     };
 
 })();

@@ -23,6 +23,8 @@
 
     function init () {
         $("#canvas").on("contextmenu", function(event) {
+            Taskboard.deselectAllNotes();
+
             event.preventDefault();
             if (isAppbarVisible) {
                 Controls.hideappbar();
