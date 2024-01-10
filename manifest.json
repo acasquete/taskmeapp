@@ -22,7 +22,6 @@
       }
     ],
     "background_color": "#FFFFFF",
-    "theme_color": "#FF6142",
     "description": "TaskMe is a simple Kanban board that can be used to organize many areas of your life. The simplest kanban board consist of three columns. Task Me can also be used as a tool to keep track of your time while using Pomodoro Technique.",
     "scope": "/",
     "lang": "en-EN",
