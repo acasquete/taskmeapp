@@ -22,7 +22,7 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.1);
     text-align: center;
     overflow: auto;
-    font-size: 1.45em;
+    font-size: 1.35vw;
     padding: 0.5em;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.1);
     cursor: pointer;
@@ -33,13 +33,13 @@ body {
 }
 
 .note-normal {
-    height: 11vw;
-    width: 11vw;
+    height: 9vw;
+    width: 9vw;
 }
 
 .note-small {
-    height: 5.5vw;
-    width: 11vw;
+    height: 4.5vw;
+    width: 9vw;
 }
 
 .selected {
@@ -54,23 +54,23 @@ body {
 }
 
 #newbuttons .new-normal {
-    width: 80px;
-    height: 35px;
+    width: 5vw;
+    height: 2.5vw;
     margin-top: 20px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     transform: rotate(3deg);
 }
 
 #newbuttons .new-small {
-    width: 70px;
-    height: 25px;
+    width: 4vw;
+    height: 2vw;
     margin-top: 10px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     transform: rotate(3deg);
 }
 
 .help {
-    width: 30em;
+    width: 40vw;
     text-align: left;
     height: 15em;
 }
