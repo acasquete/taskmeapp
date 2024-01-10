@@ -266,15 +266,6 @@
         }
     }
 
-    function removehandlers(element) {
-        $(element).off('dragstart');
-        $(element).off('drag');
-        $(element).off('dragend');
-
-        $(element).off('blur');
-        $(element).off('focus');
-    }
-
     function ondragstart(ev, dd) {
         deselectAllNotes();
         applyRandomRotate($(this).get(0));
