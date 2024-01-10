@@ -1,6 +1,8 @@
 var Notifications = (function() {
     'use strict';
 
+    var notification;
+
     function isSupported() {
         return "Notification" in window;
     }
@@ -31,15 +33,24 @@ var Notifications = (function() {
             return;
         }
 
-        setTimeout(function() {
+        notification = window.setTimeout(function() {
             sendNotification(title, options);
         }, delayMs);
+    }
+
+    function cancelNotification ()
+    {
+        if (notification) {
+            window.clearTimeout(notification);
+            notification = null; // Restablece el identificador del temporizador
+        } 
     }
 
     return {
         requestPermission: requestPermission,
         sendNotification: sendNotification,
-        scheduleNotification: scheduleNotification
+        scheduleNotification: scheduleNotification,
+        cancelNotification: cancelNotification
     };
 
     return {

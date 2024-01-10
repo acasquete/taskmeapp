@@ -1,7 +1,7 @@
 ﻿(function () {
     "use strict";
     
-    var pomodoroDuration = 25;
+    var pomodoroDuration = 0.1;
     var shortBreakDuration = 5;
     var longBreakDuration = 15;
     var dateFirstPomodoro;
@@ -61,14 +61,11 @@
 
             initInterval();
 
-            // Lugar para tus propias funciones de notificaciones
-            // Notifications.scheduleToast(pomodoroEndTime, config.toastText);
-            // Notifications.sendBadgeText("playing", config.duration);
             Notifications.requestPermission();
-            var icon = 'https://static.vecteezy.com/system/resources/previews/028/882/808/original/tomato-tomato-red-tomato-with-transparent-background-ai-generated-free-png.png';
+            var icon = 'https://taskmeapp.com/images/apple-touch-icon.png';
             var body = "Pomodoro Finished!";
             
-            Notifications.scheduleNotification('TaskMeApp', { body, icon }, config.duration * 60000);
+            Notifications.scheduleNotification('TaskMe', { body, icon }, config.duration * 60000);
         }
 
         // Lugar para guardar el estado del Pomodoro
@@ -120,13 +117,12 @@
 
     function cancel() {
         finishPomodoro();
-        // Lugar para eliminar notificaciones y actualizar badge
-        // Notifications.removeToast();
-        // Notifications.clearBadge();
     }
 
     function finishPomodoro() {
         window.clearInterval(interval);
+        Notifications.cancelNotification();
+
         hide().then(function () {
             $("#time").text("00:00");
             pomodoroStartTime = null;
