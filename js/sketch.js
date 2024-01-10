@@ -30,12 +30,6 @@
     
     window.addEventListener('resize', resizeCanvas);
 
-    var onEndDrawing = function () {
-        canvas.drawing = false;
-        canvas.pathBegun = false;
-        updateHighResCanvas();
-    };
-
     var toggleEraserMode = function () {
         isEraserMode = !isEraserMode;
         if (isEraserMode) {
@@ -125,7 +119,7 @@
         context.lineWidth = lineWidth;
 
         context.globalCompositeOperation = isEraserMode ? 'destination-out' : 'source-over';
-
+        
         if (!canvas.pathBegun) {
             context.beginPath();
             context.moveTo(x, y);
@@ -180,16 +174,14 @@
         $('.note').removeClass('selected');
         canvas.drawing = true;
         canvas.pathBegun = false;
-        //lastX = lastY = undefined; 
         onMove(event);
     };
 
     var onEnd = function (event) {
         canvas.drawing = false;
         canvas.pathBegun = false;
-        //lastX = lastY = undefined; // Reset last positions
-        Config.saveCanvas(); 
         updateHighResCanvas();
+        Config.saveCanvas(); 
     };
 
     var showCursorCircle = function () {
@@ -239,7 +231,7 @@
             canvas.addEventListener('touchend', onEnd, false);
             canvas.addEventListener('mouseenter', showCursorCircle);
             canvas.addEventListener('mouseleave', hideCursorCircle);
-            canvas.addEventListener('mouseout', onEndDrawing);
+            canvas.addEventListener('mouseout', onEnd);
             document.addEventListener('keypress', onKeyPress);
 
             currentColor = Config.getColor();
