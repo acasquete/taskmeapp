@@ -136,6 +136,10 @@ body {
         height: 40px;
         width: 80px;
     }
+
+    .note {
+        font-size: 0.8em;
+    }
 }
 
 @media (min-width: 768px) {
@@ -152,6 +156,10 @@ body {
     .note-small {
         height: 50px;
         width: 100px;
+    }
+
+    .note {
+        font-size: 0.9em;
     }
 }
 
@@ -170,6 +178,10 @@ body {
         height: 85px;
         width: 170px;
     }
+
+    .note {
+        font-size: 1.45em;
+    }
     
 }
 
@@ -187,5 +199,9 @@ body {
     .note-small {
         height: 85px;
         width: 170px;
+    }
+
+    .note {
+        font-size: 1.75em;
     }
 }
