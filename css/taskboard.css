@@ -33,13 +33,13 @@ body {
 }
 
 .note-normal {
-    height: 184px;
-    width: 184px;
+    height: 11vw;
+    width: 11vw;
 }
 
 .note-small {
-    height: 92px;
-    width: 184px;
+    height: 5.5vw;
+    width: 11vw;
 }
 
 .selected {
@@ -100,6 +100,7 @@ body {
 #column1, #column2, #column3 {
     text-align: center;
     font-family: 'PermanentMarker', sans-serif;
+    font-size: 2vw;
 }
 
 #column2 {
