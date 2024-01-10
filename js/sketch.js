@@ -9,14 +9,31 @@
     var colors = ['black', 'blue', 'red', 'green'];
     var currentColorIndex = 0;
     var cursorCircle;
-    var isEraserMode = false; // Variable para el modo borrador
-    var eraserSize = 80; // Tamaño del borrador
-    var defaultLineWidth = 25; // Ancho de línea por defecto
+    var isEraserMode = false; 
+    var eraserSize = 80;
+    var defaultLineWidth = 25;
     var hideCursorTimeout;
+    var maxSize = 6000; 
+    var highResCanvas;
+    var highResContext;
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    
+        context.drawImage(highResCanvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+    }
+
+    function updateHighResCanvas() {
+        highResContext.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+    }
+    
+    window.addEventListener('resize', resizeCanvas);
 
     var onEndDrawing = function () {
         canvas.drawing = false;
         canvas.pathBegun = false;
+        updateHighResCanvas();
     };
 
     var toggleEraserMode = function () {
@@ -172,6 +189,7 @@
         canvas.pathBegun = false;
         //lastX = lastY = undefined; // Reset last positions
         Config.saveCanvas(); 
+        updateHighResCanvas();
     };
 
     var showCursorCircle = function () {
@@ -185,6 +203,8 @@
 
     var clearCanvas = function() {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        highResContext.clearRect(0, 0, highResCanvas.width, highResCanvas.height);
+
         if (isEraserMode) {
             toggleEraserMode(); 
         }
@@ -199,10 +219,17 @@
             if (typeof idcanvas === 'undefined') {
                 idcanvas = "canvas";
             }
+
             canvas = document.getElementById(idcanvas);
             context = canvas.getContext('2d');
+            highResCanvas = document.createElement('canvas');
+            highResContext = highResCanvas.getContext('2d');
+
+            highResCanvas.width = maxSize;
+            highResCanvas.height = maxSize;
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+
             canvas.addEventListener('click', onCanvasClick);
             canvas.addEventListener('mousemove', onMove, false);
             canvas.addEventListener('mousedown', onStart, false);
@@ -222,6 +249,8 @@
             }
 
             createCursorCircle();
+
+
         },
 
         setColor: function (color) {

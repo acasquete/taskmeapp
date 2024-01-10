@@ -348,7 +348,6 @@
 
     function onViewStateChanged(eventArgs) {
         recalcposition();
-        starthandlers(".note");
     }
 
     function deselectAllNotes() {
