@@ -149,13 +149,13 @@ body {
     }
     
     .note-normal {
-        height: 100px;
-        width: 100px;
+        height: 130px;
+        width: 1300px;
     }
     
     .note-small {
-        height: 50px;
-        width: 100px;
+        height: 65px;
+        width: 130px;
     }
 
     .note {
