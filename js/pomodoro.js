@@ -1,7 +1,7 @@
 ﻿(function () {
     "use strict";
     
-    var pomodoroDuration = 0.1;
+    var pomodoroDuration = 25;
     var shortBreakDuration = 5;
     var longBreakDuration = 15;
     var dateFirstPomodoro;
@@ -62,10 +62,11 @@
             initInterval();
 
             Notifications.requestPermission();
-            var icon = 'https://taskmeapp.com/images/apple-touch-icon.png';
-            var body = "Pomodoro Finished!";
+            var icon = '/images/apple-touch-icon.png';
+            var body = 'Pomodoro Finished!';
+            var dir = 'ltr';
             
-            Notifications.scheduleNotification('TaskMe', { body, icon }, config.duration * 60000);
+            Notifications.scheduleNotification('TaskMe', { icon, dir, body }, config.duration * 60000);
         }
 
         // Lugar para guardar el estado del Pomodoro

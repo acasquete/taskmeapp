@@ -24,6 +24,9 @@ var Notifications = (function() {
         }
 
         var notification = new Notification(title, options);
+        notification.onclick = function() {
+            window.open('https://taskmeapp.com');
+           };
         return notification;
     }
 
@@ -51,10 +54,5 @@ var Notifications = (function() {
         sendNotification: sendNotification,
         scheduleNotification: scheduleNotification,
         cancelNotification: cancelNotification
-    };
-
-    return {
-        requestPermission: requestPermission,
-        sendNotification: sendNotification
     };
 })();
