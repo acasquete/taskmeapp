@@ -12,6 +12,10 @@ body {
     background-color: #efefef;
 }
 
+#canvas {
+    cursor: crosshair;
+}
+
 #apptitle {
     display: none;
 }
@@ -19,10 +23,11 @@ body {
 .note {
     align-items: center;
     position: absolute;
+    
     border: 1px solid rgba(0, 0, 0, 0.1);
     text-align: center;
     overflow: auto;
-    font-size: 1.35vw;
+    font-size: 1.45em;
     padding: 0.5em;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.1);
     cursor: pointer;
@@ -33,13 +38,13 @@ body {
 }
 
 .note-normal {
-    height: 9vw;
-    width: 9vw;
+    height: 170px;
+    width: 170px;
 }
 
 .note-small {
-    height: 4.5vw;
-    width: 9vw;
+    height: 85px;
+    width: 170px;
 }
 
 .selected {
@@ -54,23 +59,23 @@ body {
 }
 
 #newbuttons .new-normal {
-    width: 5vw;
-    height: 2.5vw;
+    width: 80px;
+    height: 35px;
     margin-top: 20px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     transform: rotate(3deg);
 }
 
 #newbuttons .new-small {
-    width: 4vw;
-    height: 2vw;
+    width: 70px;
+    height: 25px;
     margin-top: 10px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     transform: rotate(3deg);
 }
 
 .help {
-    width: 40vw;
+    width: 30em;
     text-align: left;
     height: 15em;
 }
@@ -100,7 +105,14 @@ body {
 #column1, #column2, #column3 {
     text-align: center;
     font-family: 'PermanentMarker', sans-serif;
-    font-size: 2vw;
+}
+
+@media (min-width: 300px) {
+
+#column1, #column2, #column3 {
+    font-size: 0.8em;
+}
+
 }
 
 #column2 {
@@ -109,6 +121,71 @@ body {
     border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
 
-#canvas {
-    cursor: crosshair;
+@media (min-width: 480px) {
+
+    #column1, #column2, #column3 {
+        font-size: 0.6em;
+    }
+    
+    .note-normal {
+        height: 80px;
+        width: 80px;
+    }
+    
+    .note-small {
+        height: 40px;
+        width: 80px;
+    }
+}
+
+@media (min-width: 768px) {
+
+    #column1, #column2, #column3 {
+        font-size: 0.8em;
+    }
+    
+    .note-normal {
+        height: 100px;
+        width: 100px;
+    }
+    
+    .note-small {
+        height: 50px;
+        width: 100px;
+    }
+}
+
+@media (min-width: 1024px) {
+
+    #column1, #column2, #column3 {
+        font-size: 1em;
+    }
+
+    .note-normal {
+        height: 170px;
+        width: 170px;
+    }
+    
+    .note-small {
+        height: 85px;
+        width: 170px;
+    }
+    
+}
+
+@media (min-width: 1200px) {
+
+    #column1, #column2, #column3 {
+        font-size: 1.2em;
+    }
+    
+    .note-normal {
+        height: 170px;
+        width: 170px;
+    }
+    
+    .note-small {
+        height: 85px;
+        width: 170px;
+    }
 }
