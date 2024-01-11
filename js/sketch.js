@@ -25,7 +25,7 @@
         const events = ['click', 'mousemove', 'mousedown', 'mouseup', 'touchmove', 'touchstart', 'touchend', 'mouseenter', 'mouseleave', 'mouseout'];
         events.forEach(event => canvas.addEventListener(event, eventHandlers[event]));
 
-        document.addEventListener('keypress', onKeyPress);
+        document.addEventListener('keydown', onKeyPress);
         window.addEventListener('resize', resizeCanvas);
     }
 
@@ -113,7 +113,6 @@
     };
 
     function onKeyPress (e) {
-       
         if (Taskboard.isAnyNoteSelected()) {
             return;
         }
@@ -132,7 +131,7 @@
             Taskboard.toggleNotes(); 
          } else if (e.key === 'f') {
             Taskboard.toggleFullscreen(); 
-        } else if (e.keyCode == 122 && e.metaKey) {
+        } else if (e.keyCode == 90 && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             Undo();
         }
@@ -196,17 +195,11 @@
     };
 
     function drawPaths(){
-        // delete everything
         ctx.clearRect(0,0,canvas.width,canvas.height);
-        // draw all the paths in the paths array
         pathsArray.forEach(path=>{
             ctx.beginPath();
             ctx.lineJoin = "round";
             ctx.lineCap = "round";
-            //ctx.lineWidth = path[0].s;
-            //ctx.strokeStyle = colors[path[0].c];
-            //ctx.moveTo(path[0].x,path[0].y);  
-            //ctx.lineTo(path[0].x,path[0].y);
             for(let i = 1; i < path.length; i++){
                 ctx.globalCompositeOperation = path[i].e ? 'destination-out' : 'source-over';
                 ctx.lineWidth = path[i].s;
