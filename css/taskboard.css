@@ -38,7 +38,11 @@ body {
     word-wrap: break-word;
     line-height: 1.25em;
     text-decoration: none;
+    border-bottom-right-radius: 60px 5px;
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff88', endColorstr='#ffff88',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
+
+
 
 .dot {
     width: 30px;
