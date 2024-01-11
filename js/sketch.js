@@ -1,39 +1,62 @@
-﻿var Sketch = (function () {
-    var context;
-    var canvas;
-    var currentColor;
-    var lineWidth = 25;
-    var lastX, lastY;
-    var startTime;
-    var pathDuration = 800; 
-    var colors = ['black', 'blue', 'red', 'green'];
-    var currentColorIndex = 0;
-    var cursorCircle;
-    var isEraserMode = false; 
-    var eraserSize = 80;
-    var defaultLineWidth = 25;
-    var hideCursorTimeout;
-    var maxSize = 6000; 
-    var highResCanvas;
-    var highResContext;
+﻿const Sketch = (function () {
+    let ctx, canvas, lineWidth = 8, currentColorIndex, cursorCircle;
+    let isEraserMode = false, eraserSize = 80, defaultLineWidth = 6;
+    let hideCursorTimeout, isCursorVisible = false, drawing = false;
+    let pathsArray = [], points = [], mouse = { x: 0, y: 0 }, previous = { x: 0, y: 0 };
+    const colors = ['black', 'blue', 'red', 'green'];
 
-    function resizeCanvas() {
+    function init(idCanvas = "canvas") {
+        canvas = document.getElementById(idCanvas);
+        ctx = canvas.getContext('2d');
+        
+        configureCanvas();
+        assignEventListeners();
+        currentColorIndex = Config.getColor();
+        loadCanvas();
+        createCursorCircle();
+    }
+
+    function configureCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-    
-        context.drawImage(highResCanvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
     }
 
-    function updateHighResCanvas() {
-        highResContext.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-    }
-    
-    window.addEventListener('resize', resizeCanvas);
+    function assignEventListeners() {
+        const events = ['click', 'mousemove', 'mousedown', 'mouseup', 'touchmove', 'touchstart', 'touchend', 'mouseenter', 'mouseleave', 'mouseout'];
+        events.forEach(event => canvas.addEventListener(event, eventHandlers[event]));
 
-    var toggleEraserMode = function () {
+        document.addEventListener('keypress', onKeyPress);
+        window.addEventListener('resize', resizeCanvas);
+    }
+
+    const eventHandlers = {
+        click: onCanvasClick,
+        mousemove: onMove,
+        mousedown: onStart,
+        mouseup: onEnd,
+        touchmove: onMove,
+        touchstart: onStart,
+        touchend: onEnd,
+        mouseenter: showCursorCircle,
+        mouseleave: hideCursorCircle,
+        mouseout: onEnd
+    };
+
+    function resizeCanvas() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+    
+        canvas.width = width;
+        canvas.height = height;
+
+        drawPaths();
+    }
+
+    function toggleEraserMode () {
         isEraserMode = !isEraserMode;
         if (isEraserMode) {
-            sCursorVisible = true;
+            if (hideCursorTimeout) clearTimeout(hideCursorTimeout);
+            isCursorVisible = true;
             cursorCircle.style.display = 'block';
             cursorCircle.style.width = (eraserSize + 20) + 'px';
             cursorCircle.style.height = eraserSize + 'px';
@@ -42,10 +65,10 @@
             cursorCircle.style.border = '2px solid black';
             cursorCircle.style.marginLeft = -((eraserSize + 20) / 2) + 'px';
             cursorCircle.style.marginTop = -(eraserSize / 2) + 'px';
-            lineWidth = eraserSize; // Establecer el ancho del trazo para el modo borrador
+            lineWidth = eraserSize; 
         } else {
             resetCursorCircle();
-            lineWidth = defaultLineWidth; // Restaurar el ancho de línea original
+            lineWidth = defaultLineWidth;
         }
     };
 
@@ -54,7 +77,7 @@
         isCursorVisible = false;
     }
 
-    var resetCursorCircle = function() {
+    function resetCursorCircle() {
         cursorCircle.style.display = 'block';
         cursorCircle.style.width = '30px';
         cursorCircle.style.height = '30px';
@@ -64,7 +87,7 @@
         cursorCircle.style.marginLeft = '-15px';
         cursorCircle.style.marginTop = '-15px';
 
-        clearTimeout(hideCursorTimeout);
+        if (hideCursorTimeout) clearTimeout(hideCursorTimeout);
         hideCursorTimeout = setTimeout(hideCursor, 2000);
     };
 
@@ -75,7 +98,7 @@
         cursorCircle.style.height = '30px';
         cursorCircle.style.borderRadius = '15px';
         cursorCircle.style.position = 'absolute';
-        cursorCircle.style.backgroundColor = currentColor;
+        cursorCircle.style.backgroundColor = colors[currentColorIndex];
         cursorCircle.style.marginLeft = '-15px';
         cursorCircle.style.marginTop = '-15px'; 
         cursorCircle.style.pointerEvents = 'none'; 
@@ -88,14 +111,14 @@
         };
     };
 
-    var onKeyPress = function (e) {
+    function onKeyPress (e) {
+       
         if (Taskboard.isAnyNoteSelected()) {
             return;
         }
         if (e.key === 'c') {
             currentColorIndex = (currentColorIndex + 1) % colors.length;
-            currentColor = colors[currentColorIndex];
-            Config.saveCanvas(); 
+            saveCanvas(); 
             if (isEraserMode) {
                 toggleEraserMode(); 
             }
@@ -108,156 +131,124 @@
             Taskboard.toggleNotes(); 
          } else if (e.key === 'f') {
             Taskboard.toggleFullscreen(); 
+        } else if (e.keyCode == 122 && e.metaKey) {
+            e.preventDefault();
+            Undo();
         }
 
     };
 
-    var draw = function (x, y) {
-        context.lineJoin = "round";
-        context.lineCap = "round";
-        context.strokeStyle = currentColor;
-        context.lineWidth = lineWidth;
-
-        context.globalCompositeOperation = isEraserMode ? 'destination-out' : 'source-over';
-        
-        if (!canvas.pathBegun) {
-            context.beginPath();
-            context.moveTo(x, y);
-            canvas.pathBegun = true;
-            startTime = new Date();
-        } else {
-            context.lineTo(x, y);
-            context.stroke();
+    function onMove (e)  {
+        if(drawing){
+            previous = {x:mouse.x,y:mouse.y};
+            mouse = oMousePos(canvas, e);
+            // saving the points in the points array
+            points.push({x:mouse.x,y:mouse.y,c:currentColorIndex,e:isEraserMode,s:lineWidth});
+            // drawing a line from the previous point to the current point
+            ctx.beginPath();
+            ctx.lineJoin = "round";
+            ctx.lineCap = "round";
+            ctx.globalCompositeOperation = isEraserMode ? 'destination-out' : 'source-over';
+            ctx.lineWidth = lineWidth;
+            ctx.strokeStyle = colors[currentColorIndex];
+            ctx.moveTo(previous.x,previous.y);
+            ctx.lineTo(mouse.x,mouse.y);
+            ctx.stroke();
         }
     };
 
-    var updateLineWidth = function (x, y) {
-        if (lastX !== undefined && lastY !== undefined) {
-            const dx = x - lastX;
-            const dy = y - lastY;
-            
-            if (!isEraserMode) {
-                lineWidth = Math.sqrt(dx * dx + dy * dy) * 0.2;
-                if (lineWidth > 20) lineWidth = 20;
-            } 
-        }
-
-        lastX = x;
-        lastY = y;
-    };
-
-    var checkPathDuration = function () {
-        if (new Date() - startTime > pathDuration) {
-            canvas.pathBegun = false; 
-            startTime = new Date();
-        }
-    };
-
-    var onMove = function (event) {
-        if (canvas.drawing) {
-            var x, y;
-            if (event.touches) {
-                x = event.touches[0].clientX;
-                y = event.touches[0].clientY;
-            } else {
-                x = event.clientX;
-                y = event.clientY;
-            }
-            updateLineWidth(x, y);
-            draw(x, y);
-            checkPathDuration();
-            event.preventDefault();
-        }
-    };
-
-    var onStart = function (event) {
+    function onStart (e) {
         $('.note').removeClass('selected');
-        canvas.drawing = true;
-        canvas.pathBegun = false;
-        onMove(event);
+        drawing = true; 
+        previous = {x:mouse.x,y:mouse.y};
+        mouse = oMousePos(canvas, e);
+        points = [];
+        points.push({x:mouse.x,y:mouse.y,c:currentColorIndex,e:isEraserMode,s:lineWidth});
     };
 
-    var onEnd = function (event) {
-        canvas.drawing = false;
-        canvas.pathBegun = false;
-        updateHighResCanvas();
-        Config.saveCanvas(); 
+    function onEnd (e) {
+        drawing=false;
+        pathsArray.push(points);
+        saveCanvas(); 
     };
 
-    var showCursorCircle = function () {
+    function showCursorCircle () {
         if (isCursorVisible) cursorCircle.style.display = 'block';
     };
 
-    var hideCursorCircle = function () {
+    function hideCursorCircle () {
         isEraserMode = false;
         cursorCircle.style.display = 'none';
     };
 
-    var clearCanvas = function() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        highResContext.clearRect(0, 0, highResCanvas.width, highResCanvas.height);
-
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pathsArray = [];
         if (isEraserMode) {
             toggleEraserMode(); 
         }
+        saveCanvas();
     };
 
-    var onCanvasClick = function () {
+    function onCanvasClick () {
         Taskboard.deselectAllNotes();
     };
 
-    return {
-        initialize: function (idcanvas) {
-            if (typeof idcanvas === 'undefined') {
-                idcanvas = "canvas";
+    function drawPaths(){
+        // delete everything
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        // draw all the paths in the paths array
+        pathsArray.forEach(path=>{
+            ctx.beginPath();
+            ctx.lineJoin = "round";
+            ctx.lineCap = "round";
+            //ctx.lineWidth = path[0].s;
+            //ctx.strokeStyle = colors[path[0].c];
+            //ctx.moveTo(path[0].x,path[0].y);  
+            //ctx.lineTo(path[0].x,path[0].y);
+            for(let i = 1; i < path.length; i++){
+                ctx.globalCompositeOperation = path[i].e ? 'destination-out' : 'source-over';
+                ctx.lineWidth = path[i].s;
+                ctx.strokeStyle = colors[path[i].c];
+                ctx.lineTo(path[i].x,path[i].y); 
             }
+            ctx.stroke();
+            });
+      }  
+      
+      function Undo(){
+        pathsArray.splice(-1,1);
+        drawPaths();
+      }
+            
+      function oMousePos(canvas, evt) {
+        var ClientRect = canvas.getBoundingClientRect();
+          return { //objeto
+          x: Math.round(evt.clientX - ClientRect.left),
+          y: Math.round(evt.clientY - ClientRect.top)
+      }
+      }
 
-            canvas = document.getElementById(idcanvas);
-            context = canvas.getContext('2d');
-            highResCanvas = document.createElement('canvas');
-            highResContext = highResCanvas.getContext('2d');
+    function loadCanvas() {
+        drawPathString = localStorage.getItem("drawPath");
+        if (drawPathString) pathsArray=JSON.parse(drawPathString);
+        drawPaths();
+    }
 
-            highResCanvas.width = maxSize;
-            highResCanvas.height = maxSize;
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+    function saveCanvas() {
+        Config.setColor(currentColorIndex);
 
-            canvas.addEventListener('click', onCanvasClick);
-            canvas.addEventListener('mousemove', onMove, false);
-            canvas.addEventListener('mousedown', onStart, false);
-            canvas.addEventListener('mouseup', onEnd, false);
-            canvas.addEventListener('touchmove', onMove, false);
-            canvas.addEventListener('touchstart', onStart, false);
-            canvas.addEventListener('touchend', onEnd, false);
-            canvas.addEventListener('mouseenter', showCursorCircle);
-            canvas.addEventListener('mouseleave', hideCursorCircle);
-            canvas.addEventListener('mouseout', onEnd);
-            document.addEventListener('keypress', onKeyPress);
+        var canvas = document.getElementById("canvas");
+        canvas.toBlob(function(blob) {
+            var reader = new FileReader();
+            reader.onload = function() { 
+                localStorage.setItem("canvas.png", reader.result);
+            };
+            reader.readAsDataURL(blob);
+        });
 
-            currentColor = Config.getColor();
+        localStorage.setItem("drawPath", JSON.stringify(pathsArray));
+    }
 
-            if (!currentColor) {
-                currentColor = "black";
-            }
-
-            createCursorCircle();
-
-
-        },
-
-        setColor: function (color) {
-            currentColor = color;
-        },
-
-        getColor: function () {
-            return currentColor;
-        },
-
-        getContext: function () {
-            return context;
-        },
-        
-        clearCanvas: clearCanvas
-    };
-
+    return { init, clearCanvas };
 })();

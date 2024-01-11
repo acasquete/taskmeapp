@@ -96,6 +96,12 @@
                 $(this).fadeOut();
             }
         });
+
+        if ($("#taskboard").css('display') === 'none') { 
+            $("#taskboard").fadeIn();
+        } else {
+            $("#taskboard").fadeOut();
+        }
     }
     function isAnyNoteSelected() {
         return $('.note.selected').length > 0;
@@ -142,10 +148,9 @@
             or open an issue on GitHub at <a target='_blank' href='http://www.github.com/acasquete/taskmeapp/issues'>www.github.com/acasquete/taskmeapp</a></p>
         `;
 
-        $(".help").remove();
-        $('.note').fadeIn();
-        createNote("300px", "170px", 50, "note note-normal tomato help", htmlContent, false);
-        starthandlers(".tomato");
+        $(".note-help").remove();
+        createNote("300px", "170px", 50, "note tomato note-help", htmlContent, false);
+        starthandlers(".note-help");
         Controls.hideappbar();
     }
 
@@ -158,7 +163,7 @@
     function createNote(left, top, index, style, content, editable) {
         try {
 
-            if (!style.includes('note-normal') && !style.includes('note-small')) {
+            if (!style.includes('note-normal') && !style.includes('note-small') && !style.includes('note-help')) {
                 style += ' note-normal ';
             }
 

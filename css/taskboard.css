@@ -23,7 +23,6 @@ body {
 .note {
     align-items: center;
     position: absolute;
-    
     border: 1px solid rgba(0, 0, 0, 0.1);
     text-align: center;
     overflow: auto;
@@ -45,6 +44,16 @@ body {
 .note-small {
     height: 85px;
     width: 170px;
+}
+
+.note-help {
+    width: 30em;
+    text-align: left;
+    height: 15em;
+}
+
+.note-help a {
+    color: #fff;
 }
 
 .selected {
@@ -74,16 +83,6 @@ body {
     transform: rotate(3deg);
 }
 
-.help {
-    width: 30em;
-    text-align: left;
-    height: 15em;
-}
-
-.help a {
-    color: #fff;
-}
-
 .tomato { background-color: #FF6142; color: #fff; }
 .yellow { background-color: #FEE100; color: #000; }
 .blue { background-color: #00A3C2; color: #ddd; }
@@ -102,28 +101,29 @@ body {
     width: 100%;
 }
 
-#column1, #column2, #column3 {
+.stage {
     text-align: center;
     font-family: 'PermanentMarker', sans-serif;
 }
 
-@media (min-width: 300px) {
-
-#column1, #column2, #column3 {
-    font-size: 0.8em;
-}
-
-}
-
-#column2 {
+.stage-border {
     border-right: solid 5px rgba(0, 0, 0, 0.2);
     border-left: solid 5px rgba(0, 0, 0, 0.2);
     border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
 
+@media (min-width: 300px) {
+
+.stage {
+    font-size: 0.8em;
+}
+
+}
+
+
 @media (min-width: 480px) {
 
-    #column1, #column2, #column3 {
+    .stage {
         font-size: 0.6em;
     }
     
@@ -144,7 +144,7 @@ body {
 
 @media (min-width: 768px) {
 
-    #column1, #column2, #column3 {
+    .stage {
         font-size: 0.8em;
     }
     
@@ -165,10 +165,9 @@ body {
 
 @media (min-width: 1024px) {
 
-    #column1, #column2, #column3 {
+    .stage {
         font-size: 1em;
     }
-
     .note-normal {
         height: 170px;
         width: 170px;
