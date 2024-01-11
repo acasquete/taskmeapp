@@ -37,6 +37,17 @@ body {
     font-family: 'Kalam', sans-serif;
     word-wrap: break-word;
     line-height: 1.25em;
+    text-decoration: none;
+}
+
+.dot {
+    width: 30px;
+    height: 30px;
+    background-color: darkred;
+    border-radius: 15px;
+    display: block;
+    position: absolute;
+    bottom: 10px;
 }
 
 .note-normal {
@@ -87,12 +98,19 @@ body {
 }
 
 .tomato { background-color: #FF6142; color: #fff; }
-.yellow { background-color: #FEE100; color: #000; }
-.blue { background-color: #00A3C2; color: #ddd; }
-.rose { background-color: #EF3090; color: #fff; }
-.violet { background-color: #8F3A8D; color: #fff; }
-.green { background-color: #B5CB42; color: #000; }
-.orange { background-color: #FFA300; color: #000; }
+.yellow { background-color: #fef639; color: #000; }
+.blue { background-color: #34afd8; color: #00c; }
+.rose { background-color: #fd4289; color: #fff; }
+.violet { background-color: #cf7aef; color: #fff; }
+.green { background-color: #bdda1e; color: #000; }
+.orange { background-color: #ffca20; color: #000; }
+
+.pyellow { background-color: #fcdd00; color: #00c; }
+.pblue { background-color: #10c4e3; color: #00c; }
+.prose { background-color: #ff639a; color: #fff; }
+.pviolet { background-color: #c55ae2; color: #fff; }
+.pgreen { background-color: #0fd572; color: #00c; }
+.porange { background-color: #ff771c; color: #00c; }
 
 #taskboard {
     position: absolute;
