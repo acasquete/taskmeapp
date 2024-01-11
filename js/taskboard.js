@@ -97,7 +97,7 @@
             }
         });
     }
-    
+
     function isAnyNoteSelected() {
         return $('.note.selected').length > 0;
     }
@@ -144,6 +144,7 @@
         `;
 
         $(".note-help").remove();
+        $(".note").fadeIn();
         createNote("300px", "170px", 50, "note tomato note-help", htmlContent, false);
         starthandlers(".note-help");
         Controls.hideappbar();
