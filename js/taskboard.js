@@ -297,7 +297,21 @@
                 checkminNotes();
             });
         }
+    
+        var random = Math.floor(Math.random() * 3);
+        if ($(this).hasClass("note-corner-right")) {
+            $(this).removeClass("note-corner-right");
+        }
+        if ($(this).hasClass("note-corner-left")) {
+            $(this).removeClass("note-corner-left");
+        }
 
+        if (random === 0) {
+            $(this).addClass("note-corner-right");
+        } else if (random === 1) {
+            $(this).addClass("note-corner-left");
+        }
+    
         applyRandomRotate($(this).get(0));
         updateNoteCounters();
         asyncSaveTaskboard();
