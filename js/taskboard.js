@@ -2,23 +2,24 @@
     "use strict";
     var maxnotes = 30;
     var z = -maxnotes - 1;
-    var screenwidth;
+    var dashboard = { id: 1, notes: [], total: 0, screenWidth: 0, drawPath: [], colorIndex: 0 }
 
     function init(notes) {
+
         if (notes.length < 1) {
             showHelp();
         }
 
         initNotes(notes);
 
-        screenwidth = Config.getScreenWidth();
+        dashboard.screenWidth = Config.getScreenWidth();
 
-        if (screenwidth) {
-            if (screenwidth != window.innerWidth) {
+        if (dashboard.screenwidth) {
+            if (dashboard.screenwidth != window.innerWidth) {
                 recalcposition();
             }
         } else {
-            screenwidth = window.innerWidth;
+            dashboard.screenwidth = window.innerWidth;
         }
 
         window.addEventListener("resize", onViewStateChanged);
@@ -103,13 +104,12 @@
     }
 
     function updateNoteCounters() {
-        let columnCounters = [0, 0, 0]; // For 3 columns
+        let columnCounters = [0, 0, 0]; 
     
         let totalWidth = $('#taskboard').width();
         let columnWidths = [(3 / 8) * totalWidth, (3 / 8) * totalWidth, (2 / 8) * totalWidth];
     
         $('.note').each(function() {
-            // Verificar si la nota tiene contenido
             if ($(this).text().trim() !== '') {
                 let notePosition = $(this).position().left;
                 let cumulativeWidth = 0;
@@ -145,7 +145,7 @@
 
         $(".note-help").remove();
         $(".note").fadeIn();
-        createNote("300px", "170px", 50, "note tomato note-help", htmlContent, false);
+        createNote("20%", "25%", 50, "note tomato note-help", htmlContent, false);
         starthandlers(".note-help");
         Controls.hideappbar();
     }
@@ -229,9 +229,9 @@
     }
 
     function starthandlers(element) {
-        $(element).on("dragstart", ondragstart);
-        $(element).on("drag", ondrag);
-        $(element).on("dragend", ondragend);
+        $(element).on("dragstart touchstart", ondragstart);
+        $(element).on("drag touchmove", ondrag);
+        $(element).on("dragend touchend", ondragend);
         $(element).on('keyup', function (e) { checkCharcount(this, 140, e); });
         $(element).on('keydown', function (e) { checkCharcount(this, 140, e); });
         if (!$(element).hasClass('help')) {
@@ -274,12 +274,20 @@
 
     function ondrag(ev, dd) {
         $(this).css('z-index', 1000);
-
         normalizeZIndexes();
-        $(this).css({
-            top: dd.offsetY,
-            left: dd.offsetX,
-        });
+
+        if (ev.type === "touchmove") {
+            if (event.targetTouches.length == 1) {
+                var touch = event.targetTouches[0];
+                this.style.left = touch.pageX + 'px';
+                this.style.top = touch.pageY + 'px';
+            }
+        } else if (ev.type === "drag") {
+            $(this).css({
+                top: dd.offsetY,
+                left: dd.offsetX,
+            });
+        }
         updateNoteCounters();
     }
 
@@ -335,7 +343,7 @@
             listnotes.push({ c: el.innerHTML, i: el.style.zIndex, l: el.style.left, t: el.style.top, cl: el.className });
         });
 
-        Config.saveTaskboard(listnotes, screenwidth);
+        Config.saveTaskboard(listnotes, dashboard.screenWidth);
     }
 
     function recalcposition() {
@@ -345,14 +353,14 @@
             var originalDisplay = el.css('display');
             el.css({ 'visibility': 'hidden', 'display': 'block' });
             var posNote = el.position().left;
-            var posRel = posNote * 100 / screenwidth;
+            var posRel = posNote * 100 / dashboard.screenWidth;
             var newPos = window.innerWidth * posRel / 100;
     
             el.css({ 'left': newPos, 'visibility': originalVisibility, 'display': originalDisplay });
             el.get(0).style.transform = 'rotate(0deg)';
         });
     
-        screenwidth = window.innerWidth;
+        dashboard.screenWidth = window.innerWidth;
         saveTaskboard();
     }
 

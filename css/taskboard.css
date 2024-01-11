@@ -90,7 +90,7 @@ body {
     position: absolute;
     margin-left: -25px;
     margin-top: 80px;
-    z-index: 500;
+    z-index: 0;
 }
 
 #newbuttons .new-normal {
@@ -110,6 +110,8 @@ body {
 }
 
 .tomato { background-color: #FF6142; color: #fff; }
+
+/* bright */
 .yellow { background-color: #fef639; color: #000; }
 .blue { background-color: #34afd8; color: #00c; }
 .rose { background-color: #fd4289; color: #fff; }
@@ -117,6 +119,7 @@ body {
 .green { background-color: #bdda1e; color: #000; }
 .orange { background-color: #ffca20; color: #000; }
 
+/* pastel */
 .pyellow { background-color: #fcdd00; color: #00c; }
 .pblue { background-color: #10c4e3; color: #00c; }
 .prose { background-color: #ff639a; color: #fff; }
@@ -132,6 +135,7 @@ body {
     font-size: 2em;
     height: 100%;
     width: 100%;
+    user-select: none;
 }
 
 .stage {
@@ -147,12 +151,26 @@ body {
 
 @media (min-width: 300px) {
 
-.stage {
-    font-size: 0.8em;
-}
+    .stage {
+        font-size: 0.4em;
+    }
+    
+    .note-normal {
+        height: 60px;
+        width: 60px;
+    }
+    
+    .note-small {
+        height: 30px;
+        width: 60px;
+    }
+
+    .note {
+        font-size: 0.6em;
+    }
+
 
 }
-
 
 @media (min-width: 480px) {
 
@@ -175,6 +193,7 @@ body {
     }
 }
 
+
 @media (min-width: 768px) {
 
     .stage {
@@ -194,6 +213,8 @@ body {
     .note {
         font-size: 0.9em;
     }
+
+
 }
 
 @media (min-width: 1024px) {
@@ -202,8 +223,8 @@ body {
         font-size: 1em;
     }
     .note-normal {
-        height: 170px;
-        width: 170px;
+        height: 150px;
+        width: 150px;
     }
     
     .note-small {

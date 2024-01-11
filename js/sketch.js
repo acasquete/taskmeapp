@@ -221,7 +221,7 @@
             
       function oMousePos(canvas, evt) {
         var ClientRect = canvas.getBoundingClientRect();
-          return { //objeto
+          return { 
           x: Math.round(evt.clientX - ClientRect.left),
           y: Math.round(evt.clientY - ClientRect.top)
       }
