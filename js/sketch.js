@@ -167,9 +167,12 @@
     };
 
     function onEnd (e) {
-        drawing=false;
-        pathsArray.push(points);
-        saveCanvas(); 
+        if (drawing) {
+            console.log('end');
+            drawing=false;
+            pathsArray.push(points);
+            saveCanvas();
+        }
     };
 
     function showCursorCircle () {
