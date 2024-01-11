@@ -96,13 +96,8 @@
                 $(this).fadeOut();
             }
         });
-
-        if ($("#taskboard").css('display') === 'none') { 
-            $("#taskboard").fadeIn();
-        } else {
-            $("#taskboard").fadeOut();
-        }
     }
+    
     function isAnyNoteSelected() {
         return $('.note.selected').length > 0;
     }
