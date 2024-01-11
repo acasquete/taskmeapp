@@ -22,7 +22,8 @@
     }
 
     function init () {
-        $("#canvas").on("contextmenu", function(event) {
+
+        $(document).on('contextmenu', function(e) {
             Taskboard.deselectAllNotes();
 
             event.preventDefault();

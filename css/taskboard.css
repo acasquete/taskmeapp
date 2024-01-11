@@ -169,6 +169,9 @@ body {
         font-size: 0.6em;
     }
 
+    .new-normal {
+        display: none;
+    }
 
 }
 
@@ -201,13 +204,14 @@ body {
     }
     
     .note-normal {
-        height: 130px;
-        width: 130px;
+        height: 110px;
+        width: 110px;
+        
     }
     
     .note-small {
-        height: 65px;
-        width: 130px;
+        height: 55px;
+        width: 110px;
     }
 
     .note {
@@ -234,6 +238,10 @@ body {
 
     .note {
         font-size: 1.45em;
+    }
+
+    .new-normal {
+        display: block;
     }
     
 }

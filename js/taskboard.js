@@ -24,6 +24,8 @@
 
         window.addEventListener("resize", onViewStateChanged);
 
+
+
         $("#cmdRemoveAllNotes").click(function () {
             $(".note").css({ transition: 'all 0.8s', opacity: 0.25, transform: 'translateY(-1000px)' }).promise().then(function () {
                 setTimeout(function () {
@@ -213,14 +215,18 @@
 
         var heightNote = noteSize === 'normal' ? 100 : 46;
         
-        e.css({ top: event.pageY - heightNote });
+        e.css({ left: "20%", top: event.pageY - heightNote });
         starthandlers(t);
-        e.trigger(event);
+        
+        //e.trigger(event);
+        
         $('.note').fadeIn();
     
         if ($('.note').length > maxnotes - 1) {
             $("#newbuttons").fadeOut(300);
         }
+
+        e.stopPropagation();
     }
 
     function applyRandomRotate(element) {
