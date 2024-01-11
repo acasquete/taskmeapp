@@ -102,6 +102,7 @@
         cursorCircle.style.marginLeft = '-15px';
         cursorCircle.style.marginTop = '-15px'; 
         cursorCircle.style.pointerEvents = 'none'; 
+        cursorCircle.style.top = '-1000px';
         
         document.body.appendChild(cursorCircle);
         hideCursorTimeout = setTimeout(hideCursor, 2000);
@@ -219,6 +220,7 @@
       function Undo(){
         pathsArray.splice(-1,1);
         drawPaths();
+        saveCanvas();
       }
             
       function oMousePos(canvas, evt) {
