@@ -262,7 +262,8 @@
 
         var heightNote = noteSize === 'normal' ? 100 : 46;
         
-        e.css({ left: "20%", top: event.pageY - heightNote });
+        e.css({ left: event.pageX - 20, top: event.pageY - heightNote });
+        //e.css({ left: "20%", top: event.pageY - heightNote });
         starthandlers(t);
         
         e.trigger(event);

@@ -1,13 +1,12 @@
 ﻿const Sketch = (function () {
-    let ctx, canvas, lineWidth = 8, currentColorIndex, cursorCircle;
-    let isEraserMode = false, eraserSize = 80, defaultLineWidth = 2;
+    let ctx, canvas, lineWidth = 4, currentColorIndex, cursorCircle;
+    let isEraserMode = false, eraserSize = 40, defaultLineWidth = 4;
     let hideCursorTimeout, isCursorVisible = false, drawing = false;
     let pathsArray = [], points = [], mouse = { x: 0, y: 0 }, previous = { x: 0, y: 0 };
     const colors = ['black', 'blue', 'red', 'green'];
     let currentCanvasId;
 
     function init(id) {
-
         currentCanvasId = id;
         initCanvas();
         loadCanvas();
@@ -145,12 +144,11 @@
     };
 
     function onMove (e)  {
+        console.log('move:'+isEraserMode);
         if(drawing){
             previous = {x:mouse.x,y:mouse.y};
             mouse = oMousePos(canvas, e);
-            // saving the points in the points array
             points.push({x:mouse.x,y:mouse.y,c:currentColorIndex,e:isEraserMode,s:lineWidth});
-            // drawing a line from the previous point to the current point
             ctx.beginPath();
             ctx.lineJoin = "round";
             ctx.lineCap = "round";
@@ -185,12 +183,12 @@
     };
 
     function hideCursorCircle () {
-        isEraserMode = false;
         cursorCircle.style.display = 'none';
     };
 
     function clearCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        lineWidth = defaultLineWidth;
         pathsArray = [];
         if (isEraserMode) {
             toggleEraserMode(); 
@@ -203,6 +201,7 @@
     };
 
     function drawPaths(){
+        
         ctx.clearRect(0,0,canvas.width,canvas.height);
         pathsArray.forEach(path=>{
             ctx.beginPath();
@@ -216,6 +215,8 @@
             }
             ctx.stroke();
             });
+        
+        ctx.lineWidth = defaultLineWidth;
       }  
       
       function Undo(){
