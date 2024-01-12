@@ -59,6 +59,10 @@ body {
     bottom: 10px;
 }
 
+.red {
+    color:#FF6142;
+}
+
 .note-normal {
     height: 170px;
     width: 170px;

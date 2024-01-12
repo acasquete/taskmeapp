@@ -166,11 +166,22 @@
             }
         });
     
-        $('#column1').text('To Do' + (columnCounters[0] > 0 ? ' - ' + columnCounters[0] : ''));
-        $('#column2').text('In Progress' + (columnCounters[1] > 0 ? ' - ' + columnCounters[1] : ''));
-        $('#column3').text('Done' + (columnCounters[2] > 0 ? ' - ' + columnCounters[2] : ''));
+        updateColumnTitle (1, 'To Do', columnCounters[0], 1000);
+        updateColumnTitle (2, 'In Progress', columnCounters[1], 3);
+        updateColumnTitle (3, 'Done', columnCounters[2], 1000);
     }
-    
+
+    function updateColumnTitle (num, title, total, max) {
+        var numberSpan = $('<span>').text(total);
+        if (total > max) {
+            numberSpan.addClass('red');
+        }
+
+        $('#column' + num).text(title);
+        if (total > 0) {
+            $('#column' + num).append(' - ').append(numberSpan);
+        }
+    }
 
     function showHelp() {
         
