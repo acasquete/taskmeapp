@@ -23,7 +23,7 @@
         }
 
         window.addEventListener("resize", onViewStateChanged);
-
+        window.addEventListener('orientationchange', onViewStateChanged);
 
 
         $("#cmdRemoveAllNotes").click(function () {
@@ -355,18 +355,21 @@
     function recalcposition() {
         $(".note").each(function () {
             var el = $(this);
+
             var originalVisibility = el.css('visibility');
             var originalDisplay = el.css('display');
             el.css({ 'visibility': 'hidden', 'display': 'block' });
+            
             var posNote = el.position().left;
             var posRel = posNote * 100 / dashboard.screenWidth;
-            var newPos = window.innerWidth * posRel / 100;
+            
+            var newPos = jQuery(window).width() * posRel / 100;
     
             el.css({ 'left': newPos, 'visibility': originalVisibility, 'display': originalDisplay });
             el.get(0).style.transform = 'rotate(0deg)';
         });
     
-        dashboard.screenWidth = window.innerWidth;
+        dashboard.screenWidth = jQuery(window).width();
         saveTaskboard();
     }
 
