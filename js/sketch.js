@@ -27,6 +27,8 @@
 
         document.addEventListener('keydown', onKeyPress);
         window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('orientationchange', resizeCanvas);
+
     }
 
     const eventHandlers = {
@@ -43,8 +45,8 @@
     };
 
     function resizeCanvas() {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        const width = jQuery(window).width();
+        const height = jQuery(window).height();
     
         canvas.width = width;
         canvas.height = height;
