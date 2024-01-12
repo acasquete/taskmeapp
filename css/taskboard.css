@@ -38,8 +38,6 @@ body {
     word-wrap: break-word;
     line-height: 1.25em;
     text-decoration: none;
-
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffff88', endColorstr='#ffff88',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 
 .note-corner-right {
@@ -50,7 +48,6 @@ body {
 .note-corner-left {
     border-bottom-left-radius: 60px 5px;
 }
-
 
 .dot {
     width: 30px;
