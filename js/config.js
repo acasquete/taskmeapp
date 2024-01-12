@@ -1,6 +1,14 @@
 ﻿(function () {
     "use strict";
 
+    function getActiveDashboard() {
+        return localStorage.getItem("activeDashboard") ?? 1;
+    }
+
+    function saveActiveDashboard(id) {
+        localStorage.setItem("activeDashboard", id);
+    }
+
     function saveDashboard(id, dashboard) {
         localStorage.setItem("dashboard" + id, JSON.stringify(dashboard));
     }
@@ -32,6 +40,8 @@
     }
 
     window.Config = {
+        saveActiveDashboard: saveActiveDashboard,
+        getActiveDashboard: getActiveDashboard,
         saveDashboard: saveDashboard,
         getDashboard: getDashboard,
         getCanvas: getCanvas,

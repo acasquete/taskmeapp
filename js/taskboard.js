@@ -7,25 +7,9 @@
 
     function init() {
 
-        currentDashboardId = 0;
-        dashboard = Config.getDashboard(0);
-
-        if (dashboard.notes.length < 1) {
-            showHelp();
-        }
-
-        initNotes(dashboard.notes);
-
-        if (dashboard.screenwidth) {
-            if (dashboard.screenwidth != window.innerWidth) {
-                recalcposition();
-            }
-        } else {
-            dashboard.screenwidth = window.innerWidth;
-        }
-
         window.addEventListener("resize", onViewStateChanged);
         window.addEventListener('orientationchange', onViewStateChanged);
+        document.addEventListener('keydown', onKeyPress);
 
         $("#cmdRemoveAllNotes").click(function () {
             $(".note").css({ transition: 'all 0.8s', opacity: 0.25, transform: 'translateY(-1000px)' }).promise().then(function () {
@@ -58,18 +42,69 @@
             toggleFullscreen();
         });
 
-        starthandlers(".note");
-
-        checkminNotes();
-        updateNoteCounters(); 
-
         $(".new-normal").on("mousedown touchstart", onnew);
         $(".new-small").on("mousedown touchstart", onnew);
 
         Controls.init();
-        Sketch.init(currentDashboardId);
+        currentDashboardId = Config.getActiveDashboard();
+        initDashboard(currentDashboardId, true);
         //Pomodoro.initialize(config.pomodoro);
     }
+
+    function initDashboard(id, initial) {
+
+        if (currentDashboardId==id && !initial) return;
+
+        if (!initial) { 
+            $("#dashboard-alert").stop(); 
+            $("#dashboard-alert").text(id); 
+            $("#dashboard-alert").fadeIn(100).delay(600).fadeOut(100);
+        }
+
+        $('.note').remove();
+
+        currentDashboardId = id;
+        dashboard = Config.getDashboard(currentDashboardId);
+
+        if (dashboard.notes.length < 1 && id==1) {
+            showHelp();
+        }
+
+        initNotes(dashboard.notes);
+
+        if (dashboard.screenwidth) {
+            if (dashboard.screenwidth != window.innerWidth) {
+                recalcposition();
+            }
+        } else {
+            dashboard.screenwidth = window.innerWidth;
+        }
+
+        starthandlers(".note");
+        checkminNotes();
+        updateNoteCounters(); 
+
+        Sketch.init(currentDashboardId);
+        Config.saveActiveDashboard(currentDashboardId);
+
+    }
+
+    function onKeyPress (e) {
+
+        if (isAnyNoteSelected()) {
+            return;
+        }
+
+        if ((e.ctrlKey || e.metaKey) && !isNaN(e.key)) {
+            let num = parseInt(e.key);
+            if (num >= 0 && num <= 9) {
+                initDashboard(num);
+            }
+        }
+
+        e.preventDefault();
+
+    };
 
     function toggleFullscreen ()
     {

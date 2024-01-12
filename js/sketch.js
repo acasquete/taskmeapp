@@ -1,6 +1,6 @@
 ﻿const Sketch = (function () {
     let ctx, canvas, lineWidth = 8, currentColorIndex, cursorCircle;
-    let isEraserMode = false, eraserSize = 80, defaultLineWidth = 6;
+    let isEraserMode = false, eraserSize = 80, defaultLineWidth = 2;
     let hideCursorTimeout, isCursorVisible = false, drawing = false;
     let pathsArray = [], points = [], mouse = { x: 0, y: 0 }, previous = { x: 0, y: 0 };
     const colors = ['black', 'blue', 'red', 'green'];
@@ -95,6 +95,9 @@
     };
 
     var createCursorCircle = function () {
+
+        if (cursorCircle !== undefined) return;
+
         cursorCircle = document.createElement('div');
         isCursorVisible = true;
         cursorCircle.style.width = '30px';
