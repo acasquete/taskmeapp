@@ -221,11 +221,23 @@
             
       function oMousePos(canvas, evt) {
         var ClientRect = canvas.getBoundingClientRect();
-          return { 
-          x: Math.round(evt.clientX - ClientRect.left),
-          y: Math.round(evt.clientY - ClientRect.top)
-      }
-      }
+        
+        var posX, posY;
+    
+        if (evt.touches) {
+            var touch = evt.touches[0];
+            posX = touch.clientX;
+            posY = touch.clientY;
+        } else {
+            posX = evt.clientX;
+            posY = evt.clientY;
+        }
+
+        return {
+            x: Math.round(posX - ClientRect.left),
+            y: Math.round(posY - ClientRect.top)
+        }
+    }
 
     function loadCanvas() {
         drawPathString = localStorage.getItem("drawPath");
