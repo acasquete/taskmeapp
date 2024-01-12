@@ -1,18 +1,20 @@
 ﻿var Taskboard = (function () {
     "use strict";
+    let currentDashboardId;
+    let dashboard;
     var maxnotes = 30;
     var z = -maxnotes - 1;
-    var dashboard = { id: 1, notes: [], total: 0, screenWidth: 0, drawPath: [], colorIndex: 0 }
 
-    function init(notes) {
+    function init() {
 
-        if (notes.length < 1) {
+        currentDashboardId = 0;
+        dashboard = Config.getDashboard(0);
+
+        if (dashboard.notes.length < 1) {
             showHelp();
         }
 
-        initNotes(notes);
-
-        dashboard.screenWidth = Config.getScreenWidth();
+        initNotes(dashboard.notes);
 
         if (dashboard.screenwidth) {
             if (dashboard.screenwidth != window.innerWidth) {
@@ -24,7 +26,6 @@
 
         window.addEventListener("resize", onViewStateChanged);
         window.addEventListener('orientationchange', onViewStateChanged);
-
 
         $("#cmdRemoveAllNotes").click(function () {
             $(".note").css({ transition: 'all 0.8s', opacity: 0.25, transform: 'translateY(-1000px)' }).promise().then(function () {
@@ -64,6 +65,10 @@
 
         $(".new-normal").on("mousedown touchstart", onnew);
         $(".new-small").on("mousedown touchstart", onnew);
+
+        Controls.init();
+        Sketch.init(currentDashboardId);
+        //Pomodoro.initialize(config.pomodoro);
     }
 
     function toggleFullscreen ()
@@ -147,7 +152,8 @@
 
         $(".note-help").remove();
         $(".note").fadeIn();
-        createNote("20%", "25%", 50, "note tomato note-help", htmlContent, false);
+        
+        createNote("20%", "25%", 500, "note tomato note-help", htmlContent, false);
         starthandlers(".note-help");
         Controls.hideappbar();
     }
@@ -159,6 +165,7 @@
     }
 
     function createNote(left, top, index, style, content, editable) {
+
         try {
 
             if (!style.includes('note-normal') && !style.includes('note-small') && !style.includes('note-help')) {
@@ -204,8 +211,13 @@
         var noteSize = extractSizeFromClass($(this).attr("class"));
         var noteColor = $(this).attr("class").replace("new-" + noteSize, "");
 
+        normalizeZIndexes();
+
         var e = $("<div></div>").addClass('note').addClass('note-' + noteSize).addClass(noteColor)
             .appendTo('#container')
+            .css({
+                'z-index': 500
+            })
             .hide()
             .fadeIn(300);
     
@@ -218,15 +230,13 @@
         e.css({ left: "20%", top: event.pageY - heightNote });
         starthandlers(t);
         
-        //e.trigger(event);
+        e.trigger(event);
         
         $('.note').fadeIn();
     
         if ($('.note').length > maxnotes - 1) {
             $("#newbuttons").fadeOut(300);
         }
-
-        e.stopPropagation();
     }
 
     function applyRandomRotate(element) {
@@ -342,14 +352,16 @@
     }
 
     function saveTaskboard() {
-        var listnotes = [];
-
+        let notesArray = [];
+        
         $('.note').each(function () {
             var el = $(this).get(0);
-            listnotes.push({ c: el.innerHTML, i: el.style.zIndex, l: el.style.left, t: el.style.top, cl: el.className });
+            notesArray.push({ c: el.innerHTML, i: el.style.zIndex, l: el.style.left, t: el.style.top, cl: el.className });
         });
 
-        Config.saveTaskboard(listnotes, dashboard.screenWidth);
+        dashboard.notes = notesArray;
+        
+        Config.saveDashboard(currentDashboardId, dashboard);
     }
 
     function recalcposition() {

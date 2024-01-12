@@ -4,19 +4,20 @@
     let hideCursorTimeout, isCursorVisible = false, drawing = false;
     let pathsArray = [], points = [], mouse = { x: 0, y: 0 }, previous = { x: 0, y: 0 };
     const colors = ['black', 'blue', 'red', 'green'];
+    let currentCanvasId;
 
-    function init(idCanvas = "canvas") {
-        canvas = document.getElementById(idCanvas);
-        ctx = canvas.getContext('2d');
-        
-        configureCanvas();
-        assignEventListeners();
-        currentColorIndex = Config.getColor();
+    function init(id) {
+
+        currentCanvasId = id;
+        initCanvas();
         loadCanvas();
+        assignEventListeners();
         createCursorCircle();
     }
 
-    function configureCanvas() {
+    function initCanvas() {
+        canvas = document.getElementById("canvas");
+        ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     }
@@ -170,7 +171,6 @@
 
     function onEnd (e) {
         if (drawing) {
-            console.log('end');
             drawing=false;
             pathsArray.push(points);
             saveCanvas();
@@ -242,24 +242,15 @@
     }
 
     function loadCanvas() {
-        drawPathString = localStorage.getItem("drawPath");
-        if (drawPathString) pathsArray=JSON.parse(drawPathString);
+        let storeCanvas = Config.getCanvas(currentCanvasId); 
+        currentColorIndex = storeCanvas.colorIndex;
+        pathsArray = storeCanvas.paths;
         drawPaths();
     }
 
     function saveCanvas() {
-        Config.setColor(currentColorIndex);
-
-        var canvas = document.getElementById("canvas");
-        canvas.toBlob(function(blob) {
-            var reader = new FileReader();
-            reader.onload = function() { 
-                localStorage.setItem("canvas.png", reader.result);
-            };
-            reader.readAsDataURL(blob);
-        });
-
-        localStorage.setItem("drawPath", JSON.stringify(pathsArray));
+        let storeCanvas = { colorIndex: currentColorIndex, paths: pathsArray };
+        Config.saveCanvas(currentCanvasId, storeCanvas);
     }
 
     return { init, clearCanvas };

@@ -1,62 +1,40 @@
 ﻿(function () {
     "use strict";
 
-    function savePomodoroState() {
-        localStorage.setItem("pomodoroState", JSON.stringify(Pomodoro.getState()));
-    }
-    
-    function saveTaskboard(notes, screenwidth) {
-        try {
-            saveNotes(notes, screenwidth);
-        } catch (ex) {
-            console.error("Error saving settings: ", ex);
-        }
-    }
-    
-    function saveNotes(notes, screenwidth) {
-        localStorage.setItem("total", notes.length);
-        localStorage.setItem("screenwidth", screenwidth);
-        for (var i = 0; i < notes.length; i++) {
-            localStorage.setItem("notes" + i, JSON.stringify(notes[i]));
-        }
-    }
-       
-    function getScreenWidth() {
-        return localStorage.getItem("screenwidth");
+    function saveDashboard(id, dashboard) {
+        localStorage.setItem("dashboard" + id, JSON.stringify(dashboard));
     }
 
-    function getColor() {
-        return parseInt(localStorage.getItem("colorIndex")) || 0;
+    function getDashboard(id) {
+        let dashboard = { notes: [], pomodoro: {}, screenWidth: null };
+        let dashboardString = localStorage.getItem("dashboard"+id);
+
+        if (dashboardString) {
+            dashboard = JSON.parse(dashboardString);
+        } 
+
+        return dashboard;
     }
 
-    function setColor(index) {
-        return localStorage.setItem("colorIndex", index);
+    function saveCanvas(id, canvas) {
+        localStorage.setItem("canvas" + id, JSON.stringify(canvas));
     }
-    
-    function getAll() {
-        var total = localStorage.getItem("total");
-        var notes = [];
 
-        for (var i = 0; i < total; i++) {
-            var note = localStorage.getItem("notes" + i);
-            if (note) {
-                notes.push(JSON.parse(note));
-            }
-        }
+    function getCanvas(id) {
+        let canvas = { paths: [], colorIndex: 0 };
+        let canvasString = localStorage.getItem("canvas"+id);
 
-        var pomodoroStateValue = localStorage.getItem("pomodoroState");
-        var pomodoroState = pomodoroStateValue ? JSON.parse(pomodoroStateValue) : null;
+        if (canvasString) {
+            canvas = JSON.parse(canvasString);
+        } 
 
-        return { notes: notes, pomodoro: pomodoroState };
+        return canvas;
     }
 
     window.Config = {
-        getAll: getAll,
-        getScreenWidth: getScreenWidth,
-        getColor: getColor,
-        setColor: setColor,
-        savePomodoroState: savePomodoroState,
-        saveTaskboard: saveTaskboard
+        saveDashboard: saveDashboard,
+        getDashboard: getDashboard,
+        getCanvas: getCanvas,
+        saveCanvas: saveCanvas,
     };
-
 })();
