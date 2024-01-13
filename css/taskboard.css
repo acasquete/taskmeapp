@@ -71,6 +71,8 @@ body {
     border-radius: 15px;
     display: block;
     position: absolute;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.1);
+
 }
 
 .dots {

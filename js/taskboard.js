@@ -418,14 +418,14 @@
 
     function ondragstartdot(ev, dd) {
         dragged = ev.target;
+        $(dragged).css('z-index', 1000);
 
         deselectAllNotes();
-        applyRandomRotate($(this).get(0));
     }
 
     function ondrag(ev, dd) {
         $(this).css('z-index', 1000);
-        normalizeZIndexes();
+        
 
         if (ev.type === "touchmove") {
             if (event.targetTouches.length == 1) {
@@ -450,6 +450,7 @@
     }
 
     function ondragend() {
+        
         if ($(this).position().top < -5) {
             $(this).animate({ opacity: 0.25, top: -200 }, 100, 'linear', function () {
                 $(this).remove();
@@ -470,15 +471,25 @@
         } else if (random === 1) {
             $(this).addClass("note-corner-left");
         }
-    
+        
         applyRandomRotate($(this).get(0));
+        normalizeZIndexes();
         updateNoteCounters();
         asyncSaveTaskboard();
         return false;
     }
 
     function normalizeZIndexes() {
+        
+        
         var zIndex = 1; 
+        
+        $('.dot').sort(function(a, b) { 
+            return parseInt($(a).css('z-index')) - parseInt($(b).css('z-index'));
+        }).each(function() {
+            $(this).css('z-index', zIndex++); 
+        });
+        
         $('.note').sort(function(a, b) { 
             return parseInt($(a).css('z-index')) - parseInt($(b).css('z-index'));
         }).each(function() {
