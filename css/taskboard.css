@@ -110,7 +110,7 @@ body {
 }
 
 #newbuttons .new-normal {
-    width: 50px;
+    width: 45px;
     height: 32px;
     margin-top: 15px;
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
@@ -118,7 +118,7 @@ body {
 }
 
 #newbuttons .new-small {
-    width: 40px;
+    width: 35px;
     height: 25px;
     margin-top: 10px;
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
@@ -279,6 +279,10 @@ body {
     .dot-internal, .dot {
         width: 20px;
         height: 20px;
+    }
+
+    .new-normal {
+        display: block;
     }
 
 }
