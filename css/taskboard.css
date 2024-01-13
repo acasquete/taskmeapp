@@ -38,6 +38,7 @@ body {
     word-wrap: break-word;
     line-height: 1.25em;
     text-decoration: none;
+    overflow: hidden;
 }
 
 .note p {
@@ -46,6 +47,7 @@ body {
     padding: 0.5em;
     max-height: 170px;
 }
+
 
 *[contenteditable="true"]:focus {
     outline: none;
@@ -80,10 +82,9 @@ body {
 }
 
 .dot-internal {
-    width: 30px;
-    height: 30px;
     background-color: red;
     border-radius: 15px;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.2);
 }
 
 .red-indicator {
@@ -231,6 +232,11 @@ body {
         display: none;
     }
 
+    .dot-internal {
+        width: 10px;
+        height: 10px;
+    }
+
 }
 
 @media (min-width: 480px) {
@@ -252,6 +258,11 @@ body {
     .note {
         font-size: 0.8em;
     }
+
+    .dot-internal {
+        width: 15px;
+        height: 15px;
+    }
 }
 
 
@@ -272,10 +283,14 @@ body {
         width: 110px;
     }
 
-    .note {
-        font-size: 0.9em;
+    .note p {
+        font-size: 1.0em;
     }
 
+    .dot-internal {
+        width: 25px;
+        height: 25px;
+    }
 
 }
 
@@ -294,12 +309,17 @@ body {
         width: 170px;
     }
 
-    .note {
-        font-size: 1.45em;
+    .note p {
+        font-size: 1.5em;
     }
 
     .new-normal {
         display: block;
+    }
+
+    .dot-internal {
+        width: 25px;
+        height: 25px;
     }
     
 }
@@ -320,7 +340,13 @@ body {
         width: 170px;
     }
 
-    .note {
-        font-size: 1.75em;
+    .note p {
+        font-size: 2em;
+        line-height: 1.15em;
+    }
+
+    .dot-internal {
+        width: 30px;
+        height: 30px;
     }
 }

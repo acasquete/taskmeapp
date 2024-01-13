@@ -222,7 +222,7 @@
                 style += ' note-normal ';
             }
 
-            $('<div><div class=dots></div><p contenteditable>' + content + '</p></div>')
+            $('<div><div class=dots></div><p contenteditable></p></div>')
             .css({
                 'left': left,
                 'top': top,
@@ -236,6 +236,7 @@
                 for (var i = 0; i < dots; i++) {
                     $('<div></div>').addClass('dot-internal').appendTo(dotsElement);
                 }
+                $(this).find('p').html(content);
             })
             .appendTo('#container');
                 
@@ -272,6 +273,12 @@
             if (z < notes[i].i) z = notes[i].i;
         }
         z++;
+        $('.dot-internal').on('dblclick', function () { 
+            $(this).fadeOut(500, function() {
+                 $(this).remove();
+                 asyncSaveTaskboard();
+             });
+        });
     }
 
     function initDots(dots) {
@@ -348,7 +355,6 @@
         $(element).on("drag touchmove", ondrag);
         $(element).on("dragend touchend", ondragend);
         $(element).on("dblclick", function () { $(this).remove() });
-
         $(element).draggable();
     }
 
@@ -372,6 +378,12 @@
             $(element).droppable({
                 drop: function( event, ui ) {
                     $("<div></div>").addClass('dot-internal').appendTo($(this).find('.dots'))
+                    .on('dblclick', function() {
+                        $(this).fadeOut(500, function() { 
+                            $(this).remove(); 
+                            asyncSaveTaskboard();
+                        });
+                    });
                     ui.draggable.remove();
                 }
               });
@@ -480,7 +492,7 @@
 
         $('.note').each(function () {
             var el = $(this).get(0);
-            var content = $(el).find('p').text();
+            var content = $(el).find('p').html();
             var dotsCount = $(el).find('.dots').children().length;
             notesArray.push({ c: content, i: el.style.zIndex, l: el.style.left, t: el.style.top, cl: el.className, d:dotsCount });
         });
