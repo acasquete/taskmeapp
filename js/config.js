@@ -14,7 +14,7 @@
     }
 
     function getDashboard(id) {
-        let dashboard = { notes: [], pomodoro: {}, screenWidth: null };
+        let dashboard = { notes: [], dots: [], pomodoro: {}, screenWidth: null };
         let dashboardString = localStorage.getItem("dashboard"+id);
 
         if (dashboardString) {

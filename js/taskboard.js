@@ -6,7 +6,6 @@
     var z = -maxnotes - 1;
 
     function init() {
-
         window.addEventListener("resize", onViewStateChanged);
         window.addEventListener('orientationchange', onViewStateChanged);
         document.addEventListener('keydown', onKeyPress);
@@ -15,6 +14,7 @@
             $(".note").css({ transition: 'all 0.8s', opacity: 0.25, transform: 'translateY(-1000px)' }).promise().then(function () {
                 setTimeout(function () {
                     $(".note").remove();
+                    $(".dot").remove();
                     checkminNotes();
                     asyncSaveTaskboard();
                 }, 800);
@@ -44,6 +44,7 @@
 
         $(".new-normal").on("mousedown touchstart", onnew);
         $(".new-small").on("mousedown touchstart", onnew);
+        $(".new-dot").on("mousedown touchstart", onnewdot);
 
         Controls.init();
         currentDashboardId = Config.getActiveDashboard();
@@ -62,6 +63,7 @@
         }
 
         $('.note').remove();
+        $('.dot').remove();
 
         currentDashboardId = id;
         dashboard = Config.getDashboard(currentDashboardId);
@@ -71,6 +73,7 @@
         }
 
         initNotes(dashboard.notes);
+        initDots(dashboard.dots);
 
         if (dashboard.screenwidth) {
             if (dashboard.screenwidth != window.innerWidth) {
@@ -81,6 +84,7 @@
         }
 
         starthandlers(".note");
+        starthandlersdot(".dot");
         checkminNotes();
         updateNoteCounters(); 
 
@@ -132,7 +136,7 @@
     }
 
     function toggleNotes () {
-        $('.note').each(function() {
+        $('.note,.dot').each(function() {
             if ($(this).css('display') === 'none') {
                 $(this).fadeIn();
             } else {
@@ -142,7 +146,7 @@
     }
 
     function isAnyNoteSelected() {
-        return $('.note.selected').length > 0;
+        return $('.note p.selected').length > 0;
     }
 
     function updateNoteCounters() {
@@ -174,7 +178,7 @@
     function updateColumnTitle (num, title, total, max) {
         var numberSpan = $('<span>').text(total);
         if (total > max) {
-            numberSpan.addClass('red');
+            numberSpan.addClass('red-indicator');
         }
 
         $('#column' + num).text(title);
@@ -199,7 +203,7 @@
         $(".note-help").remove();
         $(".note").fadeIn();
         
-        createNote("20%", "25%", 500, "note tomato note-help", htmlContent, false);
+        createNote("20%", "25%", 500, "note tomato note-help", htmlContent, 0, false);
         starthandlers(".note-help");
         Controls.hideappbar();
     }
@@ -210,7 +214,7 @@
         }, 500);
     }
 
-    function createNote(left, top, index, style, content, editable) {
+    function createNote(left, top, index, style, content, dots, editable) {
 
         try {
 
@@ -218,17 +222,40 @@
                 style += ' note-normal ';
             }
 
-            $('<div></div>')
+            $('<div><div class=dots></div><p contenteditable>' + content + '</p></div>')
+            .css({
+                'left': left,
+                'top': top,
+                'z-index': index,
+                'position': 'absolute', 
+                'transform': 'rotate(' + getRandomAngle() + 'deg)'
+            })
+            .addClass(style)
+            .each(function() {
+                var dotsElement = $(this).find('.dots');
+                for (var i = 0; i < dots; i++) {
+                    $('<div></div>').addClass('dot-internal').appendTo(dotsElement);
+                }
+            })
+            .appendTo('#container');
+                
+        } catch (ex) {
+            console.error('Error creating note:', ex);
+        }
+    }
+
+    function createDot(left, top, index, style) {
+
+        try {
+
+            $('<div draggable="true"></div>')
                 .addClass(style)
-                .html(content) 
                 .css({
                     'left': left,
                     'top': top,
                     'z-index': index,
-                    'position': 'absolute', 
-                    'transform': 'rotate(' + getRandomAngle() + 'deg)'
+                    'position': 'absolute'
                 })
-                .prop('contentEditable', editable)
                 .appendTo('#container');
         } catch (ex) {
             console.error('Error creating note:', ex);
@@ -241,10 +268,18 @@
 
     function initNotes(notes) {
         for (var i = 0; i < notes.length; i++) {
-            createNote(notes[i].l, notes[i].t, notes[i].i, notes[i].cl, notes[i].c, true);
+            createNote(notes[i].l, notes[i].t, notes[i].i, notes[i].cl, notes[i].c, notes[i].d, true);
             if (z < notes[i].i) z = notes[i].i;
         }
         z++;
+    }
+
+    function initDots(dots) {
+        if (dots === undefined) return;
+
+        for (var i = 0; i < dots.length; i++) {
+            createDot(dots[i].l, dots[i].t, dots[i].i, dots[i].cl);
+        }
     }
 
     function extractSizeFromClass(className) {
@@ -252,14 +287,33 @@
         return parts.length > 1 ? parts[1] : null;
     }
 
-    function onnew(event) {
-        
-        var noteSize = extractSizeFromClass($(this).attr("class"));
-        var noteColor = $(this).attr("class").replace("new-" + noteSize, "");
-
+    function onnewdot (ev) {
         normalizeZIndexes();
 
-        var e = $("<div></div>").addClass('note').addClass('note-' + noteSize).addClass(noteColor)
+        var e = $("<div></div>").addClass('dot')
+            .appendTo('#container')
+            .css({
+                'z-index': 500
+            })
+            .hide()
+            .fadeIn(300);
+
+        var t = e.get(0);
+        e.css({ left: ev.pageX - 15, top: ev.pageY - 15 });
+        starthandlersdot(e);
+        e.trigger(ev);
+
+        $('.note').fadeIn();
+        $('.dot').fadeIn();
+    }
+    function onnew(event) {
+
+        var noteSize = extractSizeFromClass($(this).attr("class"));
+        var noteColor = $(this).attr("class").replace("new-" + noteSize, "");
+        
+        normalizeZIndexes();
+
+        var e = $("<div><div class=dots></div><p contenteditable></p></div>").addClass('note').addClass('note-' + noteSize).addClass(noteColor)
             .appendTo('#container')
             .css({
                 'z-index': 500
@@ -269,17 +323,15 @@
     
         var t = e.get(0);
 
-        t.contentEditable = true;
-
         var heightNote = noteSize === 'normal' ? 100 : 46;
         
         e.css({ left: event.pageX - 20, top: event.pageY - heightNote });
-        //e.css({ left: "20%", top: event.pageY - heightNote });
         starthandlers(t);
         
         e.trigger(event);
         
         $('.note').fadeIn();
+        $('.dot').fadeIn();
     
         if ($('.note').length > maxnotes - 1) {
             $("#newbuttons").fadeOut(300);
@@ -291,24 +343,39 @@
         element.style.transform = 'rotate(' + angle + 'deg)';
     }
 
+    function starthandlersdot(element) {
+        $(element).on("dragstart touchstart", ondragstartdot);
+        $(element).on("drag touchmove", ondrag);
+        $(element).on("dragend touchend", ondragend);
+        $(element).on("dblclick", function () { $(this).remove() });
+
+        $(element).draggable();
+    }
+
     function starthandlers(element) {
         $(element).on("dragstart touchstart", ondragstart);
         $(element).on("drag touchmove", ondrag);
         $(element).on("dragend touchend", ondragend);
-        $(element).on('keyup', function (e) { checkCharcount(this, 140, e); });
-        $(element).on('keydown', function (e) { checkCharcount(this, 140, e); });
+        
         if (!$(element).hasClass('help')) {
-            $(element).on('dblclick', onclickNote);
+            $(element).find('p:first').on('keyup', function (e) { checkCharcount(this, 140, e); });
+            $(element).find('p:first').on('keydown', function (e) { checkCharcount(this, 140, e); });
+            $(element).find('p:first').on('click', onclickNote);
+            $(element).find('p:first').on('focus', function () { 
+                $(this).addClass("selected"); 
+            });
+            $(element).find('p:first').on('blur', function () {
+                $(this).removeClass("selected");
+                updateNoteCounters();
+                asyncSaveTaskboard();
+            });
+            $(element).droppable({
+                drop: function( event, ui ) {
+                    $("<div></div>").addClass('dot-internal').appendTo($(this).find('.dots'))
+                    ui.draggable.remove();
+                }
+              });
         }
-        $(element).on('focus', function () { 
-            $(this).addClass("selected"); 
-           
-        });
-        $(element).on('blur', function () {
-            $(this).removeClass("selected");
-            updateNoteCounters();
-            asyncSaveTaskboard();
-        });
     }
 
     function onclickNote(event) {
@@ -329,8 +396,17 @@
             e.preventDefault();
         }
     }
+    let dragged = null;
 
     function ondragstart(ev, dd) {
+
+        deselectAllNotes();
+        applyRandomRotate($(this).get(0));
+    }
+
+    function ondragstartdot(ev, dd) {
+        dragged = ev.target;
+
         deselectAllNotes();
         applyRandomRotate($(this).get(0));
     }
@@ -400,19 +476,28 @@
 
     function saveTaskboard() {
         let notesArray = [];
-        
+        let dotsArray = [];
+
         $('.note').each(function () {
             var el = $(this).get(0);
-            notesArray.push({ c: el.innerHTML, i: el.style.zIndex, l: el.style.left, t: el.style.top, cl: el.className });
+            var content = $(el).find('p').text();
+            var dotsCount = $(el).find('.dots').children().length;
+            notesArray.push({ c: content, i: el.style.zIndex, l: el.style.left, t: el.style.top, cl: el.className, d:dotsCount });
+        });
+
+        $('.dot').each(function () {
+            var el = $(this).get(0);
+            dotsArray.push({ i: el.style.zIndex, l: el.style.left, t: el.style.top, cl: el.className });
         });
 
         dashboard.notes = notesArray;
+        dashboard.dots = dotsArray;
         
         Config.saveDashboard(currentDashboardId, dashboard);
     }
 
     function recalcposition() {
-        $(".note").each(function () {
+        $(".note, .dot").each(function () {
             var el = $(this);
 
             var originalVisibility = el.css('visibility');
@@ -481,3 +566,4 @@ jQuery.fn.selectText = function () {
         selection.addRange(range);
     }
 };
+

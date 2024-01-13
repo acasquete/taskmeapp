@@ -144,7 +144,6 @@
     };
 
     function onMove (e)  {
-        console.log('move:'+isEraserMode);
         if(drawing){
             previous = {x:mouse.x,y:mouse.y};
             mouse = oMousePos(canvas, e);

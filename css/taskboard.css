@@ -30,7 +30,7 @@ body {
     text-align: center;
     overflow: auto;
     font-size: 1.45em;
-    padding: 0.5em;
+    padding: 0;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.3s;
@@ -39,6 +39,19 @@ body {
     line-height: 1.25em;
     text-decoration: none;
 }
+
+.note p {
+    margin: 0;
+    height: 100%;
+    padding: 0.5em;
+    max-height: 170px;
+}
+
+*[contenteditable="true"]:focus {
+    outline: none;
+    border: none;
+}
+
 
 .note-corner-right {
     border-bottom-right-radius: 60px 5px;
@@ -52,14 +65,28 @@ body {
 .dot {
     width: 30px;
     height: 30px;
-    background-color: darkred;
+    background-color: red;
     border-radius: 15px;
     display: block;
     position: absolute;
-    bottom: 10px;
 }
 
-.red {
+.dots {
+    display: flex;
+    bottom: 10px;
+    right: 10px;
+    position: absolute;
+    gap: 3px;
+}
+
+.dot-internal {
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    border-radius: 15px;
+}
+
+.red-indicator {
     color:#FF6142;
 }
 
@@ -83,14 +110,16 @@ body {
     color: #fff;
 }
 
+/*
 .selected {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
 }
+*/
 
 #newbuttons {
     position: absolute;
     margin-left: -25px;
-    margin-top: 80px;
+    margin-top: 50px;
     z-index: 0;
 }
 
@@ -110,6 +139,15 @@ body {
     transform: rotate(3deg);
 }
 
+#newbuttons .new-dot {
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+    border-radius: 15px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
+    margin-left: 20px;
+}
+
 .tomato { background-color: #FF6142; color: #fff; }
 
 /* bright */
@@ -119,6 +157,7 @@ body {
 .violet { background-color: #cf7aef; color: #fff; }
 .green { background-color: #bdda1e; color: #000; }
 .orange { background-color: #ffca20; color: #000; }
+.red { background-color: red; }
 
 /* pastel */
 .pyellow { background-color: #fcdd00; color: #00c; }
