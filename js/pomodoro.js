@@ -1,4 +1,4 @@
-﻿(function () {
+﻿const Pomodoro = (function () {
     "use strict";
     
     var pomodoroDuration = 25;
@@ -69,7 +69,6 @@
             Notifications.scheduleNotification('TaskMe', { icon, dir, body }, config.duration * 60000);
         }
 
-        // Lugar para guardar el estado del Pomodoro
         Config.savePomodoroState();
     }
     
@@ -170,19 +169,15 @@
         $("#butCancel").click(cancel);
     }
 
-    function initialize(state) {
+    function init() {
+        const state = Config.getPomodoroState();
         setButtonHandlers();
         setState(state);
     }
 
-    function getTotalPomodoros() {
-        return totalPomodoros;
-    }
-
-    window.Pomodoro = {
+    return {
         start: start,
-        initialize: initialize,
-        getTotalPomodoros: getTotalPomodoros,
+        init: init,
         getState: getState,
     };
 

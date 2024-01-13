@@ -22,7 +22,6 @@
     }
 
     function init () {
-
         $(document).on('contextmenu', function(e) {
             Taskboard.deselectAllNotes();
 

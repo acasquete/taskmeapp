@@ -7,8 +7,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    background-color: #FF6142;
-    box-shadow: 0px -5px 5px -5px rgba(0, 0, 0, 0.5);
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0px -5px 5px -5px rgba(0, 0, 0, 0.8);
     z-index: 1000;
 }
 
@@ -27,9 +27,9 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    border: 2px solid white;
+    border: 2px solid black;
     background-color: transparent;
-    color: white;
+    color: black;
     font-size: 24px;
     cursor: pointer;
     display: flex;
@@ -42,11 +42,11 @@
 }
 
 .appbar-btn:hover i {
-    color: #FF6142; /* Cambia el color del SVG */
+    color: black; /* Cambia el color del SVG */
 }
 .button-container span {
     margin-top: 4px;
-    color: white;
+    color: black;
     font-size: 12px;
     text-align: center;
     width: 62px;

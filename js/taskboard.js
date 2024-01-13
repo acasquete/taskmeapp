@@ -1,4 +1,4 @@
-﻿var Taskboard = (function () {
+﻿const Taskboard = (function () {
     "use strict";
     let currentDashboardId;
     let dashboard;
@@ -46,21 +46,19 @@
         $(".new-small").on("mousedown touchstart", onnew);
         $(".new-dot").on("mousedown touchstart", onnewdot);
 
-        Controls.init();
         currentDashboardId = Config.getActiveDashboard();
         initDashboard(currentDashboardId, true);
-        //Pomodoro.initialize(config.pomodoro);
     }
 
     function initDashboard(id, initial) {
-
-        if (currentDashboardId==id && !initial) return;
 
         if (!initial) { 
             $("#dashboard-alert").stop(); 
             $("#dashboard-alert").text(id); 
             $("#dashboard-alert").fadeIn(100).delay(600).fadeOut(100);
         }
+
+        if (currentDashboardId==id && !initial) return;
 
         $('.note').remove();
         $('.dot').remove();
@@ -95,19 +93,13 @@
 
     function onKeyPress (e) {
 
-        if (isAnyNoteSelected()) {
-            return;
-        }
-
         if ((e.ctrlKey || e.metaKey) && !isNaN(e.key)) {
             let num = parseInt(e.key);
             if (num >= 0 && num <= 9) {
                 initDashboard(num);
+                e.preventDefault();
             }
         }
-
-        e.preventDefault();
-
     };
 
     function toggleFullscreen ()
@@ -189,21 +181,21 @@
 
     function showHelp() {
         
-        const htmlContent = `
-        <p>You're the best! Thanks for trying <b>TaskMe</b>, <em>The Sim Kanban Board!</em></p>
-        <p><ul>
+        const content = `
+        You're the best! Thanks for trying <b>TaskMe</b>, <em>The Sim Kanban Board!</em>
+        <ul>
         <li><u>Create</u> a note by selecting a color on the left of the screen.</li>
         <li><u>Edit</u> a note by double-clicking on it.</li>
         <li><u>Remove</u> a note by dragging it to the top of the screen.</li></ul>
-            <p>(c)hange color (e)raser clear (a)ll (h)ide notes (f)ull screen</p>
-            <p>If you have any questions, ideas or suggestions, please feel free to contact me at <a target='_blank' href='http://www.x.com/acasquetenotes'>X@acasquetenotes</a>
-            or open an issue on GitHub at <a target='_blank' href='http://www.github.com/acasquete/taskmeapp/issues'>www.github.com/acasquete/taskmeapp</a></p>
+            (c)hange color (e)raser clear (a)ll (h)ide notes (f)ull screen
+            If you have any questions, ideas or suggestions, please feel free to contact me at <a target='_blank' href='http://www.x.com/acasquetenotes'>X@acasquetenotes</a>
+            or open an issue on GitHub at <a target='_blank' href='http://www.github.com/acasquete/taskmeapp/issues'>www.github.com/acasquete/taskmeapp</a>
         `;
 
         $(".note-help").remove();
         $(".note").fadeIn();
         
-        createNote("20%", "25%", 500, "note tomato note-help", htmlContent, 0, false);
+        createNote("20%", "25%", 500, "note tomato note-help", content, 0, false);
         starthandlers(".note-help");
         Controls.hideappbar();
     }
@@ -222,7 +214,7 @@
                 style += ' note-normal ';
             }
 
-            $('<div><div class=dots></div><p contenteditable></p></div>')
+            $('<div><div class=dots></div><p></p></div>')
             .css({
                 'left': left,
                 'top': top,
@@ -236,7 +228,12 @@
                 for (var i = 0; i < dots; i++) {
                     $('<div></div>').addClass('dot-internal').appendTo(dotsElement);
                 }
-                $(this).find('p').html(content);
+                var pElement = $(this).find('p');
+                pElement.html(content);
+
+                if (editable) {
+                    pElement.attr('contenteditable', 'true');
+                }
             })
             .appendTo('#container');
                 
@@ -363,12 +360,12 @@
         $(element).on("drag touchmove", ondrag);
         $(element).on("dragend touchend", ondragend);
         
-        if (!$(element).hasClass('help')) {
+        if (!$(element).hasClass('note-help')) {
             $(element).find('p:first').on('keyup', function (e) { checkCharcount(this, 140, e); });
             $(element).find('p:first').on('keydown', function (e) { checkCharcount(this, 140, e); });
             $(element).find('p:first').on('click', onclickNote);
             $(element).find('p:first').on('focus', function () { 
-                $(this).addClass("selected"); 
+              
             });
             $(element).find('p:first').on('blur', function () {
                 $(this).removeClass("selected");

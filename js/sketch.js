@@ -1,4 +1,5 @@
 ﻿const Sketch = (function () {
+    "use strict";
     let ctx, canvas, lineWidth = 4, currentColorIndex, cursorCircle;
     let isEraserMode = false, eraserSize = 40, defaultLineWidth = 4;
     let hideCursorTimeout, isCursorVisible = false, drawing = false;
@@ -28,7 +29,6 @@
         document.addEventListener('keydown', onKeyPress);
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', resizeCanvas);
-
     }
 
     const eventHandlers = {

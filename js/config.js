@@ -14,7 +14,7 @@
     }
 
     function getDashboard(id) {
-        let dashboard = { notes: [], dots: [], pomodoro: {}, screenWidth: null };
+        let dashboard = { notes: [], dots: [], screenWidth: null };
         let dashboardString = localStorage.getItem("dashboard"+id);
 
         if (dashboardString) {
@@ -39,6 +39,14 @@
         return canvas;
     }
 
+    function getPomodoroState() {
+        return localStorage.getItem("pomodoro");
+    }
+
+    function savePomodoroState(state) {
+        return localStorage.setItem("pomodoro", state);
+    }
+
     window.Config = {
         saveActiveDashboard: saveActiveDashboard,
         getActiveDashboard: getActiveDashboard,
@@ -46,5 +54,7 @@
         getDashboard: getDashboard,
         getCanvas: getCanvas,
         saveCanvas: saveCanvas,
+        savePomodoroState: savePomodoroState,
+        getPomodoroState, getPomodoroState
     };
 })();

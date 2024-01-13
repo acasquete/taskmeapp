@@ -29,35 +29,23 @@ body {
     border: 1px solid rgba(0, 0, 0, 0.1);
     text-align: center;
     overflow: auto;
-    font-size: 1.45em;
     padding: 0;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.3s;
     font-family: 'Kalam', sans-serif;
     word-wrap: break-word;
-    line-height: 1.25em;
     text-decoration: none;
-    overflow: hidden;
 }
 
 .note p {
     margin: 0;
     height: 100%;
-    padding: 0.5em;
-    max-height: 170px;
+    padding: 0.35em;
 }
-
-
-*[contenteditable="true"]:focus {
-    outline: none;
-    border: none;
-}
-
 
 .note-corner-right {
     border-bottom-right-radius: 60px 5px;
-
 }
 
 .note-corner-left {
@@ -77,8 +65,8 @@ body {
 
 .dots {
     display: flex;
-    bottom: 10px;
-    right: 10px;
+    bottom: 5px;
+    right: 5px;
     position: absolute;
     gap: 3px;
 }
@@ -104,41 +92,36 @@ body {
 }
 
 .note-help {
-    width: 30em;
+    width: 55em;
     text-align: left;
-    height: 15em;
+    height: 30em;
+    
 }
 
 .note-help a {
     color: #fff;
 }
 
-/*
-.selected {
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
-}
-*/
-
 #newbuttons {
     position: absolute;
-    margin-left: -25px;
+    margin-left: 0;
     margin-top: 50px;
     z-index: 0;
 }
 
 #newbuttons .new-normal {
-    width: 80px;
-    height: 35px;
-    margin-top: 20px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
+    width: 50px;
+    height: 32px;
+    margin-top: 15px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     transform: rotate(3deg);
 }
 
 #newbuttons .new-small {
-    width: 70px;
+    width: 40px;
     height: 25px;
     margin-top: 10px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     transform: rotate(3deg);
 }
 
@@ -147,8 +130,8 @@ body {
     height: 30px;
     margin-top: 10px;
     border-radius: 15px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
-    margin-left: 20px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
+    margin-left: 15px;
 }
 
 .tomato { background-color: #FF6142; color: #fff; }
@@ -234,7 +217,7 @@ body {
         display: none;
     }
 
-    .dot-internal {
+    .dot-internal, .dot {
         width: 10px;
         height: 10px;
     }
@@ -253,18 +236,21 @@ body {
     }
     
     .note-small {
-        height: 40px;
+        height: 35px;
         width: 80px;
     }
 
     .note {
         font-size: 0.8em;
+        line-height: 1.15em;
+        padding: 0;
     }
 
-    .dot-internal {
+    .dot-internal, .dot {
         width: 15px;
         height: 15px;
     }
+    
 }
 
 
@@ -286,42 +272,41 @@ body {
     }
 
     .note p {
-        font-size: 1.0em;
+        font-size: 1.5em;
+        line-height: 1em;
     }
 
-    .dot-internal {
-        width: 25px;
-        height: 25px;
+    .dot-internal, .dot {
+        width: 20px;
+        height: 20px;
     }
 
 }
 
 @media (min-width: 1024px) {
 
-    .stage {
-        font-size: 1em;
+    #column1, #column2, #column3 {
+        font-size: 1.1em;
     }
+    
     .note-normal {
-        height: 150px;
-        width: 150px;
+        height: 145px;
+        width: 145px;
     }
     
     .note-small {
-        height: 85px;
-        width: 170px;
+        height: 68px;
+        width: 145px;
     }
 
     .note p {
-        font-size: 1.5em;
+        font-size: 1.8em;
+        line-height: 1.10em;
     }
 
-    .new-normal {
-        display: block;
-    }
-
-    .dot-internal {
+    .dot-internal, .dot {
         width: 25px;
-        height: 25px;
+        height: 25x;
     }
     
 }
@@ -338,7 +323,7 @@ body {
     }
     
     .note-small {
-        height: 85px;
+        height: 80px;
         width: 170px;
     }
 
@@ -347,7 +332,7 @@ body {
         line-height: 1.15em;
     }
 
-    .dot-internal {
+    .dot-internal, .dot {
         width: 30px;
         height: 30px;
     }
