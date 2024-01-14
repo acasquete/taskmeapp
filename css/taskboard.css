@@ -281,10 +281,6 @@ body {
         height: 20px;
     }
 
-    .new-normal {
-        display: block;
-    }
-
 }
 
 @media (min-width: 1024px) {
@@ -310,9 +306,12 @@ body {
 
     .dot-internal, .dot {
         width: 25px;
-        height: 25x;
+        height: 25px;
     }
     
+    .new-normal {
+        display: block;
+    }
 }
 
 @media (min-width: 1200px) {

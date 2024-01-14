@@ -47,25 +47,17 @@
     margin-bottom: 30px;
 }
 
-.tool {
-    display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
-    flex-direction: column;
-    gap: 3px;
-    padding: 5px;
-    background: #f0f0f0;
-    text-align: center;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    height: 65px;
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 30px;
 }
 
 .tool {
     display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
+    justify-content: center; 
+    align-items: center; 
     flex-direction: column;
     gap: 3px;
     padding: 5px;
@@ -79,8 +71,8 @@
 
 .dash {
     display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
+    justify-content: center; 
+    align-items: center; 
     flex-direction: column;
     
     padding: 5px;
@@ -92,6 +84,16 @@
     height: 35px;
 }
 
+.dash.active {
+    background-color: tomato;
+    color: white;
+}
+
+.tool:hover, .dash:hover {
+    background-color: tomato;
+    color: white;
+    transition: all 0.3s;
+}
 
 .tool i {
     display: block;

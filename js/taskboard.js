@@ -2,6 +2,7 @@
     "use strict";
     let currentDashboardId;
     let dashboard;
+    let observers = []; 
     var maxnotes = 30;
     var z = -maxnotes - 1;
 
@@ -57,7 +58,7 @@
 
         Sketch.init(currentDashboardId);
         Config.saveActiveDashboard(currentDashboardId);
-
+        notifyAllObservers();
     }
 
     function onKeyPress (e) {
@@ -546,6 +547,16 @@
         }
     }
 
+    function addObserver (observer) {
+        observers.push(observer);
+    }
+
+    function notifyAllObservers (observer) {
+        observers.forEach(function(observer) {
+            observer.update(currentDashboardId);
+        });
+    }
+
     return {
         init: init,
         isAnyNoteSelected: isAnyNoteSelected,
@@ -555,7 +566,9 @@
         removeAllNotes: removeAllNotes,
         showHelpNote: showHelpNote,
         clearCanvas: clearCanvas,
-        switch: initDashboard
+        switch: initDashboard,
+        addObserver: addObserver,
+        notifyAllObservers: notifyAllObservers
     };
 
 })();
