@@ -9,11 +9,11 @@ $(document).ready(function() {
         $('#hamburgerMenu').toggleClass('active');
     });
     
-    $(document).on("click", function(event) {
-        if ($('#hamburgerMenu').hasClass('active') && !$(event.target).is(".hamburger-icon *")) {
-            $('#hamburgerMenu').toggleClass('active');
-        }
-    });
+    // $(document).on("click", function(event) {
+    //     if ($('#hamburgerMenu').hasClass('active') && !$(event.target).is(".hamburger-icon *")) {
+    //         $('#hamburgerMenu').toggleClass('active');
+    //     }
+    // });
 
     $('.marker-grid .dash').click(function() {
         var action = $(this).data('action');
@@ -67,6 +67,7 @@ $(document).ready(function() {
                 break;
             case 'removeNotes':
                 Taskboard.removeAllNotes();
+                break;
             case 'startPomodoro':
                 Pomodoro.startPomodoro();
                 break;
