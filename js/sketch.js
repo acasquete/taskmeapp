@@ -117,6 +117,18 @@
         };
     };
 
+    function changeColor (color) {
+        if (color==='eraser') {
+            toggleEraserMode();
+        } else {
+            currentColorIndex = color;
+            saveCanvas(); 
+            if (isEraserMode) {
+                toggleEraserMode(); 
+            }
+        }
+    }
+
     function onKeyPress (e) {
         if (Taskboard.isAnyNoteSelected()) {
             return;
@@ -256,5 +268,5 @@
         Config.saveCanvas(currentCanvasId, storeCanvas);
     }
 
-    return { init, clearCanvas };
+    return { init, clearCanvas, changeColor };
 })();

@@ -15,6 +15,19 @@ $(document).ready(function() {
         }
     });
 
+    $('.marker-grid .dash').click(function() {
+        var action = $(this).data('action');
+        var colorMap = {
+            'black': 0,
+            'blue': 1,
+            'red': 2,
+            'green': 3,
+            'eraser': 'eraser'
+        };
+        var colorValue = colorMap[action];
+        Sketch.changeColor(colorValue);
+    });
+
     var toolboxGrid = $('.switch-dashboard');
 
     for (var i = 1; i <= 10; i++) {

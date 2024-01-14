@@ -30,6 +30,7 @@
     transition: transform 0.3s ease;
     z-index: 2000;
     user-select: none;
+    overflow-x: scroll;
 }
 
 .hamburger-menu.active {
@@ -105,3 +106,9 @@
     display: block;
     font-size: 12px;
 }
+
+.dash[data-action="black"] i { color: black; }
+.dash[data-action="blue"] i { color: blue; }
+.dash[data-action="red"] i { color: red; }
+.dash[data-action="green"] i { color: green; }
+.dash[data-action="eraser"] i { color: gray; }
