@@ -44,12 +44,62 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+    margin-bottom: 30px;
 }
 
 .tool {
-    padding: 10px;
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    flex-direction: column;
+    gap: 3px;
+    padding: 5px;
     background: #f0f0f0;
     text-align: center;
     border-radius: 5px;
     cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 65px;
+}
+
+.tool {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    flex-direction: column;
+    gap: 3px;
+    padding: 5px;
+    background: #f0f0f0;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 65px;
+}
+
+.dash {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    flex-direction: column;
+    
+    padding: 5px;
+    background: #f0f0f0;
+    text-align: center;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 35px;
+}
+
+
+.tool i {
+    display: block;
+    font-size: 1.2em;
+    margin-bottom: 3px;
+}
+
+.tool span {
+    display: block;
+    font-size: 12px;
 }

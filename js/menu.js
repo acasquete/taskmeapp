@@ -3,13 +3,34 @@
             $('#hamburgerMenu').toggleClass('active');
         });
 
-        $(document).mouseup(function(e) {
-            var menu = $("#hamburgerMenu");
-            
-            if (!menu.is(e.target) && menu.has(e.target).length === 0 && !$('.hamburger-button').is(e.target)) {
-                menu.removeClass('active');
+        $(document).on('contextmenu', function(e) {
+            Taskboard.deselectAllNotes();
+            e.preventDefault();
+            $('#hamburgerMenu').toggleClass('active');
+        });
+        
+        $(document).on("click", function(event) {
+            if ($('#hamburgerMenu').hasClass('active') && !$(event.target).is(".hamburger-icon *")) {
+                $('#hamburgerMenu').toggleClass('active');
             }
         });
+
+        var toolboxGrid = $('.switch-dashboard');
+
+        for (var i = 1; i <= 9; i++) {
+            var toolDiv = $('<div>', {
+                'class': 'dash',
+                'data-action': 'switchDashboard',
+                'text': i,
+                'click': function() {
+                    var dashboardNumber = $(this).text();
+                    Taskboard.switch(dashboardNumber);
+                }
+            });
+
+            toolboxGrid.append(toolDiv);
+        }
+        
 
         $('.tool').click(function() {
             var toolFunction = $(this).data('action');

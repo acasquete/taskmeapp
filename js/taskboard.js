@@ -171,9 +171,9 @@
         You're the best! Thanks for trying <b>TaskMe</b>, <em>The Sim Kanban Board!</em>
         <ul>
         <li><u>Create</u> a note by selecting a color on the left of the screen.</li>
-        <li><u>Edit</u> a note by double-clicking on it.</li>
+        <li><u>Edit</u> a note by clicking on it.</li>
         <li><u>Remove</u> a note by dragging it to the top of the screen.</li></ul>
-            (c)hange color (e)raser clear (a)ll (h)ide notes (f)ull screen
+            (c)hange color (e)raser clear (a)ll (h)ide notes (f)ull screen<br/><br/>
             If you have any questions, ideas or suggestions, please feel free to contact me at <a target='_blank' href='http://www.x.com/acasquetenotes'>X@acasquetenotes</a>
             or open an issue on GitHub at <a target='_blank' href='http://www.github.com/acasquete/taskmeapp/issues'>www.github.com/acasquete/taskmeapp</a>
         `;
@@ -554,7 +554,8 @@
         toggleFullscreen: toggleFullscreen,
         removeAllNotes: removeAllNotes,
         showHelpNote: showHelpNote,
-        clearCanvas: clearCanvas
+        clearCanvas: clearCanvas,
+        switch: initDashboard
     };
 
 })();
