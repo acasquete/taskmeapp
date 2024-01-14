@@ -40,11 +40,18 @@
     }
 
     function getPomodoroState() {
-        return localStorage.getItem("pomodoro");
+        let pomodoroString = localStorage.getItem("pomodoro");
+        let pomodoro = {};
+
+        if (pomodoroString) {
+            pomodoro = JSON.parse(pomodoroString);
+        } 
+
+        return pomodoro;
     }
 
     function savePomodoroState(state) {
-        return localStorage.setItem("pomodoro", state);
+        return localStorage.setItem("pomodoro", JSON.stringify(state));
     }
 
     window.Config = {

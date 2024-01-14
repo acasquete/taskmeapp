@@ -69,7 +69,7 @@
             Notifications.scheduleNotification('TaskMe', { icon, dir, body }, config.duration * 60000);
         }
 
-        Config.savePomodoroState();
+        saveState();
     }
     
     function initInterval() {
@@ -99,7 +99,7 @@
 
     function show() {
         isVisible = true;
-        Config.savePomodoroState();
+        saveState();
         $("#pomodoro").show();
         $("#overlay").fadeIn(300);
         return $(".layer").animate({ opacity: 1, top: -20 }, 200).promise();
@@ -107,8 +107,7 @@
 
     function hide() {
         isVisible = false;
-        // Lugar para guardar el estado del Pomodoro
-        Config.savePomodoroState();
+        saveState();
         $("#overlay").fadeOut(300);
         return $(".layer").animate({ opacity: 0, top: 20 }, 200, function() {
             $("#pomodoro").hide();
@@ -127,7 +126,7 @@
             $("#time").text("00:00");
             pomodoroStartTime = null;
             pomodoroEndTime = null;
-            Config.savePomodoroState();
+            saveState();
         });
     }
 
@@ -142,9 +141,18 @@
         };
     }
 
+    function saveState()
+    {
+        let state = getState();
+        console.log(state);
+        Config.savePomodoroState(state);
+    }
+
     function setState(data) {
+        console.log("sss"+data);
         if (!data) return;
 
+        console.log(data.dateFirstPomodoro);
         dateFirstPomodoro = data.dateFirstPomodoro ? new Date(data.dateFirstPomodoro) : null;
         totalPomodoros = data.totalPomodoros;
         pomodoroStartTime = data.pomodoroStartTime ? new Date(data.pomodoroStartTime) : null;
@@ -152,6 +160,8 @@
         pomodoroType = data.pomodoroType;
 
         if (resetPomodoroCountIfNeeded()) return;
+
+        console.log("sss"+pomodoroStartTime);
 
         if (pomodoroStartTime) {
             initInterval();
