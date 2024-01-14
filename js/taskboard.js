@@ -10,37 +10,6 @@
         window.addEventListener('orientationchange', onViewStateChanged);
         document.addEventListener('keydown', onKeyPress);
 
-        $("#cmdRemoveAllNotes").click(function () {
-            $(".note").css({ transition: 'all 0.8s', opacity: 0.25, transform: 'translateY(-1000px)' }).promise().then(function () {
-                setTimeout(function () {
-                    $(".note").remove();
-                    $(".dot").remove();
-                    checkminNotes();
-                    asyncSaveTaskboard();
-                }, 800);
-
-            });
-
-            Controls.hideappbar();
-        });
-
-        $("#cmdClearCanvas").click(function () {
-            Sketch.clearCanvas();
-            asyncSaveTaskboard();
-            Controls.hideappbar();
-        });
-
-        $("#cmdHelp").click(function () {
-            showHelp();
-        });
-
-        $('#toggleNotes').click(function() {
-            toggleNotes();
-        });
-
-        $('#cmdFullscreenButton').click( function() {
-            toggleFullscreen();
-        });
 
         $(".new-normal").on("mousedown touchstart", onnew);
         $(".new-small").on("mousedown touchstart", onnew);
@@ -67,7 +36,7 @@
         dashboard = Config.getDashboard(currentDashboardId);
 
         if (dashboard.notes.length < 1 && id==1) {
-            showHelp();
+            showHelpNote();
         }
 
         initNotes(dashboard.notes);
@@ -141,6 +110,23 @@
         return $('.note .selected').length > 0;
     }
 
+    function removeAllNotes () {
+        $(".note").css({ transition: 'all 0.8s', opacity: 0.25, transform: 'translateY(-1000px)' }).promise().then(function () {
+            setTimeout(function () {
+                $(".note").remove();
+                $(".dot").remove();
+                checkminNotes();
+                asyncSaveTaskboard();
+            }, 800);
+
+        });
+    }
+
+    function clearCanvas () {
+        Sketch.clearCanvas();
+        asyncSaveTaskboard();
+    }
+
     function updateNoteCounters() {
         let columnCounters = [0, 0, 0]; 
     
@@ -179,7 +165,7 @@
         }
     }
 
-    function showHelp() {
+    function showHelpNote() {
         
         const content = `
         You're the best! Thanks for trying <b>TaskMe</b>, <em>The Sim Kanban Board!</em>
@@ -565,7 +551,10 @@
         isAnyNoteSelected: isAnyNoteSelected,
         deselectAllNotes: deselectAllNotes,
         toggleNotes: toggleNotes,
-        toggleFullscreen: toggleFullscreen
+        toggleFullscreen: toggleFullscreen,
+        removeAllNotes: removeAllNotes,
+        showHelpNote: showHelpNote,
+        clearCanvas: clearCanvas
     };
 
 })();

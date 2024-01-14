@@ -13,7 +13,7 @@ var Notifications = (function() {
             return;
         }
         Notification.requestPermission().then(function(permission) {
-            console.log("Permiso de notificación:", permission);
+            console.log(permission);
         });
     }
 

@@ -144,15 +144,12 @@
     function saveState()
     {
         let state = getState();
-        console.log(state);
         Config.savePomodoroState(state);
     }
 
     function setState(data) {
-        console.log("sss"+data);
         if (!data) return;
 
-        console.log(data.dateFirstPomodoro);
         dateFirstPomodoro = data.dateFirstPomodoro ? new Date(data.dateFirstPomodoro) : null;
         totalPomodoros = data.totalPomodoros;
         pomodoroStartTime = data.pomodoroStartTime ? new Date(data.pomodoroStartTime) : null;
@@ -160,8 +157,6 @@
         pomodoroType = data.pomodoroType;
 
         if (resetPomodoroCountIfNeeded()) return;
-
-        console.log("sss"+pomodoroStartTime);
 
         if (pomodoroStartTime) {
             initInterval();
@@ -189,6 +184,10 @@
         start: start,
         init: init,
         getState: getState,
+        startPomodoro: startPomodoro,
+        startShort: startShort,
+        startLong: startLong
+
     };
 
 })();

@@ -18,16 +18,16 @@
     <meta name="twitter:image" content="https://taskmeapp.com/images/apple-touch-icon.png">
     <meta name="twitter:site" content="@TaskMeApp">
     <meta name="robots" content="index, follow">
-    <link href="/css/appbar.css" rel="stylesheet" />
     <link href="/css/taskboard.css" rel="stylesheet" />
     <link href="/css/pomodoro.css" rel="stylesheet" />
+    <link href="/css/menu.css" rel="stylesheet" />
     <script src="/Scripts/jquery-1.8.1.min.js"></script>
     <script src="/Scripts/jquery.event.drag-2.2.js"></script>
     <script src="/Scripts/jquery-ui-1.9.2.custom.min.js"></script>
     <script src="js/notificationsweb.js"></script>
+    <script src="js/menu.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/pomodoro.js"></script>
-    <script src="js/controls.js"></script>
     <script src="js/config.js"></script>
     <script src="js/taskboard.js"></script>
     <script src="js/sketch.js"></script>
@@ -41,6 +41,29 @@
   </head>
 </head>
     <body>
+
+        <div class="hamburger-icon">
+            <button class="hamburger-button"><i class="fas fa-bars"></i></button>
+        </div>
+
+        <div id="hamburgerMenu" class="hamburger-menu">
+            <div class="menu-content">
+                <div class="toolbox-grid">
+                    <div class="tool" data-action="toggleFullScreen"><i class="fas fa-expand"></i>Fullscreen</div>
+                    <div class="tool" data-action="removeNotes"><i class="fas fa-trash-alt"></i>Remove Notes</div>
+                    <div class="tool" data-action="eraseDashboard"><i class="fas fa-eraser"></i>Erase Whiteboard</div>
+                    <div class="tool" data-action="toggleNotes"><i class="fas fa-sticky-note"></i>Toggle Notes</div>
+                    <div class="tool" data-action="openHelp"><i class="fas fa-question-circle"></i>Help</div>
+                    <div class="tool" data-action="startPomodoro"><i class="fas fa-clock"></i>Start Pomodoro</div>
+                    <div class="tool" data-action="startBreakShort"><i class="fas fa-coffee"></i>Short Break</div>
+                    <div class="tool" data-action="startBreakLong"><i class="fas fa-utensils"></i>Long Break</div>
+                    <!-- 3x3 Grid para dashboards -->
+                    
+                </div>
+            </div>
+            
+        </div>
+    
         <div id="dashboard-alert"></div>
         <div id="newbuttons">
             <div class="new-dot red"></div>
@@ -77,63 +100,7 @@
                     </div>
                 </div> 
             </div>
-        
-       
-        </div>
-        <div id="appbar" class="win-appbar">
-            <div class="button-group left">
-                <div class="button-container">
-                    <button id="cmdFullscreenButton" class="appbar-btn" type="button">
-                        <i class="fas fa-expand"></i>
-                    </button>
-                    <span>Fullscreen</span>
-                </div>
-                <div class="button-container">
-                    <button id="toggleNotes" class="appbar-btn" type="button">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <span>Show/Hide Notes</span>
-                </div>
-                <div class="button-container">
-                    <button id="cmdRemoveAllNotes" class="appbar-btn" type="button">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                    <span>Remove All Notes</span>
-                </div>
-                <div class="button-container">
-                    <button id="cmdClearCanvas" class="appbar-btn" type="button">
-                        <i class="fas fa-eraser"></i>
-                    </button>
-                    <span>Erase Whiteboard</span>
-                </div>
-                <div class="button-container">
-                    <button id="cmdHelp" class="appbar-btn" type="button">
-                        <i class="fas fa-question-circle"></i>
-                    </button>
-                    <span>Help</span>
-                </div>
-            </div>
-        
-            <div class="button-group right">
-                <div class="button-container">
-                    <button id="cmdStartPomodoro" class="appbar-btn" type="button">
-                        <i class="fas fa-circle-play"></i>
-                    </button>
-                    <span>Start Pomodoro</span>
-                </div>
-                <div class="button-container">
-                    <button id="cmdStartShortBreak" class="appbar-btn" type="button">
-                        <i class="fa-regular fa-hourglass-half"></i>
-                    </button>
-                    <span>Take a Short Break</span>
-                </div>
-                <div class="button-container">
-                    <button id="cmdStartLongBreak" class="appbar-btn" type="button">
-                        <i class="fa-solid fa-hourglass-start"></i>
-                    </button>
-                    <span>Take a Long Break</span>
-                </div>
-            </div>
+
         </div>
         
         <canvas id="canvas"></canvas>
