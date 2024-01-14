@@ -138,7 +138,7 @@
     }
 
     function isAnyNoteSelected() {
-        return $('.note p.selected').length > 0;
+        return $('.note .selected').length > 0;
     }
 
     function updateNoteCounters() {
@@ -365,7 +365,7 @@
             $(element).find('p:first').on('keydown', function (e) { checkCharcount(this, 140, e); });
             $(element).find('p:first').on('click', onclickNote);
             $(element).find('p:first').on('focus', function () { 
-              
+                $(this).addClass("selected");
             });
             $(element).find('p:first').on('blur', function () {
                 $(this).removeClass("selected");
@@ -478,7 +478,6 @@
 
     function normalizeZIndexes() {
         
-        
         var zIndex = 1; 
         
         $('.dot').sort(function(a, b) { 
@@ -545,12 +544,11 @@
         $('.note').each(function () {
             $(this).removeClass('selected');
             if (this === document.activeElement) {
-                this.blur(); // Quita el foco del elemento si está enfocado
+                this.blur(); 
             }
             
         });
 
-        // Deseleccionar cualquier texto seleccionado en el documento
         if (window.getSelection) {
             if (window.getSelection().empty) {  // Chrome
                 window.getSelection().empty();
