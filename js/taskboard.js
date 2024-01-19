@@ -201,7 +201,7 @@
                 style += ' note-normal ';
             }
 
-            $('<div><div class=dots></div><p></p></div>')
+            $('<a><span class=dots></span><p></p></a>')
             .css({
                 'left': left,
                 'top': top,
@@ -351,14 +351,7 @@
             $(element).find('p:first').on('keyup', function (e) { checkCharcount(this, 140, e); });
             $(element).find('p:first').on('keydown', function (e) { checkCharcount(this, 140, e); });
             $(element).find('p:first').on('click', onclickNote);
-            $(element).find('p:first').on('focus', function () { 
-                $(this).addClass("selected");
-            });
-            $(element).find('p:first').on('blur', function () {
-                $(this).removeClass("selected");
-                updateNoteCounters();
-                asyncSaveTaskboard();
-            });
+            
             $(element).droppable({
                 drop: function( event, ui ) {
                     $("<div></div>").addClass('dot-internal').appendTo($(this).find('.dots'))

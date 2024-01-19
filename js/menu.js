@@ -9,11 +9,11 @@ $(document).ready(function() {
         $('#hamburgerMenu').toggleClass('active');
     });
     
-    // $(document).on("click", function(event) {
-    //     if ($('#hamburgerMenu').hasClass('active') && !$(event.target).is(".hamburger-icon *")) {
-    //         $('#hamburgerMenu').toggleClass('active');
-    //     }
-    // });
+    $(document).on("click", function(event) {
+        if ($('#hamburgerMenu').hasClass('active') && !$(event.target).is(".hamburger-icon *")) {
+            $('#hamburgerMenu').toggleClass('active');
+        }
+    });
 
     $('.marker-grid .dash').click(function() {
         var action = $(this).data('action');
@@ -41,6 +41,7 @@ $(document).ready(function() {
                     dashboardNumber = '0';
                 }
                 Taskboard.switch(dashboardNumber);
+                
             }
         });
 
@@ -48,9 +49,9 @@ $(document).ready(function() {
         Taskboard.addObserver(gridItem);
         toolboxGrid.append(toolDiv);
     }
-    
 
     $('.tool').click(function() {
+        $('#hamburgerMenu').toggleClass('active');
         var toolFunction = $(this).data('action');
         switch (toolFunction) {
             case 'toggleFullScreen':

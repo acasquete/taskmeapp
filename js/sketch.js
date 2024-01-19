@@ -38,10 +38,7 @@
         mouseup: onEnd,
         touchmove: onMove,
         touchstart: onStart,
-        touchend: onEnd,
-        mouseenter: showCursorCircle,
-        mouseleave: hideCursorCircle,
-        mouseout: onEnd
+        touchend: onEnd
     };
 
     function resizeCanvas() {
@@ -133,6 +130,7 @@
         if (Taskboard.isAnyNoteSelected()) {
             return;
         }
+
         if (e.key === 'c') {
             currentColorIndex = (currentColorIndex + 1) % colors.length;
             saveCanvas(); 
