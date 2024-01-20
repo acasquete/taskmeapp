@@ -108,7 +108,7 @@
     }
 
     function isAnyNoteSelected() {
-        return $('.note .selected').length > 0;
+        return $('.note p:focus').length > 0;
     }
 
     function removeAllNotes () {

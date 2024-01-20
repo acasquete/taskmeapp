@@ -86,12 +86,12 @@
 }
 
 .dash.active {
-    background-color: tomato;
+    background-color: #ccc;
     color: white;
 }
 
 .tool:hover, .dash:hover {
-    background-color: tomato;
+    background-color: #ccc;
     color: white;
     transition: all 0.3s;
 }

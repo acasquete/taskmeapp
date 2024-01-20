@@ -28,6 +28,13 @@ $(document).ready(function() {
         Sketch.changeColor(colorValue);
     });
 
+    $('.marker-grid .dash').each(function () {
+        var gridItem = new GridItem($(this)); 
+        Taskboard.addObserver(gridItem);
+
+        
+    });
+
     var toolboxGrid = $('.switch-dashboard');
 
     for (var i = 1; i <= 10; i++) {
@@ -41,7 +48,6 @@ $(document).ready(function() {
                     dashboardNumber = '0';
                 }
                 Taskboard.switch(dashboardNumber);
-                
             }
         });
 
@@ -86,7 +92,7 @@ $(document).ready(function() {
     
         this.update = function(dashboardNumber) {
             var elementNumber = this.element.text();
-            if (elementNumber === '10') elementNumber = '0'; // Convertir el texto '10' a '0'
+            if (elementNumber === '10') elementNumber = '0';
     
             if (elementNumber === dashboardNumber.toString()) {
                 this.element.addClass('active');
