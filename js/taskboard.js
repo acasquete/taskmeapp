@@ -363,7 +363,7 @@
                     });
                     ui.draggable.remove();
                 }
-              });
+            });
         }
     }
 
