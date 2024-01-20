@@ -42,12 +42,7 @@ body {
 .note p {
     margin: 0;
     padding: 0.35em;
-    position: absolute;
-    top: 50%; 
-    left: 50%; 
-    transform: translate(-50%, -50%); 
-    width: 100%;
-    border: 0;
+    height: 100%;
 }
 
 .note-corner-right {
