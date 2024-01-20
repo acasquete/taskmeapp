@@ -36,12 +36,18 @@ body {
     font-family: 'Kalam', sans-serif;
     word-wrap: break-word;
     text-decoration: none;
+    display: block;
 }
 
 .note p {
     margin: 0;
-    height: 100%;
     padding: 0.35em;
+    position: absolute;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    width: 100%;
+    border: 0;
 }
 
 .note-corner-right {
@@ -83,10 +89,12 @@ body {
 
 .note-normal {
     height: 170px;
+    max-height: 170px;
     width: 170px;
 }
 
 .note-small {
+    max-height: 85px;
     height: 85px;
     width: 170px;
 }
@@ -95,6 +103,7 @@ body {
     width: 55em;
     text-align: left;
     height: 30em;
+    max-height: 30em;
     
 }
 

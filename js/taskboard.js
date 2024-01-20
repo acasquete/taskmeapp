@@ -201,7 +201,7 @@
                 style += ' note-normal ';
             }
 
-            $('<a><span class=dots></span><p></p></a>')
+            $('<div><span class=dots></span><p></p></div>')
             .css({
                 'left': left,
                 'top': top,
