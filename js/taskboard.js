@@ -348,8 +348,8 @@
         $(element).on("dragend touchend", ondragend);
         
         if (!$(element).hasClass('note-help')) {
-            $(element).find('p:first').on('keyup', function (e) { checkCharcount(this, 140, e); });
-            $(element).find('p:first').on('keydown', function (e) { checkCharcount(this, 140, e); });
+            $(element).find('p:first').on('keyup', function (e) { asyncSaveTaskboard(); checkCharcount(this, 60, e); });
+            $(element).find('p:first').on('keydown', function (e) { checkCharcount(this, 60, e); });
             $(element).find('p:first').on('click', onclickNote);
             
             $(element).droppable({
