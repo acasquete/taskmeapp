@@ -1,5 +1,8 @@
 ﻿document.addEventListener('DOMContentLoaded', function() {
 
+    Taskboard.init();
+    Pomodoro.init();
+
     const googleToken = localStorage.getItem('googleToken');
     if (googleToken && !isTokenExpired(googleToken)) {
         signInWithFirebase(googleToken);
@@ -7,7 +10,6 @@
         localStorage.removeItem('googleToken');
     }
     
-    Pomodoro.init();
 });
 
 
@@ -34,7 +36,7 @@ function signInWithFirebase(googleToken) {
         .then((result) => {
             const user = result.user;
             Data.setUserId(user.uid);
-            Taskboard.init();
+            Taskboard.loadCurrentDashboard();
             isSigned = true;
         }).catch((error) => {
             console.error("Error en la autenticación con Firebase:", error);

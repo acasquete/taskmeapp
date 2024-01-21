@@ -15,6 +15,10 @@
         $(".new-small").on("mousedown touchstart", onnew);
         $(".new-dot").on("mousedown touchstart", onnewdot);
 
+        loadCurrentDashboard();
+    }
+
+    async function loadCurrentDashboard() {
         currentDashboardId = Config.getActiveDashboard();
         await initDashboard(currentDashboardId, true);
     }
@@ -188,6 +192,7 @@
 
     function asyncSaveTaskboard() {
         window.setTimeout(function () {
+            updateNoteCounters();
             saveTaskboard();
         }, 500);
     }
@@ -565,7 +570,8 @@
         clearCanvas: clearCanvas,
         switch: initDashboard,
         addObserver: addObserver,
-        notifyAllObservers: notifyAllObservers
+        notifyAllObservers: notifyAllObservers,
+        loadCurrentDashboard: loadCurrentDashboard
     };
 
 })();
