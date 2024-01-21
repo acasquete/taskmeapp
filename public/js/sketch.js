@@ -177,6 +177,7 @@
         mouse = oMousePos(canvas, e);
         points = [];
         points.push({x:mouse.x,y:mouse.y,c:currentColorIndex,e:isEraserMode,s:lineWidth});
+        e.stopPropagation();
     };
 
     function onEnd (e) {
@@ -205,7 +206,7 @@
         saveCanvas();
     };
 
-    function onCanvasClick () {
+    function onCanvasClick (e) {
         Taskboard.deselectAllNotes();
     };
 

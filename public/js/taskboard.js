@@ -111,6 +111,7 @@
     }
 
     function removeAllNotes () {
+        $(".dot").fadeOut();
         $(".note").css({ transition: 'all 0.8s', opacity: 0.25, transform: 'translateY(-1000px)' }).promise().then(function () {
             setTimeout(function () {
                 $(".note").remove();
@@ -295,6 +296,7 @@
         $('.note').fadeIn();
         $('.dot').fadeIn();
     }
+   
     function onnew(event) {
 
         var noteSize = extractSizeFromClass($(this).attr("class"));
@@ -305,7 +307,7 @@
         var e = $("<div><div class=dots></div><p contenteditable></p></div>").addClass('note').addClass('note-' + noteSize).addClass(noteColor)
             .appendTo('#container')
             .css({
-                'z-index': 500
+                'z-index': 0
             })
             .hide()
             .fadeIn(300);
@@ -317,14 +319,14 @@
         e.css({ left: event.pageX - 20, top: event.pageY - heightNote });
         starthandlers(t);
         
-        e.trigger(event);
-        
         $('.note').fadeIn();
         $('.dot').fadeIn();
     
         if ($('.note').length > maxnotes - 1) {
             $("#newbuttons").fadeOut(300);
         }
+
+        e.trigger(event);
     }
 
     function applyRandomRotate(element) {
@@ -348,7 +350,7 @@
         if (!$(element).hasClass('note-help')) {
             $(element).find('p:first').on('keyup', function (e) { asyncSaveTaskboard(); checkCharcount(this, 60, e); });
             $(element).find('p:first').on('keydown', function (e) { checkCharcount(this, 60, e); });
-            $(element).find('p:first').on('click', onclickNote);
+            $(element).find('p:first').on('click touchstart', onclickNote);
             
             $(element).droppable({
                 drop: function( event, ui ) {
@@ -372,9 +374,10 @@
         var el = $(this);
         
         if (event.handled !== true) {
-            deselectAllNotes();
             el.selectText();
             el.focus();
+            //deselectAllNotes();
+
             event.handled = true;
         } else {
             return false;

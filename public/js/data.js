@@ -30,10 +30,21 @@ const Data = (function () {
         return db.collection("dashboards").doc("activeDashboard").set({ id: id });
     }
 
+    let lastSavedTime = 0;
+    
     function saveDashboard(id, dashboard) {
         if (!userId) {
             return null;
         }
+
+        const currentTime = Date.now(); 
+        const timeDifference = currentTime - lastSavedTime; 
+    
+        if (timeDifference < 3000) { 
+            return null;
+        }
+    
+        lastSavedTime = currentTime; // Actualizar la última vez que se guardó
     
         return db.collection("users").doc(userId).collection("dashboards").doc("dashboard" + id).set(dashboard)
         .then(() => {
