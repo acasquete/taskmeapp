@@ -30,9 +30,53 @@ const Data = (function () {
         return db.collection("dashboards").doc("activeDashboard").set({ id: id });
     }
 
-    let lastSavedTime = 0;
-    
+    let lastRequest = null;
+    let isProcessing = false;
+
+    function processQueue() {
+        if (!lastRequest) {
+            isProcessing = false;
+            return;
+        }
+
+        const { id, dashboard } = lastRequest;
+        lastRequest = null; 
+
+        db.collection("users").doc(userId).collection("dashboards").doc("dashboard" + id).set(dashboard)
+        .then(() => {
+            console.log(`dashboard #${id} saved`);
+        })
+        .catch((error) => {
+            console.error(error);
+        }).finally(() => {
+            if (lastRequest) {
+                setTimeout(processQueue, 3000);
+            } else {
+                isProcessing = false;
+            }
+        });
+    }
+
     function saveDashboard(id, dashboard) {
+        if (!userId) {
+            return null;
+        }
+
+        lastRequest = { id, dashboard }; 
+
+        if (!isProcessing) {
+            isProcessing = true;
+            setTimeout(processQueue, 3000);
+        }
+    }
+
+    function convertNestedArrayForFirestore(nestedArray) {
+        return nestedArray.map(subArray => JSON.stringify(subArray));
+    }
+
+    let lastSavedTime = 0;
+
+    function saveCanvas(id, canvasData) {
         if (!userId) {
             return null;
         }
@@ -40,29 +84,12 @@ const Data = (function () {
         const currentTime = Date.now(); 
         const timeDifference = currentTime - lastSavedTime; 
     
-        if (timeDifference < 3000) { 
+        
+        if (timeDifference < 5000) { 
             return null;
         }
-    
-        lastSavedTime = currentTime; // Actualizar la última vez que se guardó
-    
-        return db.collection("users").doc(userId).collection("dashboards").doc("dashboard" + id).set(dashboard)
-        .then(() => {
-            console.log(`dashboard #${id} saved`);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-    }
 
-    function convertNestedArrayForFirestore(nestedArray) {
-        return nestedArray.map(subArray => JSON.stringify(subArray));
-    }
-
-    function saveCanvas(id, canvasData) {
-        if (!userId) {
-            return null;
-        }
+        lastSavedTime = currentTime; 
 
         let firestoreFormat = {
             colorIndex: canvasData.colorIndex,
@@ -71,7 +98,7 @@ const Data = (function () {
 
         return db.collection("users").doc(userId).collection("canvas").doc("canvas" + id).set(firestoreFormat)
         .then(() => {
-            console.log(`canvas #${id} saved`);
+            console.log(`canvas #${id} saved. ${timeDifference}ms`);
         })
         .catch((error) => {
             console.error(error);
