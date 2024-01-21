@@ -184,7 +184,6 @@
         
         createNote("20%", "25%", 500, "note tomato note-help", content, 0, false);
         starthandlers(".note-help");
-        Controls.hideappbar();
     }
 
     function asyncSaveTaskboard() {
