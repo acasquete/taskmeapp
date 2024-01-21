@@ -11,7 +11,6 @@
         window.addEventListener('orientationchange', onViewStateChanged);
         document.addEventListener('keydown', onKeyPress);
 
-
         $(".new-normal").on("mousedown touchstart", onnew);
         $(".new-small").on("mousedown touchstart", onnew);
         $(".new-dot").on("mousedown touchstart", onnewdot);
@@ -367,12 +366,15 @@
     }
 
     function onclickNote(event) {
-        var el = $(this);
         event.stopPropagation();
         event.preventDefault();
+
+        var el = $(this);
+        
         if (event.handled !== true) {
             deselectAllNotes();
             el.selectText();
+            el.focus();
             event.handled = true;
         } else {
             return false;
