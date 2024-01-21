@@ -7,10 +7,10 @@
     const colors = ['black', 'blue', 'red', 'green'];
     let currentCanvasId;
 
-    function init(id) {
+    async function init(id) {
         currentCanvasId = id;
         initCanvas();
-        loadCanvas();
+        await loadCanvas();
         assignEventListeners();
         createCursorCircle();
     }
@@ -254,8 +254,8 @@
         }
     }
 
-    function loadCanvas() {
-        let storeCanvas = Config.getCanvas(currentCanvasId); 
+    async function loadCanvas() {
+        let storeCanvas = await Config.getCanvas(currentCanvasId); 
         currentColorIndex = storeCanvas.colorIndex;
         pathsArray = storeCanvas.paths;
         drawPaths();

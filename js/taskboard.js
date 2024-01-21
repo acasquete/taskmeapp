@@ -6,7 +6,7 @@
     var maxnotes = 30;
     var z = -maxnotes - 1;
 
-    function init() {
+    async function init() {
         window.addEventListener("resize", onViewStateChanged);
         window.addEventListener('orientationchange', onViewStateChanged);
         document.addEventListener('keydown', onKeyPress);
@@ -17,10 +17,10 @@
         $(".new-dot").on("mousedown touchstart", onnewdot);
 
         currentDashboardId = Config.getActiveDashboard();
-        initDashboard(currentDashboardId, true);
+        await initDashboard(currentDashboardId, true);
     }
 
-    function initDashboard(id, initial) {
+    async function initDashboard(id, initial) {
 
         if (!initial) { 
             $("#dashboard-alert").stop(); 
@@ -34,7 +34,7 @@
         $('.dot').remove();
 
         currentDashboardId = id;
-        dashboard = Config.getDashboard(currentDashboardId);
+        dashboard = await Config.getDashboard(currentDashboardId);
 
         if (dashboard.notes.length < 1 && id==1) {
             showHelpNote();

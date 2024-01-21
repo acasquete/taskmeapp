@@ -11,32 +11,32 @@
 
     function saveDashboard(id, dashboard) {
         localStorage.setItem("dashboard" + id, JSON.stringify(dashboard));
+        Data.saveDashboard(id, dashboard);
     }
 
-    function getDashboard(id) {
-        let dashboard = { notes: [], dots: [], screenWidth: null };
-        let dashboardString = localStorage.getItem("dashboard"+id);
-
-        if (dashboardString) {
-            dashboard = JSON.parse(dashboardString);
-        } 
-
-        return dashboard;
+    async function getDashboard(id) {
+        const dashboardRemote = await Data.getDashboard(id);
+        if (dashboardRemote!=null) {
+            return dashboardRemote;
+        }
+    
+        const dashboardString = localStorage.getItem("dashboard" + id);
+        return dashboardString ? JSON.parse(dashboardString) : { notes: [], dots: [], screenWidth: null };
     }
 
     function saveCanvas(id, canvas) {
         localStorage.setItem("canvas" + id, JSON.stringify(canvas));
+        Data.saveCanvas(id, canvas);
     }
 
-    function getCanvas(id) {
-        let canvas = { paths: [], colorIndex: 0 };
-        let canvasString = localStorage.getItem("canvas"+id);
-
-        if (canvasString) {
-            canvas = JSON.parse(canvasString);
-        } 
-
-        return canvas;
+    async function getCanvas(id) {
+        const canvasRemote = await Data.getCanvas(id);
+        if (canvasRemote!=null) {
+            return canvasRemote;
+        }
+    
+        const canvasString = localStorage.getItem("canvas" + id);
+        return canvasString ? JSON.parse(canvasString) : { paths: [], colorIndex: 0 };
     }
 
     function getPomodoroState() {

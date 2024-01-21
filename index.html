@@ -26,6 +26,9 @@
     <script src="/Scripts/jquery-1.8.1.min.js"></script>
     <script src="/Scripts/jquery.event.drag-2.2.js"></script>
     <script src="/Scripts/jquery-ui-1.9.2.custom.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
     <script src="js/notificationsweb.js"></script>
     <script src="js/menu.js"></script>
     <script src="js/utils.js"></script>
@@ -34,6 +37,7 @@
     <script src="js/taskboard.js"></script>
     <script src="js/sketch.js"></script>
     <script src="js/default.js"></script>
+    <script src="js/data.js"></script>
     <link href="/css/fa/css/fontawesome.min.css" rel="stylesheet">
     <link href="/css/fa/css/brands.min.css" rel="stylesheet">
     <link href="/css/fa/css/solid.min.css" rel="stylesheet">
@@ -70,28 +74,28 @@
                     <div class="tool" data-action="openHelp"><i class="fas fa-question-circle"></i><span>Help</span></div>
                 </div>
 
-                <div class="dashboard-grid switch-dashboard">
-                    
-                </div>
+                <div class="dashboard-grid switch-dashboard"></div>
 
+                
+                    <div class="g_id_signin"
+                        data-type="standard"
+                        data-shape="pill"
+                        data-theme="outline"
+                        data-text="signin_with"
+                        data-size="large"
+                        data-logo_alignment="center" style="margin-left: 1em; ">
+                    </div>
+            
                 <div id="g_id_onload"
                     data-client_id="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com"
                     data-context="signin"
                     data-ux_mode="popup"
                     data-callback="onSignIn"
-                    data-nonce=""
                     data-auto_select="true"
-                    data-itp_support="true">
+                    data-itp_support="true" style="position: absolute; bottom: 100px; height: 0; width: 0; ">
                 </div>
 
-                <div class="g_id_signin"
-                    data-type="standard"
-                    data-shape="pill"
-                    data-theme="outline"
-                    data-text="continue_with"
-                    data-size="medium"
-                    data-logo_alignment="left">
-                </div>
+                
 
             </div>
             
@@ -138,6 +142,7 @@
         </div>
         
         <canvas id="canvas"></canvas>
+
 
     </body>
 </html>
