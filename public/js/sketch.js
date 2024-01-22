@@ -183,17 +183,11 @@
     function onEnd (e) {
         if (drawing) {
             drawing=false;
-            pathsArray.push(points);
-            saveCanvas();
+            if (points.length > 1) {
+                pathsArray.push(points);
+                saveCanvas();
+            }
         }
-    };
-
-    function showCursorCircle () {
-        if (isCursorVisible) cursorCircle.style.display = 'block';
-    };
-
-    function hideCursorCircle () {
-        cursorCircle.style.display = 'none';
     };
 
     function clearCanvas() {
