@@ -2,6 +2,10 @@ const Data = (function () {
     "use strict";
 
     var userId = null;
+    var lastRequestTime = 0;
+    var queue = {};
+    var timeoutId = null;
+    const SAVE_INTERVAL = 3000;
 
     const firebaseConfig = {
         apiKey: "AIzaSyAolhu6a8_LPL1UkVlmJxCYVAjylm-XGUI",
@@ -16,140 +20,116 @@ const Data = (function () {
     firebase.initializeApp(firebaseConfig);
     var db = firebase.firestore();
 
-    function setUserId(newUserId) {
-        userId = newUserId;
-    }
-    
-    function getActiveDashboard() {
-        return db.collection("dashboards").doc("activeDashboard").get().then(doc => {
-            return doc.exists ? doc.data().id : 1;
-        });
+    function saveToFirestore(collectionPath, docId, data) {
+        return db.collection(collectionPath).doc(docId).set(data)
+            .then(() => console.log(`${docId} saved`))
+            .catch((error) => console.error(error));
     }
 
-    function saveActiveDashboard(id) {
-        return db.collection("dashboards").doc("activeDashboard").set({ id: id });
+    function getDocId(type, id) {
+        const prefix = type === 'dashboards' ? 'd' : 'c';
+        return `${prefix}${id}`;
     }
-
-    let lastRequest = null;
-    let isProcessing = false;
 
     function processQueue() {
-        if (!lastRequest) {
-            isProcessing = false;
-            return;
+        lastRequestTime = Date.now();
+
+        Object.values(queue).forEach(request => {
+            const { type, id, data } = request;
+            const collectionPath = `users/${userId}/${type}`;
+            const docId = getDocId(type, id);
+            saveToFirestore(collectionPath, docId, data);
+        });
+
+        queue = {}; 
+    }
+
+    function addToQueue(type, id, data) {
+        if (!userId) {
+            return null;
         }
 
-        const { id, dashboard } = lastRequest;
-        lastRequest = null; 
+        queue[type] = { type, id, data };
+        const currentTime = Date.now();
 
-        db.collection("users").doc(userId).collection("dashboards").doc("dashboard" + id).set(dashboard)
-        .then(() => {
-            console.log(`dashboard #${id} saved`);
-        })
-        .catch((error) => {
-            console.error(error);
-        }).finally(() => {
-            if (lastRequest) {
-                setTimeout(processQueue, 3000);
-            } else {
-                isProcessing = false;
-            }
-        });
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+
+        if (currentTime - lastRequestTime >= SAVE_INTERVAL) {
+            processQueue();
+        } else {
+            timeoutId = setTimeout(processQueue, SAVE_INTERVAL - (currentTime - lastRequestTime));
+        }
     }
 
     function saveDashboard(id, dashboard) {
-        if (!userId) {
-            return null;
-        }
-
-        lastRequest = { id, dashboard }; 
-
-        if (!isProcessing) {
-            isProcessing = true;
-            setTimeout(processQueue, 3000);
-        }
+        addToQueue('dashboards', id, dashboard);
     }
-
-    function convertNestedArrayForFirestore(nestedArray) {
-        return nestedArray.map(subArray => JSON.stringify(subArray));
-    }
-
-    let lastSavedTime = 0;
 
     function saveCanvas(id, canvasData) {
-        if (!userId) {
-            return null;
-        }
-
-        const currentTime = Date.now(); 
-        const timeDifference = currentTime - lastSavedTime; 
-    
-        
-        if (timeDifference < 5000) { 
-            return null;
-        }
-
-        lastSavedTime = currentTime; 
-
-        let firestoreFormat = {
+        const firestoreFormat = {
             colorIndex: canvasData.colorIndex,
-            paths:  convertNestedArrayForFirestore(canvasData.paths)
+            paths: convertNestedArrayForFirestore(canvasData.paths)
         };
+        addToQueue('canvas', id, firestoreFormat);
+    }
 
-        return db.collection("users").doc(userId).collection("canvas").doc("canvas" + id).set(firestoreFormat)
-        .then(() => {
-            console.log(`canvas #${id} saved. ${timeDifference}ms`);
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+    function fetchFirestoreDocument(collectionPath, docId) {
+       
+        return db.collection(collectionPath).doc(docId).get()
+            .then(doc => {
+                if (doc.exists) {
+                    return doc.data();
+                } else {
+                    console.warn(`Document ${docId} not found in ${collectionPath}`);
+                    return null;
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching document:", error);
+                throw error;
+            });
     }
 
     function getDashboard(id) {
         if (!userId) {
             return null;
         }
-    
-        return db.collection("users").doc(userId).collection("dashboards").doc("dashboard" + id).get()
-        .then((doc) => {
-            if (doc.exists) {
-                return doc.data();
-            } else {
-                return null; 
-            }
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-        });
-    }
 
-    function revertFirestoreDataToNestedArray(data) {
-        return data.map(subArrayString => JSON.parse(subArrayString));
+        const docId = `d${id}`;
+        const collectionPath = `users/${userId}/dashboards`;
+        return fetchFirestoreDocument(collectionPath, docId);
     }
 
     function getCanvas(id) {
         if (!userId) {
             return null;
         }
-    
-        return db.collection("users").doc(userId).collection("canvas").doc("canvas" + id).get()
-        .then((doc) => {
-            if (doc.exists) {
-                let data = doc.data(); doc.data();
+
+        const docId = `c${id}`;
+        const collectionPath = `users/${userId}/canvas`;
+        return fetchFirestoreDocument(collectionPath, docId).then(data => {
+            if (data && data.paths) {
                 data.paths = revertFirestoreDataToNestedArray(data.paths);
-                return data;
-            } else {
-                return null; 
             }
-        })
-        .catch((error) => {
-            console.error("Error:", error);
+            return data;
         });
     }
 
+    function setUserId(newUserId) {
+        userId = newUserId;
+    }
+    
+    function convertNestedArrayForFirestore(nestedArray) {
+        return nestedArray.map(subArray => JSON.stringify(subArray));
+    }
+
+    function revertFirestoreDataToNestedArray(data) {
+        return data.map(subArrayString => JSON.parse(subArrayString));
+    }
+
     return {
-        getActiveDashboard: getActiveDashboard,
-        saveActiveDashboard: saveActiveDashboard,
         getDashboard: getDashboard,
         getCanvas: getCanvas,
         saveDashboard: saveDashboard,
