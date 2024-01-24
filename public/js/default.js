@@ -30,17 +30,29 @@ function signInWithFirebase(googleToken) {
         return;
     }
 
-    const credential = firebase.auth.GoogleAuthProvider.credential(googleToken);
+const credential = firebase.auth.GoogleAuthProvider.credential(googleToken);
 
-    firebase.auth().signInWithCredential(credential)
-        .then((result) => {
-            const user = result.user;
-            Data.setUserId(user.uid);
-            Taskboard.loadCurrentDashboard();
-            isSigned = true;
-        }).catch((error) => {
-            console.error("Error en la autenticación con Firebase:", error);
-        });
+firebase.auth().signInWithCredential(credential)
+    .then((result) => {
+        const user = result.user;
+        Data.setUserId(user.uid);
+        Taskboard.loadCurrentDashboard();
+        isSigned = true;
+        hideStatusBarIcon();
+    }).catch((error) => {
+        console.error("Error en la autenticación con Firebase:", error);
+        showStatusBarIcon();
+    });
+}
+
+
+
+function showStatusBarIcon() {
+    $("#statusbar").show();
+}
+
+function hideStatusBarIcon() {
+    $("#statusbar").hide();
 }
 
 function isTokenExpired(token) {

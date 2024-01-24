@@ -205,8 +205,8 @@ body {
 
 #statusbar {
     font-size: 0.6em;
-    bottom: 3px;
-    right: 3px;
+    bottom: 10px;
+    right: 10px;
     position: absolute;
     -webkit-user-select: none;  /* Safari */
     -moz-user-select: none;     /* Firefox */
