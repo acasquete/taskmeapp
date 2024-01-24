@@ -92,10 +92,10 @@
     padding: 3px;
     background: #f0f0f0;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    height: 50px;
+    height: 45px;
 }
 
 .dash {
@@ -103,7 +103,6 @@
     justify-content: center; 
     align-items: center; 
     flex-direction: column;
-    
     padding: 5px;
     background: #f0f0f0;
     text-align: center;
@@ -141,3 +140,20 @@
 .dash[data-action="red"] i { color: red; }
 .dash[data-action="green"] i { color: green; }
 .dash[data-action="eraser"] i { color: black; }
+
+.license {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    text-align: center;
+    font-size: 1em;
+}
+
+.license .button {
+    border: 1px solid #000;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.8em;
+    display: block;
+}
