@@ -43,6 +43,9 @@ body {
     margin: 0;
     padding: 0.35em;
     height: 100%;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }
 
 .note-corner-right {
@@ -109,7 +112,7 @@ body {
 #newbuttons {
     position: absolute;
     margin-left: -5px;
-    margin-top: 60px;
+    margin-top: 80px;
     z-index: 0;
 }
 
@@ -166,7 +169,9 @@ body {
     font-size: 2em;
     height: 100%;
     width: 100%;
-    user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
 }
 
 .stage {
@@ -198,6 +203,17 @@ body {
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
+#statusbar {
+    font-size: 0.6em;
+    bottom: 3px;
+    right: 3px;
+    position: absolute;
+    -webkit-user-select: none;  /* Safari */
+    -moz-user-select: none;     /* Firefox */
+    -ms-user-select: none;      /* IE/Edge */
+    user-select: none;   
+}
+
 @media (min-width: 300px) {
 
     .stage {
@@ -225,6 +241,7 @@ body {
     .dot-internal, .dot {
         width: 10px;
         height: 10px;
+       
     }
 
 }

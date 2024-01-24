@@ -22,14 +22,43 @@
     position: fixed;
     left: 0;
     top: 0;
-    width: 350px;
+    width: 300px;
     height: 100%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 1);
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     z-index: 2000;
-    user-select: none;
     overflow-x: scroll;
+    cursor:default;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.hamburger-menu h1 {
+    padding: 0;
+    font-family: "PermanentMarker";
+    margin: 0;
+    text-align: center;
+    margin-top: 0;
+
+}
+
+.accent1 {
+   color: green;
+}
+
+.accent2 {
+    color: blue;
+ }
+
+.hamburger-menu h2 {
+    color: rgb(0, 0, 0);
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    font-size: 0.4em;
+    line-height: 0.1em;
 }
 
 .hamburger-menu.active {
@@ -37,13 +66,12 @@
 }
 
 .menu-content {
-    margin-top: 3em;
-    padding: 20px;
+    padding: 1.5em;
 }
 
 .toolbox-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     margin-bottom: 25px;
 }
@@ -67,7 +95,7 @@
     border-radius: 5px;
     cursor: pointer;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    height: 65px;
+    height: 50px;
 }
 
 .dash {
@@ -83,6 +111,7 @@
     cursor: pointer;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 35px;
+    border-radius: 50%;
 }
 
 .dash.active {
@@ -111,4 +140,4 @@
 .dash[data-action="blue"] i { color: blue; }
 .dash[data-action="red"] i { color: red; }
 .dash[data-action="green"] i { color: green; }
-.dash[data-action="eraser"] i { color: gray; }
+.dash[data-action="eraser"] i { color: black; }

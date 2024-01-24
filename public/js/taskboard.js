@@ -355,18 +355,20 @@
         if (!$(element).hasClass('note-help')) {
             $(element).find('p:first').on('keyup', function (e) { asyncSaveTaskboard(); checkCharcount(this, 60, e); });
             $(element).find('p:first').on('keydown', function (e) { checkCharcount(this, 60, e); });
-            $(element).find('p:first').on('click touchstart', onclickNote);
+            $(element).find('p:first').on('click touchend', onclickNote);
             
             $(element).droppable({
                 drop: function( event, ui ) {
+                    event.stopImmediatePropagation();
                     $("<div></div>").addClass('dot-internal').appendTo($(this).find('.dots'))
                     .on('dblclick', function() {
-                        $(this).fadeOut(500, function() { 
+                        $(this).fadeOut(300, function() { 
                             $(this).remove(); 
                             asyncSaveTaskboard();
                         });
                     });
                     ui.draggable.remove();
+                    
                 }
             });
         }
