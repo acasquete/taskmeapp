@@ -13,6 +13,7 @@ body {
     overflow: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #efefef;
+    font-size: 16px;
 }
 
 #canvas {
