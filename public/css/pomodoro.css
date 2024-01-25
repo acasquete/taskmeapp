@@ -18,17 +18,21 @@
     background-color: #fff;
     text-align: center;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), 0 0 50px rgba(0, 0, 0, 0.1);
-    margin-top: 20%;
     opacity: 0;
     padding: 0;
+    margin-top: 8em;
     z-index: 1000;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    cursor: default;
 }
 
 #pomodoro .content {
     text-align: center;
     width: 50%;
     margin: auto;
-    padding: 2em;
+    padding: 3vw;
 }
 
 #pomodoro .content h2 {
@@ -38,31 +42,31 @@
 #pomodoro .content #status {
     text-align: center;
     font-family: "PermanentMarker" ;
-    font-size: 3em;
+    font-size: 3vw;
     color:tomato;
 }
 
 #pomodoro .content #time {
-    font-size: 10em;
+    font-size: 10vw;
     margin: auto;
-    line-height: 1em;
+    line-height: 10vw;
     color: gray;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #pomodoro .content .buttons {
-    margin-top: 30px;
+    margin-top: 1vw;
   
 }
 
 #pomodoro .content .buttons #butHide {
-    border-color: tomato;
-    background-color: tomato;
+    border-color: greenyellow;
+    background-color: green;
 }
 
 #pomodoro .content .buttons #butHide:hover {
-    background-color: #FF8A75;
-    border-color: #FF4A2B;
+    background-color: greenyellow;
+    border-color:green;
 }
 
 #pomodoro .content .buttons #butCancel {
@@ -76,41 +80,10 @@
 }
 
 #pomodoro .content .buttons button {
-    margin-left: 10px;
-    font-size: 20px;
-    border-radius: 10px;
-    padding: 8px 50px; 
+    margin-left: 1vw;
+    font-size: 1em;
+    border-radius: 0.5vw;
+    padding: 1vw 3vw; 
     border: 0;
 }
 
-/*
-@media screen and (-ms-view-state: snapped) {
-    #pomodoro #overlay {
-   
-    top:0;
-   
-}
-    #pomodoro .layer {
-        position: absolute;
-        width: 320px;
-        margin-top: 240px;
-        padding-top:2em;
-        padding-bottom:2em;
-        padding-left:0;
-        padding-right:0;
-    }
-
-    #pomodoro .content {
-        text-align: center;
-        margin-left: 20px;
-        margin-right: 20px;
-        width: 280px;
-    }
-
-        #pomodoro .content #time {
-            font-size: 6em;
-            line-height: 1em;
-            margin: auto;
-        }
-
-}*/

@@ -8,13 +8,17 @@
 .hamburger-icon button {
     background: #fff;
     border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
     padding: 5px 10px;
     color: black;
     cursor: pointer;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+}
+
+.hamburger-icon button:active {
+    border: 1px solid tomato;
 
 }
 
