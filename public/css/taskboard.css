@@ -211,7 +211,7 @@ body {
 #statusbar {
     font-size: 1.125rem;
     bottom: 0.5rem;
-    right: 1rem;
+    right: 2rem;
     position: absolute;
     -webkit-user-select: none; 
     -moz-user-select: none;   
