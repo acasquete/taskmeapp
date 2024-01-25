@@ -1,4 +1,9 @@
-﻿@font-face {
+﻿:root {
+    --accent-color:#00a651;
+    --accent-light-color:#80ff80;
+}
+
+@font-face {
     font-family: 'Kalam'; 
     src: url('/fonts/Kalam-Regular.ttf') format('truetype');
 }
@@ -206,14 +211,21 @@ body {
   }
 
 #statusbar {
-    font-size: 0.6em;
-    bottom: 10px;
-    right: 10px;
+    font-size: 1.125rem;
+    bottom: 0.5rem;
+    right: 0.5rem;
     position: absolute;
-    -webkit-user-select: none;  /* Safari */
-    -moz-user-select: none;     /* Firefox */
-    -ms-user-select: none;      /* IE/Edge */
-    user-select: none;   
+    -webkit-user-select: none; 
+    -moz-user-select: none;   
+    user-select: none;
+}
+
+#statusbar a {
+    color: black;
+}
+
+#statusbar a:hover {
+    color: var(--accent-color);
 }
 
 @media (min-width: 300px) {

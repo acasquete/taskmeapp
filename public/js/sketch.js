@@ -4,7 +4,7 @@
     let isEraserMode = false, eraserSize = 40, defaultLineWidth = 4;
     let hideCursorTimeout, isCursorVisible = false, drawing = false;
     let pathsArray = [], points = [], mouse = { x: 0, y: 0 }, previous = { x: 0, y: 0 };
-    const colors = ['black', 'blue', 'red', 'green'];
+    const colors = ['black', '#0047bb', '#ef3340', '#00a651'];
     let currentCanvasId;
 
     async function init(id) {

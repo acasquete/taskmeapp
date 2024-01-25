@@ -17,7 +17,7 @@
 }
 
 .hamburger-icon button:active {
-    border: 1px solid tomato;
+    border: 1px solid var(--accent-color);
 }
 
 .hamburger-menu {
@@ -25,6 +25,7 @@
     left: 0.5rem;
     top: 3rem;
     width: 20rem;
+    height: calc(100% - 3.5rem);
     border-radius: 0.5rem;
     background: rgba(255, 255, 255, 1);
     border: 1px solid #ccc;
@@ -33,9 +34,10 @@
     z-index: 2000;
     overflow-x: scroll;
     cursor:default;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
+    -webkit-user-select: none; 
+    -ms-user-select: none;
+    user-select: none; 
+    display: block;
 }
 
 .hamburger-menu h1 {
@@ -47,12 +49,8 @@
 }
 
 .accent1 {
-   color: green;
+   color: var(--accent-color);
 }
-
-.accent2 {
-    color: blue;
- }
 
 .hamburger-menu h2 {
     color: rgb(0, 0, 0);
@@ -73,16 +71,17 @@
 
 .toolbox-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin-bottom: 25px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    margin-bottom: 0.5rem;
 }
 
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-bottom: 25px;
+    gap: 0;
+    margin-bottom: 0.5rem;
+    border-radius: 0.6rem;
 }
 
 .tool {
@@ -90,11 +89,10 @@
     justify-content: center; 
     align-items: center; 
     flex-direction: column;
-    gap: 0.250px;
-    padding-top: 0.5rem;
-    background: #f0f0f0;
+    gap: 0;
+    padding-top: 3px;
     text-align: center;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     cursor: pointer;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 45px;
@@ -106,24 +104,25 @@
     align-items: center; 
     flex-direction: column;
     padding: 5px;
-    background: #f0f0f0;
+    background: white;
     text-align: center;
-    border-radius: 5px;
+    gap: 0;
     cursor: pointer;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "PermanentMarker", sans-serif;
     height: 35px;
-    border-radius: 50%;
+    border-radius: 0.5rem;
+    font-size: 1.2rem;
 }
 
 .dash.active {
-    background-color: #ccc;
+    background-color: var(--accent-color);
     color: white;
 }
 
 .tool:hover, .dash:hover {
-    background-color: #ccc;
-    color: white;
-    transition: all 0.3s;
+    background-color: var(--accent-light-color);
+    color: var(--accent-color);
+    transition: all 0.2s;
 }
 
 .tool i {
@@ -138,26 +137,7 @@
 }
 
 .dash[data-action="black"] i { color: black; }
-.dash[data-action="blue"] i { color: blue; }
-.dash[data-action="red"] i { color: red; }
-.dash[data-action="green"] i { color: green; }
+.dash[data-action="blue"] i { color: #0047bb; }
+.dash[data-action="red"] i { color: #ef3340; }
+.dash[data-action="green"] i { color: #00a651; }
 .dash[data-action="eraser"] i { color: black; }
-
-.license {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    text-align: center;
-    font-size: 1em;
-
-}
-
-.license .button {
-    border: 1px solid #000;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 0.8em;
-    display: block;
-    color:#000;
-}

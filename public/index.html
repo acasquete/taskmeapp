@@ -55,6 +55,7 @@
             <h1>Task<span class="accent1">Me</span></h1>
             <h2>The Natural Kanban Way</h2>
             <div class="menu-content">
+                
                 <div class="dashboard-grid marker-grid">
                     <div class="dash" data-action="black"><i class="fas fa-circle"></i><span></span></div>
                     <div class="dash" data-action="blue"><i class="fas fa-circle"></i><span></span></div>
@@ -67,11 +68,9 @@
                     <div class="tool" data-action="toggleNotes" title="Toggle Notes (H)"><i class="fas fa-sticky-note"></i><span></span></div>
                     <div class="tool" data-action="eraseDashboard" title="Erase Whiteboard (A)"><i class="fas fa-eraser"></i><span></span></div>
                     <div class="tool" data-action="removeNotes" title="Remove Notes"><i class="fas fa-trash-alt"></i><span></span></div>
-                    <div class="tool" data-action="toggleFullScreen" title="Fullscreen (F)"><i class="fas fa-expand"></i><span></span></div>
                     <div class="tool" data-action="startPomodoro" title="Start Pomodoro"><i class="fas fa-clock"></i><span></span></div>
                     <div class="tool" data-action="startBreakShort" title="Short Break"><i class="fas fa-coffee"></i><span></span></div>
                     <div class="tool" data-action="startBreakLong" title="Long Break"><i class="fas fa-utensils"></i><span></span></div>
-                    <div class="tool" data-action="openHelp" title="Help"><i class="fas fa-question-circle"></i><span></span></div>
                 </div>
 
                 <div class="dashboard-grid switch-dashboard"></div>
@@ -94,10 +93,7 @@
                     data-itp_support="true" style="position: absolute; bottom: 100px; height: 0; width: 0; ">
                 </div>
             </div>
-            <div class="license">
-                <a href="/privacy.html" target="_blank" class="button" data-action="black"><i class="fas fa-info"></i>
-                </a>
-            </div>
+            
         </div>
     
         <div id="dashboard-alert"></div>
@@ -139,7 +135,8 @@
         </div>
 
         <div id="statusbar">
-            <i class="fas fa-hard-drive"></i>
+            <i id="localmode" class="fas fa-hard-drive"></i>
+            <a href="/privacy.html" target="_blank"><i class="fa-regular fa-circle-question"></i></a>
         </div>
         
         <canvas id="canvas"></canvas>

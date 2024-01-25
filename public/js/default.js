@@ -48,11 +48,11 @@ firebase.auth().signInWithCredential(credential)
 
 
 function showStatusBarIcon() {
-    $("#statusbar").show();
+    $("#localmode").show();
 }
 
 function hideStatusBarIcon() {
-    $("#statusbar").hide();
+    $("#localmode").hide();
 }
 
 function isTokenExpired(token) {
