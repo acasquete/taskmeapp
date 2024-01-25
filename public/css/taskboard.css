@@ -48,11 +48,9 @@ body {
 .note p {
     display: inline-block;
     margin: 0;
-    padding: 0.35em;
+    padding: 0;
     height: 100%;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
+    width: 100%;
 }
 
 .note-corner-right {
@@ -213,7 +211,7 @@ body {
 #statusbar {
     font-size: 1.125rem;
     bottom: 0.5rem;
-    right: 0.5rem;
+    right: 1rem;
     position: absolute;
     -webkit-user-select: none; 
     -moz-user-select: none;   

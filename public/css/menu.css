@@ -38,6 +38,7 @@
     -ms-user-select: none;
     user-select: none; 
     display: block;
+    border-bottom-left-radius: 1rem;
 }
 
 .hamburger-menu h1 {

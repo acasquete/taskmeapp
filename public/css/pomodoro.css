@@ -60,13 +60,13 @@
 }
 
 #pomodoro .content .buttons #butHide {
-    border-color: greenyellow;
-    background-color: green;
+    border-color: var(--accent-light-color);
+    background-color: var(--accent-color);;
 }
 
 #pomodoro .content .buttons #butHide:hover {
-    background-color: greenyellow;
-    border-color:green;
+    background-color: var(--accent-light-color);
+    border-color:var(--accent-color);
 }
 
 #pomodoro .content .buttons #butCancel {
