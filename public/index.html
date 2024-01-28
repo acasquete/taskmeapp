@@ -6,7 +6,7 @@
     <meta name="description" content="TaskMe: The Natural Kanban Way for task and project management. Discover the ease of organizing and boosting productivity with our intuitive Kanban board.">
     <meta name="keywords" content="TaskMe, Natural Kanban Way, Easy Task Management, Efficient Project Management, Kanban Board, Productivity, User-Friendly, Task Organizer, Pomodoro Technique">
     <meta name="author" content="TaskMe">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
     <meta property="og:title" content="TaskMe - The Natural Kanban Way">
     <meta property="og:description" content="Embrace The Natural Kanban Way with TaskMe for seamless task and project management. Experience the ultimate simplicity and productivity in one intuitive app.">
     <meta property="og:image" content="https://taskmeapp.com/images/apple-touch-icon.png">
@@ -23,6 +23,7 @@
     <link href="/css/menu.css" rel="stylesheet" />
     <script src="https://accounts.google.com/gsi/client" async></script>
     <meta name="google-signin-client_id" content="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com">
+    <script src="/scripts/fabric.min.js"></script>
     <script src="/scripts/jquery-1.8.1.min.js"></script>
     <script src="/scripts/jquery.event.drag-2.2.js"></script>
     <script src="/scripts/jquery-ui-1.9.2.custom.min.js"></script>
@@ -96,7 +97,7 @@
             
         </div>
     
-        <div id="dashboard-alert"></div>
+        <div id="dashboard-number"></div>
         <div id="newbuttons">
             <div class="new-normal yellow"></div>
             <div class="new-small yellow"></div>
@@ -113,13 +114,6 @@
             <div class="new-dot red"></div>
         </div>
     
-        <div id="container"></div>
-       
-        <div id="taskboard">
-            <div class="stage"><div id="column1"></div></div>
-            <div class="stage stage-border"><div id="column2"></div></div>
-            <div class="stage"><div id="column3"></div></div>
-        </div>
         <div id="pomodoro">
             <div id="overlay"></div>
             <div class="layer">
@@ -138,7 +132,13 @@
             <i id="localmode" class="fas fa-hard-drive"></i>
             <a href="/privacy.html" target="_blank"><i class="fa-regular fa-circle-question"></i></a>
         </div>
+
+        <div id="wrapper">
+
+
+            <canvas id="canvas"></canvas>
+
+        </div>
         
-        <canvas id="canvas"></canvas>
     </body>
 </html>

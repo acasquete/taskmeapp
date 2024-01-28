@@ -38,16 +38,13 @@ $(document).ready(function() {
 
     var toolboxGrid = $('.switch-dashboard');
 
-    for (var i = 1; i <= 10; i++) {
+    for (var i = 1; i <= 5; i++) {
         var toolDiv = $('<div>', {
             'class': 'dash',
             'data-action': 'switchDashboard',
             'text': i,
             'click': function() {
                 var dashboardNumber = $(this).text();
-                if (dashboardNumber === '10') {
-                    dashboardNumber = '0';
-                }
                 Taskboard.switch(dashboardNumber);
             }
         });

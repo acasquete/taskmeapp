@@ -68,11 +68,7 @@ const Data = (function () {
     }
 
     function saveCanvas(id, canvasData) {
-        const firestoreFormat = {
-            colorIndex: canvasData.colorIndex,
-            paths: convertNestedArrayForFirestore(canvasData.paths)
-        };
-        addToQueue('canvas', id, firestoreFormat);
+        addToQueue('canvas', id, canvasData);
     }
 
     function fetchFirestoreDocument(collectionPath, docId) {
@@ -109,12 +105,7 @@ const Data = (function () {
 
         const docId = `c${id}`;
         const collectionPath = `users/${userId}/canvas`;
-        return fetchFirestoreDocument(collectionPath, docId).then(data => {
-            if (data && data.paths) {
-                data.paths = revertFirestoreDataToNestedArray(data.paths);
-            }
-            return data;
-        });
+        return fetchFirestoreDocument(collectionPath, docId);
     }
 
     function setUserId(newUserId) {

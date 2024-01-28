@@ -36,7 +36,8 @@
         }
     
         const canvasString = localStorage.getItem("c" + id);
-        return canvasString ? JSON.parse(canvasString) : { paths: [], colorIndex: 0 };
+        
+        return canvasString ? JSON.parse(canvasString) : { content: '{}', colorIndex: 0 };
     }
 
     function getPomodoroState() {

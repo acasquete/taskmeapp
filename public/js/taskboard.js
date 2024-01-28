@@ -7,14 +7,8 @@
     var z = -maxnotes - 1;
 
     async function init() {
-        window.addEventListener("resize", onViewStateChanged);
-        window.addEventListener('orientationchange', onViewStateChanged);
+        Sketch.init();
         document.addEventListener('keydown', onKeyPress);
-
-        $(".new-normal").on("mousedown touchstart", onnew);
-        $(".new-small").on("mousedown touchstart", onnew);
-        $(".new-dot").on("mousedown touchstart", onnewdot);
-
         loadCurrentDashboard();
     }
 
@@ -26,9 +20,9 @@
     async function initDashboard(id, initial) {
 
         if (!initial) { 
-            $("#dashboard-alert").stop(); 
-            $("#dashboard-alert").text(id); 
-            $("#dashboard-alert").fadeIn(100).delay(600).fadeOut(100);
+            $("#dashboard-number").stop(); 
+            $("#dashboard-number").text(id); 
+            $("#dashboard-number").fadeIn(100).delay(600).fadeOut(100);
         }
 
         if (currentDashboardId==id && !initial) return;
@@ -39,27 +33,23 @@
         currentDashboardId = id;
         dashboard = await Config.getDashboard(currentDashboardId);
 
-        if (dashboard.notes.length < 1 && id==1) {
-            showHelpNote();
-        }
+//        initNotes(dashboard.notes);
+  //      initDots(dashboard.dots);
 
-        initNotes(dashboard.notes);
-        initDots(dashboard.dots);
+        // if (dashboard.screenwidth) {
+        //     if (dashboard.screenwidth != window.innerWidth) {
+        //         recalcposition();
+        //     }
+        // } else {
+        //     dashboard.screenwidth = window.innerWidth;
+        // }
 
-        if (dashboard.screenwidth) {
-            if (dashboard.screenwidth != window.innerWidth) {
-                recalcposition();
-            }
-        } else {
-            dashboard.screenwidth = window.innerWidth;
-        }
-
-        starthandlers(".note");
-        starthandlersdot(".dot");
-        checkminNotes();
+        //starthandlers(".note");
+        //starthandlersdot(".dot");
+        //checkminNotes();
         updateNoteCounters(); 
 
-        Sketch.init(currentDashboardId);
+        Sketch.loadCanvas(currentDashboardId);
         Config.saveActiveDashboard(currentDashboardId);
         notifyAllObservers();
     }
@@ -68,7 +58,7 @@
 
         if ((e.ctrlKey || e.metaKey) && !isNaN(e.key)) {
             let num = parseInt(e.key);
-            if (num >= 0 && num <= 9) {
+            if (num >= 1 && num <= 5) {
                 initDashboard(num);
                 e.preventDefault();
             }
@@ -348,9 +338,20 @@
     }
 
     function starthandlers(element) {
-        $(element).on("dragstart touchstart", ondragstart);
-        $(element).on("drag touchmove", ondrag);
-        $(element).on("dragend touchend", ondragend);
+        
+        $(element).draggable({
+            drag: function(evt,ui)
+            {
+                var zoom = $('#wrapper').css('zoom');  
+                 var factor = (1 / zoom) -1;
+    
+                 ui.position.top += Math.round((ui.position.top - ui.originalPosition.top) * factor);
+                 ui.position.left += Math.round((ui.position.left- ui.originalPosition.left) * factor);    
+            }                 
+        });
+        //$(element).on("dragstart touchstart", ondragstart);
+        //$(element).on("drag touchmove", ondrag);
+        //$(element).on("dragend touchend", ondragend);
         
         if (!$(element).hasClass('note-help')) {
             $(element).find('p:first').on('keyup', function (e) { asyncSaveTaskboard(); checkCharcount(this, 60, e); });

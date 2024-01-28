@@ -1,0 +1,37 @@
+
+OK Evitar atajos si se esta en edicion
+OK Cambio Dashboard
+OK guardar canvas al guardar posicion
+OK 5 dashboards
+OK Colores
+OK No duplica al new
+OK Tamanos
+OK ZIndex
+OK Mostrar todo el Dashboard
+OK Calculo numero de tareas
+OK Hacer pan
+OK Texto nota alineado en el centro
+OK Fuente al cargar
+OK Posicionar nueva nota aleatoria
+OK Anadir rotacion random 3deg
+OK Posicionar nueva nota aleatoria
+OK Calcular zoom segun tamano de ventana al inicio
+
+Eliminar nota arrastrando
+Limitar el pan
+Hacer zoom
+Cargar SVG como linea dibujada
+Anadir dots
+Drag and Drop Dots
+Evitar rotar
+Compartir taskboard
+Thumbnaul
+Limitar longitud
+Evitar el doble sombreado al editar
+
+
+
+
+
+
+

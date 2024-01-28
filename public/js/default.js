@@ -1,6 +1,10 @@
 ﻿document.addEventListener('DOMContentLoaded', function() {
 
-    Taskboard.init();
+    var params = new URLSearchParams(window.location.search);
+
+    var sharedId = params.get('sid');
+    
+    Taskboard.init(sharedId);
     Pomodoro.init();
 
     const googleToken = localStorage.getItem('googleToken');

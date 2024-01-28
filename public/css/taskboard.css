@@ -15,18 +15,10 @@
 
 body {
     margin: 0;
-    overflow: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #efefef;
     font-size: 16px;
-}
-
-#canvas {
-    cursor: crosshair;
-}
-
-#apptitle {
-    display: none;
+    touch-action: none;
 }
 
 .note {
@@ -115,10 +107,10 @@ body {
 }
 
 #newbuttons {
-    position: absolute;
+    position: fixed;
     margin-left: -5px;
     margin-top: 80px;
-    z-index: 0;
+    z-index: 1;
 }
 
 #newbuttons .new-normal {
@@ -166,31 +158,15 @@ body {
 .pgreen { background-color: #0fd572; color: #00c; }
 .porange { background-color: #ff771c; color: #00c; }
 
-#taskboard {
-    position: absolute;
-    z-index: -2;
-    display: grid;
-    grid-template-columns: 3fr 3fr 2fr;
-    font-size: 2em;
-    height: 100%;
-    width: 100%;
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
+#wrapper {
+    overflow: hidden;
 }
 
-.stage {
-    text-align: center;
-    font-family: 'PermanentMarker', sans-serif;
+#canvas {
+    z-index: 0;
 }
 
-.stage-border {
-    border-right: solid 5px rgba(0, 0, 0, 0.2);
-    border-left: solid 5px rgba(0, 0, 0, 0.2);
-    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-}
-
-#dashboard-alert {
+#dashboard-number {
     display: none; 
     position: fixed;
     text-align: center;
@@ -212,7 +188,7 @@ body {
     font-size: 1.125rem;
     bottom: 0.5rem;
     right: 2rem;
-    position: absolute;
+    position: fixed;
     -webkit-user-select: none; 
     -moz-user-select: none;   
     user-select: none;
@@ -226,151 +202,3 @@ body {
     color: var(--accent-color);
 }
 
-@media (min-width: 300px) {
-
-    .stage {
-        font-size: 0.4em;
-    }
-    
-    .note-normal {
-        height: 60px;
-        width: 60px;
-    }
-    
-    .note-small {
-        height: 30px;
-        width: 60px;
-    }
-
-    .note {
-        font-size: 0.6em;
-    }
-
-    .new-normal {
-        display: none;
-    }
-
-    .dot-internal, .dot {
-        width: 10px;
-        height: 10px;
-       
-    }
-
-}
-
-@media (min-width: 480px) {
-
-    .stage {
-        font-size: 0.6em;
-    }
-    
-    .note-normal {
-        height: 80px;
-        width: 80px;
-    }
-    
-    .note-small {
-        height: 35px;
-        width: 80px;
-    }
-
-    .note {
-        font-size: 0.75em;
-        line-height: 1.15em;
-        padding: 0;
-    }
-
-    .dot-internal, .dot {
-        width: 15px;
-        height: 15px;
-    }
-    
-}
-
-
-@media (min-width: 768px) {
-
-    .stage {
-        font-size: 0.8em;
-    }
-    
-    .note-normal {
-        height: 110px;
-        width: 110px;
-        
-    }
-    
-    .note-small {
-        height: 55px;
-        width: 110px;
-    }
-
-    .note p {
-        font-size: 1.30em;
-        line-height: 1em;
-    }
-
-    .dot-internal, .dot {
-        width: 20px;
-        height: 20px;
-    }
-
-}
-
-@media (min-width: 1024px) {
-
-    #column1, #column2, #column3 {
-        font-size: 1.1em;
-    }
-    
-    .note-normal {
-        height: 145px;
-        width: 145px;
-    }
-    
-    .note-small {
-        height: 68px;
-        width: 145px;
-    }
-
-    .note p {
-        font-size: 1.7em;
-        line-height: 1.10em;
-    }
-
-    .dot-internal, .dot {
-        width: 25px;
-        height: 25px;
-    }
-    
-    .new-normal {
-        display: block;
-    }
-}
-
-@media (min-width: 1200px) {
-
-    #column1, #column2, #column3 {
-        font-size: 1.2em;
-    }
-    
-    .note-normal {
-        height: 170px;
-        width: 170px;
-    }
-    
-    .note-small {
-        height: 80px;
-        width: 170px;
-    }
-
-    .note p {
-        font-size: 2em;
-        line-height: 1.15em;
-    }
-
-    .dot-internal, .dot {
-        width: 30px;
-        height: 30px;
-    }
-}
