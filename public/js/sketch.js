@@ -107,7 +107,7 @@
         canvas.on('object:moving', function(e) {
             var obj = e.target;
     
-            if (obj.isNote) {
+            if (obj.cl ==='n') {
                 updateNoteCounters();
             }
 
@@ -151,9 +151,9 @@
         });
 
         
-
         $(".new-small").on('mousedown touchstart', onNew);
         $('.new-normal').on('mousedown touchstart', onNew);
+        $('.new-dot').on('mousedown touchstart', onNewDot);
     }
 
     function updateNoteCounters() {
@@ -162,7 +162,7 @@
         let separators = columnConfigurations.map(col => col.separator).filter(id => id).map(id => canvas.getObjects().find(obj => obj.id === id));
     
         canvas.getObjects().forEach(obj => {
-            if (obj.isNote) {
+            if (obj.cl==='n') {
                 let columnIndex = separators.findIndex(sep => sep && obj.left < sep.left);
                 if (columnIndex === -1) {
                     columnIndex = separators.length;
@@ -174,7 +174,7 @@
         columnConfigurations.forEach(column => {
             updateColumnTitle(column.id, column.count);
             if (column.id === 'col2' && column.count > column.colorThreshold) {
-                setColorForColumn(column.id, 'red');
+                setColorForColumn(column.id, '#ef3340');
             } else {
                 setColorForColumn(column.id, 'default'); // Cambiar 'default' por el color original
             }
@@ -307,7 +307,7 @@
                 hasControls: false, 
                 hasBorders: false,
                 opacity: 0,
-                isNote: true
+                cl: 'n'
             });
 
             const noteWidth = 150;
@@ -316,7 +316,7 @@
             let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
             let separatorLeft = separator1 ? separator1.left : canvas.width / 3;
 
-            let notesInFirstCol = canvas.getObjects().filter(obj => obj.isNote && obj.left < separatorLeft);
+            let notesInFirstCol = canvas.getObjects().filter(obj => obj.cl ==='n' && obj.left < separatorLeft);
 
             let newLeft = 150;
             let newTop = 150;
@@ -365,6 +365,59 @@
             canvas.add(group);
             updateNoteCounters();
             saveCanvas();
+    }
+
+    function onNewDot () {
+
+        normalizeZIndex ();
+
+            const colors = {
+                red: {
+                    primary: '#ff0000',
+                    secondary: darkenColor('#ff0000', 20)
+                }
+            };
+            
+            let color = 'red';
+
+            var gradient = new fabric.Gradient({
+                type: 'radial',
+                coords: {
+                    x1: 25,
+                    y1: 25,
+                    x2: 25,
+                    y2: 25,
+                    r1: 20,
+                    r2: 50,
+                },
+                colorStops: [
+                { offset: 0, color: colors[color].primary }, // Color de inicio
+                { offset: 1, color:  colors[color].secondary }  // Color de fin
+                ]
+            });
+
+            let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
+            let firstColWidth = separator1 ? separator1.left : canvas.width / 3; // o cualquier otro cálculo para la primera columna
+            let firstColHeight = separator1 ? separator1.height / 3 : canvas.height / 4; // o cualquier otro cálculo para la primera columna
+
+            let randomLeft = Math.random() * (firstColWidth - 150) + 150; // 28 es el diámetro del círculo (2 * radio)
+            let randomTop = Math.random() * (firstColHeight - 28) + 100; // Asumiendo que quieres que pueda aparecer en cualquier parte de la altura del canvas
+
+            var circle = new fabric.Circle({
+                left: randomLeft, 
+                top: randomTop,  
+                radius: 14,
+                fill: gradient,
+                shadow: 'rgba(0,0,0,0.6) 0px 0px 3px',
+                hasControls: false, 
+                hasBorders: false,
+                cl: 'd'
+            });
+
+            circle.on('mousedblclick', removeDot);
+            canvas.add(circle);
+            saveCanvas();
+            console.log('newcirlce');
     }
 
     function isOverlapping(note, space, width, height) {
@@ -577,7 +630,7 @@
 
    
     function initKanbanBoard() {
-        let kanbanElements = canvas.getObjects().filter(obj => obj.kanbanElement);
+        let kanbanElements = canvas.getObjects().filter(obj => obj.cl === 'k');
         if (kanbanElements.length > 0) {
             return;
         }
@@ -597,10 +650,10 @@
                 fontWeight: 'bold',
                 fontFamily: 'PermanentMarker',
                 selectable: false,
-                kanbanElement: true,
                 width: 300,
                 textAlign: 'center',
-                id: column.id
+                id: column.id,
+                cl: 'k'
             });
     
             canvas.add(text);
@@ -609,7 +662,7 @@
                 let separator = new fabric.Line([currentLeft + columnWidth, 0, currentLeft + columnWidth, separatorYPosition], {
                     stroke: 'black',
                     selectable: false,
-                    kanbanElement: true,
+                    cl: 'k',
                     id: 'sep' + (index + 1)
                 });
                 canvas.add(separator);
@@ -658,13 +711,22 @@
                             hasControls: false,
                             hasBorders: false,
                             lockRotation: true,
-                            isNote: true
+                            cl: 'n'
                         });
 
                         obj.on('mousedblclick', editNote);
                     }
 
-                    if (obj.kanbanElement) {
+                    if (obj.cl === 'd') {
+                        obj.set({
+                            hasControls: false,
+                            hasBorders: false,
+                        });
+
+                        obj.on('mousedblclick', removeDot);
+                    }
+
+                    if (obj.cl==='k') {
                         obj.set({
                             hasControls: false,
                             hasBorders: false,
@@ -682,10 +744,15 @@
         }
     }
 
+    function removeDot(e) {
+        var object = e.target;
+        canvas.remove(object);
+    }
+
     function saveCanvas() {
         const currentMode = canvas.isDrawingMode;
         canvas.isDrawingMode = false;
-        let jsonCanvas = canvas.toJSON(['id', 'isNote', 'kanbanElement']);
+        let jsonCanvas = canvas.toJSON(['cl', 'id']);
         let storeCanvas = { colorIndex: currentColorIndex, content:  JSON.stringify(jsonCanvas) };
         Config.saveCanvas(currentCanvasId, storeCanvas);
         canvas.isDrawingMode = currentMode;

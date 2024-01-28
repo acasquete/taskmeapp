@@ -17,19 +17,23 @@ OK Anadir rotacion random 3deg
 OK Posicionar nueva nota aleatoria
 OK Calcular zoom segun tamano de ventana al inicio
 OK Rojo inprogress >4
+OK Eliminar nota arrastrando
+OK Anadir dots
 
-Eliminar nota arrastrando
+Cargar dots
+Normalizar puntos
 Limitar el pan
 Hacer zoom
-
+Ocultar notas
+Color blanco para algunos textos
 Cargar SVG como linea dibujada
-Anadir dots
 Drag and Drop Dots
 Evitar rotar
 Compartir taskboard
 Thumbnaul
 Limitar longitud
 Evitar el doble sombreado al editar
+Nota de ayuda
 
 
 
