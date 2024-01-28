@@ -231,27 +231,33 @@
             const colors = {
                 yellow: {
                     primary: '#fef639',
-                    secondary: darkenColor('#fef639', 20)
+                    secondary: darkenColor('#fef639', 20),
+                    text: '#000000'
                 },
                 blue: {
                     primary: '#34afd8',
-                    secondary: darkenColor('#34afd8', 20)
+                    secondary: darkenColor('#34afd8', 20),
+                    text: '#ffffff'
                 },
                 rose: {
                     primary: '#fd4289',
-                    secondary: darkenColor('#fd4289', 20)
+                    secondary: darkenColor('#fd4289', 20),
+                    text: '#ffffff'
                 },
                 violet: {
                     primary: '#cf7aef',
-                    secondary: darkenColor('#cf7aef', 20)
+                    secondary: darkenColor('#cf7aef', 20),
+                    text: '#ffffff'
                 },
                 green: {
                     primary: '#bdda1e',
-                    secondary: darkenColor('#bdda1e', 20)
+                    secondary: darkenColor('#bdda1e', 20),
+                    text: '#000000'
                 },
                 orange: {
                     primary: '#ffca20',
-                    secondary: darkenColor('#ffca20', 20)
+                    secondary: darkenColor('#ffca20', 20),
+                    text: '#000000'
                 }
             };
 
@@ -287,7 +293,8 @@
                 height: noteHeight,
                 fontFamily: 'Kalam',
                 splitByGrapheme: 'split',
-                textAlign: 'center'
+                textAlign: 'center',
+                fill: colors[color].text 
               });
 
             var square = new fabric.Rect({
@@ -443,7 +450,9 @@
             splitByGrapheme: 'split',
             left: target.left,
             top: target.top,
-            angle: target.angle
+            angle: target.angle,
+            editingBorderColor: 'rgba(255,255,255,0)',
+            fill: text.fill
         })
         
         text.visible = false;

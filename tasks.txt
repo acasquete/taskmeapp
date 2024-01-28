@@ -19,13 +19,15 @@ OK Calcular zoom segun tamano de ventana al inicio
 OK Rojo inprogress >4
 OK Eliminar nota arrastrando
 OK Anadir dots
+OK Cargar dots
+OK Color blanco para algunos textos
 
-Cargar dots
+Nota de ayuda
+Confirmacion al borrar dashboards
 Normalizar puntos
 Limitar el pan
 Hacer zoom
 Ocultar notas
-Color blanco para algunos textos
 Cargar SVG como linea dibujada
 Drag and Drop Dots
 Evitar rotar
@@ -33,7 +35,8 @@ Compartir taskboard
 Thumbnaul
 Limitar longitud
 Evitar el doble sombreado al editar
-Nota de ayuda
+
+
 
 
 
