@@ -16,10 +16,12 @@ OK Posicionar nueva nota aleatoria
 OK Anadir rotacion random 3deg
 OK Posicionar nueva nota aleatoria
 OK Calcular zoom segun tamano de ventana al inicio
+OK Rojo inprogress >4
 
 Eliminar nota arrastrando
 Limitar el pan
 Hacer zoom
+
 Cargar SVG como linea dibujada
 Anadir dots
 Drag and Drop Dots

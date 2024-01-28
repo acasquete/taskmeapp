@@ -25,7 +25,6 @@
     function resizeCanvas() {
         canvas.setWidth($(window).width());
         canvas.setHeight($(window).height());
-        
         canvas.requestRenderAll();
     }
 
@@ -79,12 +78,12 @@
     
           canvas.on('mouse:down', function(opt) {
             var evt = opt.e;
-            //if (evt.altKey === true) {
+            if (evt.altKey === true) {
               this.isDragging = true;
               this.selection = false;
               this.lastPosX = evt.clientX;
               this.lastPosY = evt.clientY;
-            //}
+            }
           });
 
           canvas.on('mouse:move', function(opt) {
@@ -101,8 +100,8 @@
 
           canvas.on('mouse:up', function(opt) {
             this.setViewportTransform(this.viewportTransform);
-            //this.isDragging = false;
-            //this.selection = true;
+            this.isDragging = false;
+            this.selection = true;
           });
               
         canvas.on('object:moving', function(e) {
@@ -124,6 +123,23 @@
                     duration: 300, 
                     onChange: canvas.renderAll.bind(canvas)
                 });
+
+                if (activeObject.top < 10) {
+                    activeObject.animate({
+                        'top': activeObject.top - 250, 
+                        'opacity': 0 // Desvanecer
+                    }, {
+                        duration: 500,
+                        easing: fabric.util.ease['easeOutExpo'],
+                        onChange: canvas.renderAll.bind(canvas),
+                        onComplete: function() {
+                            canvas.remove(activeObject);
+                            normalizeZIndex();
+                            saveCanvas();
+                        }
+                    });
+                    return;
+                }
             }
             normalizeZIndex();
             saveCanvas();
@@ -141,32 +157,36 @@
     }
 
     function updateNoteCounters() {
-        let columnCounters = [0, 0, 0];
-    
-        // Obtener los separadores por su ID personalizado
-        let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
-        let separator2 = canvas.getObjects().find(obj => obj.id === 'sep2');
+        let columnConfigurations = getColumnConfiguration();
+
+        let separators = columnConfigurations.map(col => col.separator).filter(id => id).map(id => canvas.getObjects().find(obj => obj.id === id));
     
         canvas.getObjects().forEach(obj => {
-            
             if (obj.isNote) {
-               
-                let notePosition = obj.left;
-
-                if (separator1 && notePosition < separator1.left) {
-                    columnCounters[0]++;
-                } else if (separator2 && notePosition >= separator1.left && notePosition < separator2.left) {
-                    columnCounters[1]++;
-                } else if (separator2 && notePosition >= separator2.left) {
-                    columnCounters[2]++;
+                let columnIndex = separators.findIndex(sep => sep && obj.left < sep.left);
+                if (columnIndex === -1) {
+                    columnIndex = separators.length;
                 }
+                columnConfigurations[columnIndex].count++;
             }
         });
-        
-        // Actualiza los títulos de las columnas
-        updateColumnTitle('col1', columnCounters[0]);
-        updateColumnTitle('col2', columnCounters[1]);
-        updateColumnTitle('col3', columnCounters[2]);
+    
+        columnConfigurations.forEach(column => {
+            updateColumnTitle(column.id, column.count);
+            if (column.id === 'col2' && column.count > column.colorThreshold) {
+                setColorForColumn(column.id, 'red');
+            } else {
+                setColorForColumn(column.id, 'default'); // Cambiar 'default' por el color original
+            }
+        });
+    }
+
+    function setColorForColumn(columnId, color) {
+        let columnTitle = canvas.getObjects().find(obj => obj.id === columnId);
+        if (columnTitle) {
+            columnTitle.set('fill', color === 'default' ? 'black' : color); 
+            canvas.requestRenderAll();
+        }
     }
 
     function updateColumnTitle(columnId, counter) {
@@ -175,6 +195,14 @@
             column.setText(column.text.split(' - ')[0] + ' - ' + counter);
             canvas.requestRenderAll();
         }
+    }
+
+    function getColumnConfiguration () {
+        return [
+            { id: 'col1', title: 'Todo', count: 0, separator: null, proportion: 0.35 },
+            { id: 'col2', title: 'In Progress', count: 0, separator: 'sep1', colorThreshold: 3, proportion: 0.35 },
+            { id: 'col3', title: 'Done', count: 0, separator: 'sep2', proportion: 0.3 }
+        ];
     }
 
     function normalizeZIndex() {
@@ -195,7 +223,6 @@
     
         canvas.renderAll();
     }
-    
 
     function onNew () {
 
@@ -333,9 +360,11 @@
                 duration: 200, 
                 onChange: canvas.renderAll.bind(canvas)
             });
+
             group.on('mousedblclick', editNote);
             canvas.add(group);
-             saveCanvas();
+            updateNoteCounters();
+            saveCanvas();
     }
 
     function isOverlapping(note, space, width, height) {
@@ -555,17 +584,13 @@
     
         let canvasWidth = 2000;
         let separatorYPosition = 2000;
-        let columnConfigurations = [
-            { id: 'col1', title: 'Todo', proportion: 0.35 },
-            { id: 'col2', title: 'In Progress', proportion: 0.35 },
-            { id: 'col3', title: 'Done', proportion: 0.3 }
-        ];
+        let columnConfigurations = getColumnConfiguration();
     
         let currentLeft = 0;
     
         columnConfigurations.forEach((column, index) => {
             let columnWidth = canvasWidth * column.proportion;
-            let text = new fabric.IText(column.title, {
+            let text = new fabric.Textbox(column.title, {
                 left: currentLeft + (columnWidth / 2) - 150,
                 top: 10,
                 fontSize: 30,
