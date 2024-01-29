@@ -13,7 +13,7 @@
     function initCanvas() {
         if (canvas) canvas.dispose();
     
-        canvas = new fabric.Canvas('c');
+        canvas = new fabric.Canvas('c', { allowTouchScrolling: true });
 
         resizeCanvas();
         $(window).resize(resizeCanvas);
@@ -65,6 +65,9 @@
         });
         
         canvas.on('mouse:wheel', function(opt) {
+
+            console.log(opt);
+
             var deltaX = -opt.e.deltaX;
             var deltaY = -opt.e.deltaY;
           
@@ -85,25 +88,50 @@
             opt.e.stopPropagation();
           });
 
-          let lastPosX = null;
-          let lastPosY = null;
-          
-        canvas.on('touch:gesture', function(opt) {
-        if (opt.e.touches && opt.e.touches.length === 1) {
-            var e = opt.e.touches[0];
-            if (lastPosX && lastPosY) {
-            var deltaX = e.clientX - lastPosX;
-            var deltaY = e.clientY - lastPosY;
-            canvas.relativePan(new fabric.Point(deltaX, deltaY));
+          let pausePanning = false;
+          let currentX;
+          let currentY;
+          let lastX;
+          let lastY;
+          let xChange;
+          let yChange;
+
+          canvas.on({
+            'touch:gesture': function(e) {
+                console.log('gesture');
+                if (e.e.touches && e.e.touches.length == 2) {
+                    pausePanning = true;
+                    var point = new fabric.Point(e.self.x, e.self.y);
+                    if (e.self.state == "start") {
+                        zoomStartScale = self.canvas.getZoom();
+                    }
+                    var delta = zoomStartScale * e.self.scale;
+                    self.canvas.zoomToPoint(point, delta);
+                    pausePanning = false;
+                }
+            },
+            'object:selected': function() {
+                pausePanning = true;
+            },
+            'selection:cleared': function() {
+                pausePanning = false;
+            },
+            'touch:drag': function(e) {
+                if (pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
+                    currentX = e.e.layerX;
+                    currentY = e.e.layerY;
+                    xChange = currentX - lastX;
+                    yChange = currentY - lastY;
+    
+                    if( (Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
+                        var delta = new fabric.Point(xChange, yChange);
+                        canvas.relativePan(delta);
+                    }
+    
+                    lastX = e.e.layerX;
+                    lastY = e.e.layerY;
+                }
             }
-            lastPosX = e.clientX;
-            lastPosY = e.clientY;
-        }
-        });
-        
-        canvas.on('touch:dragend', function(opt) {
-        lastPosX = null;
-        lastPosY = null;
         });
 
         canvas.on('object:moving', function(e) {
