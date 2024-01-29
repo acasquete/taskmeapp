@@ -28,10 +28,10 @@ OK Dibujar si no se hace down en un elemento
 OK Eliminar notas
 OK Eliminar dashboards
 OK Ocultar notas
+OK Limitar el pan
+OK Pan tactil
 
 Eraser mode cursor
-Limitar el pan
-Pan tactil
 
 Nota de ayuda
 Confirmacion al borrar dashboards

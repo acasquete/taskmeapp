@@ -24,7 +24,8 @@ $(document).ready(function() {
             'red': 2,
             'green': 3,
             'eraser': 'eraser',
-            'pointer': 'pointer'
+            'pointer': 'pointer',
+            'selection': 'selection'
         };
         var colorValue = colorMap[action];
         Sketch.changeColor(colorValue);

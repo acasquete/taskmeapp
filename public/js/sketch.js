@@ -13,7 +13,7 @@
     function initCanvas() {
         if (canvas) canvas.dispose();
     
-        canvas = new fabric.Canvas('c', { allowTouchScrolling: true });
+        canvas = new fabric.Canvas('c', { allowTouchScrolling: true, selection: false });
 
         resizeCanvas();
         $(window).resize(resizeCanvas);
@@ -54,8 +54,6 @@
 
     function assignEventListeners() {
 
-        const esDispositivoTactil = 'ontouchstart' in window || navigator.maxTouchPoints;
-
         document.addEventListener('keydown', onKeyPress);
 
          
@@ -65,8 +63,6 @@
         });
         
         canvas.on('mouse:wheel', function(opt) {
-
-            console.log(opt);
 
             var deltaX = -opt.e.deltaX;
             var deltaY = -opt.e.deltaY;
@@ -98,7 +94,6 @@
 
           canvas.on({
             'touch:gesture': function(e) {
-                console.log('gesture');
                 if (e.e.touches && e.e.touches.length == 2) {
                     pausePanning = true;
                     var point = new fabric.Point(e.self.x, e.self.y);
@@ -117,17 +112,39 @@
                 pausePanning = false;
             },
             'touch:drag': function(e) {
-                if (pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
+                
+                if (!canvas.selection && pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
+                    var target = canvas.findTarget(e.e);
+            
+                    if (canvas.isDrawingMode) {
+                        pausePanning = true;
+                        return;
+                    }
+            
+                    if (target && (target.cl === 'n' || target.cl === 'd' || target.type == 'path')) {
+                        pausePanning = true;
+                        return;
+                    }
+            
                     currentX = e.e.layerX;
                     currentY = e.e.layerY;
                     xChange = currentX - lastX;
                     yChange = currentY - lastY;
-    
-                    if( (Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
-                        var delta = new fabric.Point(xChange, yChange);
+            
+                    if ((Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
+                        var currentViewPort = canvas.viewportTransform;
+                        var newX = currentViewPort[4] + xChange;
+                        var newY = currentViewPort[5] + yChange;
+            
+                        if (newX > 0) newX = 0;
+                        if (newY > 0) newY = 0;
+                        if (newX < -2000) newX = -2000;
+                        if (newY < -2000) newY = -2000;
+            
+                        var delta = new fabric.Point(newX - currentViewPort[4], newY - currentViewPort[5]);
                         canvas.relativePan(delta);
                     }
-    
+            
                     lastX = e.e.layerX;
                     lastY = e.e.layerY;
                 }
@@ -317,7 +334,7 @@
 
             var noteHeight = size === 'small' ? 75 : 150; 
 
-            var text = new fabric.Textbox('Note', {
+            var text = new fabric.Textbox('To Do', {
                 fontSize: 20,
                 width: 150, 
                 height: noteHeight,
@@ -519,6 +536,12 @@
     
     function setPointerMode() {
         canvas.isDrawingMode = false;
+        canvas.selection = false;
+    }
+
+    function setSelectionMode() {
+        canvas.isDrawingMode = false;
+        canvas.selection = true;
     }
     
     function setEraserMode() {
@@ -547,6 +570,7 @@
     function setDrawingMode(colorIndex) {
         canvas.freeDrawingBrush.color = getColorByIndex(colorIndex);
         canvas.isDrawingMode = true;
+        canvas.selection = false;
     
         if (isEraserMode) {
             toggleEraserMode();
@@ -557,6 +581,9 @@
         switch (color) {
             case 'pointer':
                 setPointerMode();
+                break;
+            case 'selection':
+                setSelectionMode();
                 break;
             case 'eraser':
                 setEraserMode();
@@ -599,6 +626,8 @@
             changeColor(currentColorIndex);
         } else if (e.key === 'e') {
             setEraserMode();
+        } else if (e.key === 's') {
+            changeColor('selection');
         } else if (e.key === 'd') {
             changeColor('pointer');
         } else if (e.key === 'a') {
@@ -669,7 +698,7 @@
         }
     
         let canvasWidth = 2000;
-        let separatorYPosition = 2000;
+        let separatorYPosition = 4000;
         let columnConfigurations = getColumnConfiguration();
     
         let currentLeft = 0;
