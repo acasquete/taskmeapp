@@ -16,6 +16,7 @@
         canvas = new fabric.Canvas('c', { allowTouchScrolling: true, selection: false });
 
         resizeCanvas();
+
         $(window).resize(resizeCanvas);
 
         adjustCanvasZoom();
@@ -52,11 +53,68 @@
         canvas.requestRenderAll();
     }
 
+    let isDragging = false;
+    let targetElement = null;
+    let originalPosition = null;
+
+    
+    function moveRelatedElements(id, deltaX) {
+        let movedIndex =  parseInt(id.replace(/[^\d]/g, ''), 10);
+    
+        canvas.forEachObject(function(obj) {
+            if (obj.id && (obj.id.startsWith('sep') || obj.id.startsWith('col'))) {
+                let objIndex = parseInt(obj.id.replace(/[^\d]/g, ''));
+                if (objIndex >= movedIndex && obj.id != id) {
+                    obj.set({
+                        left: obj.left + deltaX,
+                    });
+                }
+            }
+            
+        });
+    
+        canvas.renderAll();
+    }
+
     function assignEventListeners() {
 
         document.addEventListener('keydown', onKeyPress);
 
-         
+        function isDraggableElement(object) {
+            return object.cl === 'k' && object.id.startsWith('col');
+        }
+
+        canvas.on('mouse:down', function (options) {
+            let target = canvas.findTarget(options.e);
+            if (target && isDraggableElement(target)) {
+                isDragging = true;
+                targetElement = target;
+                targetElement.selectable = false; 
+                originalPosition = { x: target.left };
+            }
+        });
+
+        canvas.on('mouse:move', function (options) {
+            if (isDragging && targetElement) {
+                let pointer = canvas.getPointer(options.e);
+                targetElement.set({
+                    left: pointer.x
+                });
+                canvas.renderAll();
+            }
+        });
+
+        canvas.on('mouse:up', function (options) {
+            isDragging = false;
+            if (targetElement) {
+                targetElement.selectable = false;
+                let pointer = canvas.getPointer(options.e);
+                let deltaX = pointer.x - originalPosition.x;
+                moveRelatedElements (targetElement.id, deltaX);
+                targetElement = null;
+            }
+        });
+
     
         canvas.on('selection:created', function() {
             fabric.ActiveSelection.hasControls = false;
@@ -245,9 +303,9 @@
 
     function getColumnConfiguration () {
         return [
-            { id: 'col1', title: 'Todo', count: 0, separator: null, proportion: 0.35 },
-            { id: 'col2', title: 'In Progress', count: 0, separator: 'sep1', colorThreshold: 3, proportion: 0.35 },
-            { id: 'col3', title: 'Done', count: 0, separator: 'sep2', proportion: 0.3 }
+            { id: 'col1', title: 'Todo', count: 0, separator: 'sep1', proportion: 0.35 },
+            { id: 'col2', title: 'In Progress', count: 0, separator: 'sep2', colorThreshold: 3, proportion: 0.35 },
+            { id: 'col3', title: 'Done', count: 0, separator: 'sep3', proportion: 0.3 }
         ];
     }
 
@@ -706,6 +764,7 @@
         columnConfigurations.forEach((column, index) => {
             let columnWidth = canvasWidth * column.proportion;
             let text = new fabric.Textbox(column.title, {
+                originX: 'left',
                 left: currentLeft + (columnWidth / 2) - 150,
                 top: 10,
                 fontSize: 30,
@@ -713,22 +772,22 @@
                 fontFamily: 'PermanentMarker',
                 selectable: false,
                 width: 300,
-                textAlign: 'center',
+                textAlign: 'left',
                 id: column.id,
                 cl: 'k'
             });
     
             canvas.add(text);
     
-            if (index < columnConfigurations.length - 1) {
-                let separator = new fabric.Line([currentLeft + columnWidth, 0, currentLeft + columnWidth, separatorYPosition], {
-                    stroke: 'black',
-                    selectable: false,
-                    cl: 'k',
-                    id: 'sep' + (index + 1)
-                });
-                canvas.add(separator);
-            }
+            console.log(column.separator);
+            let separator = new fabric.Line([currentLeft + columnWidth, 0, currentLeft + columnWidth, separatorYPosition], {
+                stroke: 'black',
+                selectable: false,
+                strokeWidth: 4,
+                cl: 'k',
+                id: column.separator
+            });
+            canvas.add(separator);
     
             currentLeft += columnWidth;
         });
