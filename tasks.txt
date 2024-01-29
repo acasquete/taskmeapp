@@ -31,17 +31,23 @@ OK Ocultar notas
 OK Limitar el pan
 OK Pan tactil
 
-Eraser mode cursor
-
-Nota de ayuda
-Confirmacion al borrar dashboards
-Normalizar puntos
 Hacer zoom
-Cargar SVG como linea dibujada
+
+Eraser mode cursor
 Drag and Drop Dots
-Evitar rotar, escalado en seleccion
+Resize de columna
+Anadir columna
+Confirmacion al borrar dashboards
 Compartir taskboard
-Thumbnaul
+
+Nota de presentacion
+Ventana de ayuda
+
+Normalizar puntos
+Cargar SVG como linea dibujada
+Evitar rotar, escalado en seleccion
 Limitar longitud
 Evitar el doble sombreado al editar
+Thumbnail Dashboard
 Dark mode
+Al hacer dobleclic en una nota moverla a la columna de la derecha si hay
