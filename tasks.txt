@@ -1,4 +1,3 @@
-
 OK Evitar atajos si se esta en edicion
 OK Cambio Dashboard
 OK guardar canvas al guardar posicion
@@ -21,26 +20,28 @@ OK Eliminar nota arrastrando
 OK Anadir dots
 OK Cargar dots
 OK Color blanco para algunos textos
+OK New Duplicado en touch
+OK Al pulsar en canvas ocultar menu
+OK Pan por defecto, si no se pulsa sobre elemento
+OK Habilitar modo dibujo en menu
+OK Dibujar si no se hace down en un elemento
+OK Eliminar notas
+OK Eliminar dashboards
+OK Ocultar notas
+
+Eraser mode cursor
+Limitar el pan
+Pan tactil
 
 Nota de ayuda
 Confirmacion al borrar dashboards
 Normalizar puntos
-Limitar el pan
 Hacer zoom
-Ocultar notas
 Cargar SVG como linea dibujada
 Drag and Drop Dots
-Evitar rotar
+Evitar rotar, escalado en seleccion
 Compartir taskboard
 Thumbnaul
 Limitar longitud
 Evitar el doble sombreado al editar
-
-
-
-
-
-
-
-
-
+Dark mode

@@ -1,25 +1,24 @@
 ﻿const Sketch = (function () {
     "use strict";
-    let canvas, lineWidth = 4, currentColorIndex, cursorCircle;
-    let isEraserMode = false, eraserSize = 40, defaultLineWidth = 4;
-    let hideCursorTimeout, isCursorVisible = false;
+    let canvas, currentColorIndex;
+    let isEraserMode = false;
     let currentCanvasId;
     let isEditMode = false;
 
     async function init() {
         initCanvas();
         assignEventListeners();
-        createCursorCircle();
     }
 
     function initCanvas() {
         if (canvas) canvas.dispose();
     
-        canvas = new fabric.Canvas('canvas');
+        canvas = new fabric.Canvas('c');
+
         resizeCanvas();
         $(window).resize(resizeCanvas);
+
         adjustCanvasZoom();
-        canvas.isDrawingMode = false;
     }
     
     function resizeCanvas() {
@@ -45,9 +44,8 @@
     }
     
     function adjustCanvasZoom() {
-        let canvasWidth = 2000; // El ancho total de tu canvas
-        let viewportWidth = window.innerWidth; // El ancho disponible en la ventana del navegador
-    
+        let canvasWidth = 2000; 
+        let viewportWidth = window.innerWidth; 
         let zoomLevel = viewportWidth / canvasWidth;
     
         canvas.setZoom(zoomLevel);
@@ -56,61 +54,64 @@
 
     function assignEventListeners() {
 
+        const esDispositivoTactil = 'ontouchstart' in window || navigator.maxTouchPoints;
+
         document.addEventListener('keydown', onKeyPress);
 
-        fabric.util.requestAnimFrame(function requestAnimFrameRender() {
-            canvas.requestRenderAll();
-            fabric.util.requestAnimFrame(requestAnimFrameRender);
+         
+    
+        canvas.on('selection:created', function() {
+            fabric.ActiveSelection.hasControls = false;
         });
-
+        
         canvas.on('mouse:wheel', function(opt) {
-            var delta = opt.e.deltaY;
-            var zoom = canvas.getZoom();
-            zoom *= 0.999 ** delta;
-            if (zoom > 2) zoom = 2;
-            if (zoom < 0.5) zoom = 0.5;
-            canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+            var deltaX = -opt.e.deltaX;
+            var deltaY = -opt.e.deltaY;
+          
+            var currentX = canvas.viewportTransform[4];
+            var currentY = canvas.viewportTransform[5];
+          
+            var newX = currentX + deltaX;
+            var newY = currentY + deltaY;
+          
+            if (newX > 0) newX = 0;
+            if (newY > 0) newY = 0;
+            if (newX < -2000) newX = -2000;
+            if (newY < -2000) newY = -2000;
+          
+            canvas.relativePan(new fabric.Point(newX - currentX, newY - currentY));
+          
             opt.e.preventDefault();
             opt.e.stopPropagation();
-            canvas.requestRenderAll();
-
           });
-    
-          canvas.on('mouse:down', function(opt) {
-            var evt = opt.e;
-            if (evt.altKey === true) {
-              this.isDragging = true;
-              this.selection = false;
-              this.lastPosX = evt.clientX;
-              this.lastPosY = evt.clientY;
+
+          let lastPosX = null;
+          let lastPosY = null;
+          
+        canvas.on('touch:gesture', function(opt) {
+        if (opt.e.touches && opt.e.touches.length === 1) {
+            var e = opt.e.touches[0];
+            if (lastPosX && lastPosY) {
+            var deltaX = e.clientX - lastPosX;
+            var deltaY = e.clientY - lastPosY;
+            canvas.relativePan(new fabric.Point(deltaX, deltaY));
             }
-          });
+            lastPosX = e.clientX;
+            lastPosY = e.clientY;
+        }
+        });
+        
+        canvas.on('touch:dragend', function(opt) {
+        lastPosX = null;
+        lastPosY = null;
+        });
 
-          canvas.on('mouse:move', function(opt) {
-            if (this.isDragging) {
-              var e = opt.e;
-              var vpt = this.viewportTransform;
-              vpt[4] += e.clientX - this.lastPosX;
-              vpt[5] += e.clientY - this.lastPosY;
-              canvas.requestRenderAll();
-              this.lastPosX = e.clientX;
-              this.lastPosY = e.clientY;
-            }
-          });
-
-          canvas.on('mouse:up', function(opt) {
-            this.setViewportTransform(this.viewportTransform);
-            this.isDragging = false;
-            this.selection = true;
-          });
-              
         canvas.on('object:moving', function(e) {
             var obj = e.target;
     
             if (obj.cl ==='n') {
                 updateNoteCounters();
             }
-
         });
 
         canvas.on('object:modified', function(event) {
@@ -151,9 +152,9 @@
         });
 
         
-        $(".new-small").on('mousedown touchstart', onNew);
-        $('.new-normal').on('mousedown touchstart', onNew);
-        $('.new-dot').on('mousedown touchstart', onNewDot);
+        $(".new-small").on('mousedown', onNew);
+        $('.new-normal').on('mousedown', onNew);
+        $('.new-dot').on('mousedown', onNewDot);
     }
 
     function updateNoteCounters() {
@@ -225,9 +226,10 @@
     }
 
     function onNew () {
+        showNotes();
 
         normalizeZIndex ();
-
+        
             const colors = {
                 yellow: {
                     primary: '#fef639',
@@ -375,6 +377,7 @@
     }
 
     function onNewDot () {
+        showNotes();
 
         normalizeZIndex ();
 
@@ -485,94 +488,59 @@
         })
     }
 
-
-    function toggleEraserMode () {
-        isEraserMode = !isEraserMode;
-        if (isEraserMode) {
-            if (hideCursorTimeout) clearTimeout(hideCursorTimeout);
-            isCursorVisible = true;
-            canvas.isDrawingMode = false;
-            canvas.selection = true;
-
-            cursorCircle.style.display = 'block';
-            cursorCircle.style.width = (eraserSize + 20) + 'px';
-            cursorCircle.style.height = eraserSize + 'px';
-            cursorCircle.style.borderRadius = '30px';
-            cursorCircle.style.backgroundColor = 'white';
-            cursorCircle.style.border = '2px solid black';
-            cursorCircle.style.marginLeft = -((eraserSize + 20) / 2) + 'px';
-            cursorCircle.style.marginTop = -(eraserSize / 2) + 'px';
-            lineWidth = eraserSize; 
-
-           // var eraser = new fabric.PencilBrush(canvas);
-           // eraser.color = 'rgba(0,0,0,1)'; // Color semitransparente para el borrador
-           // eraser.globalCompositeOperation = 'destination-out'; // Configura el borrador para eliminar lo que está debajo
-           // canvas.freeDrawingBrush = eraser;
-        } else {
-            resetCursorCircle();
-            lineWidth = defaultLineWidth;
-            //canvas.freeDrawingBrush.color = colors[currentColorIndex];
-            //canvas.freeDrawingBrush.globalCompositeOperation = 'source-over'; 
-        }
-    };
-
-    function hideCursor() {
-        cursorCircle.style.display = 'none';
-        isCursorVisible = false;
+    
+    function setPointerMode() {
+        canvas.isDrawingMode = false;
     }
-
-    function resetCursorCircle() {
-        cursorCircle.style.display = 'block';
-        cursorCircle.style.width = '30px';
-        cursorCircle.style.height = '30px';
-        cursorCircle.style.borderRadius = '15px';
-        cursorCircle.style.backgroundColor = getColorByIndex(currentColorIndex);
-        cursorCircle.style.border = 'none';
-        cursorCircle.style.marginLeft = '-15px';
-        cursorCircle.style.marginTop = '-15px';
-
-        if (hideCursorTimeout) clearTimeout(hideCursorTimeout);
-        hideCursorTimeout = setTimeout(hideCursor, 2000);
-    };
-
-    var createCursorCircle = function () {
-
-        if (cursorCircle !== undefined) return;
-
-        isCursorVisible = false;
-
-        cursorCircle = document.createElement('div');
-        cursorCircle.style.width = '20px';
-        cursorCircle.style.height = '20px';
-        cursorCircle.style.borderRadius = '10px';
-        cursorCircle.style.position = 'absolute';
-        cursorCircle.style.backgroundColor = getColorByIndex(currentColorIndex);
-        cursorCircle.style.marginLeft = '-10px';
-        cursorCircle.style.marginTop = '-10px'; 
-        cursorCircle.style.pointerEvents = 'none'; 
-        cursorCircle.style.top = '-1000px';
+    
+    function setEraserMode() {
         
-        document.body.appendChild(cursorCircle);
-        hideCursorTimeout = setTimeout(hideCursor, 1);
+        // Crear un objeto de círculo en Fabric.js
+        var circle = new fabric.Circle({
+            radius: 10,
+            fill: 'white',
+            stroke: 'black',
+            strokeWidth: 1,
+            left: 100,
+            top: 100,
+            selectable: false,
+            hasBorders: false,
+            hasControls: false
+        });
+        canvas.add(circle);
 
-        document.onmousemove = function (e) {
-            cursorCircle.style.left = e.clientX + 'px';
-            cursorCircle.style.top = e.clientY + 'px';
-        };
-    };
+        // Ocultar el cursor real
+        canvas.getElement().style.cursor = "none";
 
-    function changeColor (color) {
-        if (color==='eraser') {
+
+
+    }
+    
+    function setDrawingMode(colorIndex) {
+        canvas.freeDrawingBrush.color = getColorByIndex(colorIndex);
+        canvas.isDrawingMode = true;
+    
+        if (isEraserMode) {
             toggleEraserMode();
-        } else {
-            currentColorIndex = color;
-            canvas.freeDrawingBrush.color = getColorByIndex(currentColorIndex);
-
-            if (isEraserMode) {
-                toggleEraserMode(); 
-            }
         }
-        resetCursorCircle();
+    }
+    
+    function changeColor(color) {
+        switch (color) {
+            case 'pointer':
+                setPointerMode();
+                break;
+            case 'eraser':
+                setEraserMode();
+                break;
+            default:
+                currentColorIndex = color;
+                setDrawingMode(currentColorIndex);
+                break;
+        }
+
+        
+        canvas.requestRenderAll();
     }
 
     function deleteSelectedObjects() {
@@ -599,17 +567,16 @@
         if (isEditMode) return;
 
         if (e.key === 'c') {
-            currentColorIndex = (currentColorIndex + 1) % 4;
+            if (canvas.isDrawingMode) { currentColorIndex = (currentColorIndex + 1) % 4; }
             changeColor(currentColorIndex);
         } else if (e.key === 'e') {
-            toggleEraserMode();
+            setEraserMode();
         } else if (e.key === 'd') {
-            canvas.isDrawingMode =  !canvas.isDrawingMode;
-            canvas.requestRenderAll();
+            changeColor('pointer');
         } else if (e.key === 'a') {
             clearCanvas(); 
         } else if (e.key === 'h') {
-            Taskboard.toggleNotes(); 
+            toggleNotesVisibility(); 
          } else if (e.key === 'f') {
             Taskboard.toggleFullscreen(); 
         } else if (e.keyCode == 90 && (e.metaKey || e.ctrlKey)) {
@@ -621,15 +588,44 @@
         }
     };
 
-    function clearCanvas() {
+    function clearAllCanvas() {
         canvas.clear();
         initKanbanBoard();
-        lineWidth = defaultLineWidth;
         if (isEraserMode) {
             toggleEraserMode(); 
         }
         saveCanvas();
     };
+
+    function toggleNotesVisibility() {
+        canvas.getObjects().forEach(function(obj) {
+            if (obj.cl === 'n' || obj.cl === 'd') {
+                obj.set('visible', !obj.visible); 
+            }
+        });
+    
+        canvas.requestRenderAll();
+    }
+
+    function showNotes() {
+        canvas.getObjects().forEach(function(obj) {
+            if (obj.cl === 'n' || obj.cl === 'd') {
+                obj.set('visible', true); 
+            }
+        });
+    
+        canvas.requestRenderAll();
+    }
+
+    function clearCanvas() {
+        for (let i = canvas.getObjects().length - 1; i >= 0; i--) {
+            let obj = canvas.item(i);
+            if (obj.type === 'path' || obj.cl === 'd') {
+                canvas.remove(obj);
+            }
+        }
+        saveCanvas();
+    }
       
     function Undo() {
         pathsArray.splice(-1,1);
@@ -707,7 +703,7 @@
 
         let storeCanvas = await Config.getCanvas(currentCanvasId); 
         currentColorIndex = storeCanvas.colorIndex;
-        canvas.freeDrawingBrush.width = lineWidth;
+        canvas.freeDrawingBrush.width = 4;
         canvas.freeDrawingBrush.color = getColorByIndex(currentColorIndex);
 
         if (storeCanvas.content) {
@@ -720,6 +716,7 @@
                             hasControls: false,
                             hasBorders: false,
                             lockRotation: true,
+                            visible: true,
                             cl: 'n'
                         });
 
@@ -730,6 +727,7 @@
                         obj.set({
                             hasControls: false,
                             hasBorders: false,
+                            visible: true,
                         });
 
                         obj.on('mousedblclick', removeDot);
@@ -772,5 +770,5 @@
         return colors[index];
     }
 
-    return { init, loadCanvas, clearCanvas, changeColor };
+    return { init, loadCanvas, clearCanvas, changeColor, clearAllCanvas, toggleNotesVisibility };
 })();

@@ -58,6 +58,7 @@
             <div class="menu-content">
                 
                 <div class="dashboard-grid marker-grid">
+                    <div class="dash" data-action="pointer"><i class="fas fa-arrow-pointer"></i><span></span></div>
                     <div class="dash" data-action="black"><i class="fas fa-circle"></i><span></span></div>
                     <div class="dash" data-action="blue"><i class="fas fa-circle"></i><span></span></div>
                     <div class="dash" data-action="red"><i class="fas fa-circle"></i><span></span></div>
@@ -66,7 +67,7 @@
                 </div>
 
                 <div class="toolbox-grid">
-                    <div class="tool" data-action="toggleNotes" title="Toggle Notes (H)"><i class="fas fa-sticky-note"></i><span></span></div>
+                    <div class="tool" data-action="toggleNotes" title="Toggle Notes (H)"><i class="fas fa-eye"></i><span></span></div>
                     <div class="tool" data-action="eraseDashboard" title="Erase Whiteboard (A)"><i class="fas fa-eraser"></i><span></span></div>
                     <div class="tool" data-action="removeNotes" title="Remove Notes"><i class="fas fa-trash-alt"></i><span></span></div>
                     <div class="tool" data-action="startPomodoro" title="Start Pomodoro"><i class="fas fa-clock"></i><span></span></div>
@@ -134,10 +135,7 @@
         </div>
 
         <div id="wrapper">
-
-
-            <canvas id="canvas"></canvas>
-
+            <canvas id="c"></canvas>
         </div>
         
     </body>
