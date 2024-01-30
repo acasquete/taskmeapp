@@ -446,7 +446,7 @@
             ]
         });
 
-        const content = `\nYou're the best! Thanks for trying TaskMe, The Natural Kanban Board!\n\n 1. Create a note by selecting a color on the left of the screen. \n 2. Edit a note by clicking on it. \n 3. Remove a note by dragging it to the top of the screen. \n\n(c)hange pen color - (e)raser - clear (a)ll \n (h)ide notes - (f)ull screen - (s)election - (p)ointer\n [Ctrl]+1..5 Switch Board \n\n If you have any questions, ideas or suggestions, please feel free \n to contact me at x.com/acasquetenotes \n or open an issue on GitHub at github.com/acasquete/taskmeapp`;
+        const content = `\nYou're the best! Thanks for trying TaskMe, The Natural Kanban Board!\n\n 1. Create a note by selecting a color on the left of the screen. \n 2. Edit a note by clicking on it. \n 3. Remove a note by dragging it to the top of the screen. \n\n(c)hange pen color - (e)raser - (k)lear board \n (h)ide notes - (f)ull screen - (s)election - (p)ointer\n [Ctrl]+1..5 Switch Board \n\n If you have any questions, ideas or suggestions, please feel free \n to contact me at x.com/acasquetenotes \n or open an issue on GitHub at github.com/acasquete/taskmeapp`;
 
         var text = new fabric.Textbox(content, {
             originX: 'center',
@@ -843,7 +843,7 @@
             setEraserMode();
         } else if (e.key === 's') {
             changeColor('selection');
-        } else if (e.key === 'd') {
+        } else if (e.key === 'p') {
             changeColor('pointer');
         } else if (e.key === 'a') {
             clearCanvas(); 
@@ -869,7 +869,7 @@
             width: 400,
             modal: true,
             buttons: {
-              "Delete Board": function() {
+              "Reset Board": function() {
 
                 canvas.clear();
                 initKanbanBoard();
