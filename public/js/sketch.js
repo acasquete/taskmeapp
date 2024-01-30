@@ -73,23 +73,15 @@
             var nextSepLeft = nextSep ? nextSep.left : canvas.width;
     
             if (nextSepLeft - sepLeft < minColumnWidth) {
-                if (nextSep && nextSep.left + minColumnWidth <= canvas.width) {
-                    nextSep.set({ left: sepLeft + minColumnWidth });
-                    nextSepLeft = nextSep.left;
-                } else if (sepLeft - minColumnWidth >= 0) {
-                    sepLeft = nextSepLeft - minColumnWidth;
-                    var prevSep = getObjectById('sep' + index);
-                    if (prevSep) {
-                        prevSep.set({ left: sepLeft });
-                    }
-                }
+                nextSep.set({ left: sepLeft + minColumnWidth });
+                nextSepLeft = nextSep.left;
             }
-    
+                
             col.left = sepLeft;
             col.width = nextSepLeft - sepLeft;
         });
-    
-        canvas.renderAll();
+        updateNoteCounters();
+        canvas.requestRenderAll();
     }
 
     function moveRelatedElements(id, deltaX) {
@@ -131,6 +123,22 @@
             return object.cl === 'k' && object.id.startsWith('sep');
         }
 
+        canvas.on('mouse:over', function(e) {
+            var objeto = e.target;
+            if (objeto && objeto.id && objeto.id.startsWith('sep')) {
+                objeto.set('stroke', 'green');
+                canvas.renderAll();
+            }
+        });
+        
+        canvas.on('mouse:out', function(e) {
+            var objeto = e.target;
+            if (objeto && objeto.id && objeto.id.startsWith('sep')) {
+                objeto.set('stroke', 'gray');
+                canvas.renderAll();
+            }
+        });
+
         canvas.on('mouse:down', function (options) {
             let target = canvas.findTarget(options.e);
             if (target && isSeparatorElement(target)) {
@@ -151,7 +159,7 @@
                 });
                 let deltaX = pointer.x - originalPosition.x;
                 moveRelatedElements (targetElement.id, deltaX);
-                canvas.renderAll();
+                canvas.requestRenderAll();
             }
         });
 
@@ -300,7 +308,6 @@
             normalizeZIndex();
             saveCanvas();
         });
-
         
         $(".new-small").on('mousedown', onNew);
         $('.new-normal').on('mousedown', onNew);
@@ -310,21 +317,20 @@
     function updateNoteCounters() {
         let columnConfigurations = getColumnConfiguration();
 
-        let separators = columnConfigurations.map(col => col.separator).filter(id => id).map(id => canvas.getObjects().find(obj => obj.id === id));
+        let separators =  canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('sep'));
     
-        // canvas.getObjects().forEach(obj => {
-        //     if (obj.cl==='n') {
-        //         let columnIndex = separators.findIndex(sep => sep && obj.left < sep.left);
-        //         if (columnIndex === -1) {
-        //             columnIndex = separators.length;
-        //         }
-        //         columnConfigurations[columnIndex].count++;
-        //     }
-        // });
+        canvas.getObjects().forEach(obj => {
+            if (obj.cl==='n') {
+                let columnIndex = separators.findIndex(sep => sep && obj.left < sep.left);
+                if (columnIndex > -1) {
+                    columnConfigurations[columnIndex].count++;
+                }
+            }
+        });
     
         columnConfigurations.forEach(column => {
             updateColumnTitle(column.id, column.count);
-            if (column.id === 'col2' && column.count > column.colorThreshold) {
+            if (column.colorThreshold && column.count > column.colorThreshold) {
                 setColorForColumn(column.id, '#ef3340');
             } else {
                 setColorForColumn(column.id, 'default'); // Cambiar 'default' por el color original
@@ -343,7 +349,12 @@
     function updateColumnTitle(columnId, counter) {
         let column = canvas.getObjects().find(obj => obj.id === columnId);
         if (column) {
-            column.setText(column.text.split(' - ')[0] + ' - ' + counter);
+            let baseText = column.text.split(' - ')[0];
+            if (counter > 0) {
+                column.setText(baseText + ' - ' + counter);
+            } else {
+                column.setText(baseText);
+            }
             canvas.requestRenderAll();
         }
     }
@@ -375,43 +386,128 @@
         canvas.renderAll();
     }
 
+    function getColors () {
+        return {
+            yellow: {
+                primary: '#fef639',
+                secondary: darkenColor('#fef639', 20),
+                text: '#000000'
+            },
+            blue: {
+                primary: '#34afd8',
+                secondary: darkenColor('#34afd8', 20),
+                text: '#ffffff'
+            },
+            rose: {
+                primary: '#fd4289',
+                secondary: darkenColor('#fd4289', 20),
+                text: '#ffffff'
+            },
+            violet: {
+                primary: '#cf7aef',
+                secondary: darkenColor('#cf7aef', 20),
+                text: '#ffffff'
+            },
+            green: {
+                primary: '#bdda1e',
+                secondary: darkenColor('#bdda1e', 20),
+                text: '#000000'
+            },
+            orange: {
+                primary: '#ffca20',
+                secondary: darkenColor('#ffca20', 20),
+                text: '#000000'
+            },
+            welcome: {
+                primary: '#ffffff',
+                secondary: darkenColor('#ffffff', 20),
+                text: '#000000'
+            }
+        };
+    }
+
+    function Welcome () {
+        let colors = getColors();
+
+        var gradient = new fabric.Gradient({
+            type: 'radial',
+            coords: {
+                x1: 75,
+                y1: 150 / 2,
+                x2: 75,
+                y2: 150 / 2,
+                r1: 60,
+                r2: 300,
+            },
+            colorStops: [
+            { offset: 0, color: colors['yellow'].primary }, 
+            { offset: 1, color:  colors['yellow'].secondary } 
+            ]
+        });
+
+        const content = `\nYou're the best! Thanks for trying TaskMe, The Natural Kanban Board!\n\n 1. Create a note by selecting a color on the left of the screen. \n 2. Edit a note by clicking on it. \n 3. Remove a note by dragging it to the top of the screen. \n\n(c)hange pen color - (e)raser - clear (a)ll \n (h)ide notes - (f)ull screen - (s)election - (p)ointer\n [Ctrl]+1..5 Switch Board \n\n If you have any questions, ideas or suggestions, please feel free \n to contact me at x.com/acasquetenotes \n or open an issue on GitHub at github.com/acasquete/taskmeapp`;
+
+        var text = new fabric.Textbox(content, {
+            originX: 'center',
+            originY: 'top',
+            fontSize: 24,
+            width: 900, 
+            height: 500,
+            fontFamily: 'Kalam',
+            splitByGrapheme: 'split',
+            textAlign: 'center',
+            fill: colors['yellow'].text 
+          });
+
+        var square = new fabric.Rect({
+            originX: 'center',
+            originY: 'top',
+            left: 0, 
+            top: 0,  
+            width: 900,
+            height: 500,
+            fill: gradient,
+            shadow: 'rgba(0,0,0,0.6) 0px 0px 5px'
+        });
+
+        var group = new fabric.Group([square, text], {
+            originX: 'center',
+            originY: 'top',
+            left: 170,
+            top: 170,
+            hasControls: false, 
+            hasBorders: false,
+            opacity: 0,
+            cl: 'n'
+        });
+
+        let randomAngle = 0; // Math.floor((Math.random() * 6) + 1) - 3; 
+
+        group.animate('opacity', 1, {
+            duration: 300, 
+            onChange: canvas.renderAll.bind(canvas),
+            onComplete: function () {  group.set('opacity', 1);  saveCanvas() }
+        });
+
+        group.animate('angle', randomAngle, {
+            duration: 200, 
+            onChange: canvas.renderAll.bind(canvas)
+        });
+
+        group.on('mouseup', editNote);
+        canvas.viewportCenterObject(group);
+        canvas.add(group);
+        
+        updateNoteCounters();
+        saveCanvas();
+    }
+
     function onNew () {
         showNotes();
 
         normalizeZIndex ();
         
-            const colors = {
-                yellow: {
-                    primary: '#fef639',
-                    secondary: darkenColor('#fef639', 20),
-                    text: '#000000'
-                },
-                blue: {
-                    primary: '#34afd8',
-                    secondary: darkenColor('#34afd8', 20),
-                    text: '#ffffff'
-                },
-                rose: {
-                    primary: '#fd4289',
-                    secondary: darkenColor('#fd4289', 20),
-                    text: '#ffffff'
-                },
-                violet: {
-                    primary: '#cf7aef',
-                    secondary: darkenColor('#cf7aef', 20),
-                    text: '#ffffff'
-                },
-                green: {
-                    primary: '#bdda1e',
-                    secondary: darkenColor('#bdda1e', 20),
-                    text: '#000000'
-                },
-                orange: {
-                    primary: '#ffca20',
-                    secondary: darkenColor('#ffca20', 20),
-                    text: '#000000'
-                }
-            };
+            let colors = getColors();
 
             let str = $(this).attr("class");
             let regex = /new-(\w+)\s+(\w+)/;
@@ -581,7 +677,6 @@
             circle.on('mousedblclick', removeDot);
             canvas.add(circle);
             saveCanvas();
-            console.log('newcirlce');
     }
 
     function isOverlapping(note, space, width, height) {
@@ -609,8 +704,8 @@
             textAlign: text.textAlign,
             fontSize: text.fontSize,
             fontFamily: 'Kalam',
-            width: 150,
-            height: 150,
+            width: text.width,
+            height: text.height,
             splitByGrapheme: 'split',
             left: target.left,
             top: target.top,
@@ -832,7 +927,6 @@
         if (kanbanElements.length > 0) {
             return;
         }
-    
         
         let separatorYPosition = 4000;
         let columnConfigurations = getColumnConfiguration();
@@ -857,11 +951,10 @@
     
             canvas.add(text);
     
-            console.log(column.separator);
             let separator = new fabric.Line([currentLeft + columnWidth, 0, currentLeft + columnWidth, separatorYPosition], {
-                stroke: 'black',
+                stroke: 'gray',
                 selectable: false,
-                strokeWidth: 4,
+                strokeWidth: 6,
                 cl: 'k',
                 id: 'sep' + (index+1)
             });
@@ -869,9 +962,9 @@
     
             currentLeft += columnWidth;
         });
-    }
-    
 
+        if (currentCanvasId==1) Welcome();
+    }
    
     function loadCanvas(id) {
         currentCanvasId = id;

@@ -32,15 +32,15 @@ OK Limitar el pan
 OK Pan tactil
 OK Zoom device
 OK Pinch Zoom
+OK Resize de columna
+OK Tamano minimo de columna
+OK Ajustar titulos al cambiar ancho de columna
+OK Guardar canvas al cambiar columnas
+OK Corregir Contador de columnas
+OK No mostrar numero si es cero
+OK Confirmacion al borrar dashboards
 
 MVP
-Resize de columna
-Tamano minimo de columna
-Ajustar titulos al cambiar ancho de columna
-Guardar canvas al cambiar columnas
-Corregir Contador de columnas
-No mostrar numero si es cero
-Al borrar todo el dashboard mantener elementos kanban
 Nota de presentacion centrada 
 Reorganizar menu
 Bug en tactil al pulsar opcion selecciona ocultar
@@ -50,8 +50,6 @@ Anadir angulo al crear nota
 Padding en la nota
 Eraser mode cursor
 Drag and Drop Dots
-Confirmacion al borrar dashboards
-Ajustar notas de columna a la nueva posicion
 Anadir columna
 Compartir taskboard
 Ventana de ayuda
@@ -60,9 +58,9 @@ Ocultar statusbar en mobile
 Link policy funcional
 Guardar en local posicion pan, zoom
 
-
-
 NICE TO HAVE
+Ajustar notas de columna a la nueva posicion
+Al borrar todo el dashboard mantener elementos kanban
 Cargar SVG como linea dibujada
 Evitar rotar, escalado en seleccion
 Limitar longitud
