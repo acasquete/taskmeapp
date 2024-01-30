@@ -30,20 +30,38 @@ OK Eliminar dashboards
 OK Ocultar notas
 OK Limitar el pan
 OK Pan tactil
+OK Zoom device
+OK Pinch Zoom
 
-Hacer zoom
-
+MVP
+Resize de columna
+Ajustar titulos al cambiar ancho de columna
+Guardar canvas al cambiar columnas
+Corregir Contador de columnas
+No mostrar numero si es cero
+Al borrar todo el dashboard mantener elementos kanban
+Nota de presentacion centrada 
+Reorganizar menu
+Bug en tactil al pulsar opcion selecciona ocultar
+Pan en tactil
+Zoom tactil
+Anadir angulo al crear nota
+Padding en la nota
 Eraser mode cursor
 Drag and Drop Dots
-Resize de columna
-Anadir columna
 Confirmacion al borrar dashboards
+Ajustar notas de columna a la nueva posicion
+Anadir columna
 Compartir taskboard
-
-Nota de presentacion
 Ventana de ayuda
-
 Normalizar puntos
+Ocultar statusbar en mobile
+Link policy funcional
+Guardar en local posicion pan, zoom
+
+
+
+NICE TO HAVE
 Cargar SVG como linea dibujada
 Evitar rotar, escalado en seleccion
 Limitar longitud
@@ -51,3 +69,4 @@ Evitar el doble sombreado al editar
 Thumbnail Dashboard
 Dark mode
 Al hacer dobleclic en una nota moverla a la columna de la derecha si hay
+Swimlines

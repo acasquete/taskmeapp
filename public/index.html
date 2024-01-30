@@ -21,6 +21,7 @@
     <link href="/css/taskboard.css" rel="stylesheet" />
     <link href="/css/pomodoro.css" rel="stylesheet" />
     <link href="/css/menu.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/jquery-ui.min.css" integrity="sha512-ELV+xyi8IhEApPS/pSj66+Jiw+sOT1Mqkzlh8ExXihe4zfqbWkxPRi8wptXIO9g73FSlhmquFlUOuMSoXz5IRw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://accounts.google.com/gsi/client" async></script>
     <meta name="google-signin-client_id" content="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com">
     <script src="/scripts/fabric.min.js"></script>
@@ -129,6 +130,10 @@
                 </div> 
             </div>
         </div>
+
+        <div id="dialog-confirm" title="Confirm Board Deletion">
+            <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>The content of this board will be permanently deleted and cannot be recovered. Are you sure?</p>
+          </div>
 
         <div id="statusbar">
             <i id="localmode" class="fas fa-hard-drive"></i>

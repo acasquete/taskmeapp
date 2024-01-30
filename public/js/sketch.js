@@ -4,6 +4,7 @@
     let isEraserMode = false;
     let currentCanvasId;
     let isEditMode = false;
+    const CANVAS_WIDTH = 2000;
 
     async function init() {
         initCanvas();
@@ -45,67 +46,107 @@
     }
     
     function adjustCanvasZoom() {
-        let canvasWidth = 2000; 
         let viewportWidth = window.innerWidth; 
-        let zoomLevel = viewportWidth / canvasWidth;
+        let zoomLevel = viewportWidth / CANVAS_WIDTH;
     
         canvas.setZoom(zoomLevel);
         canvas.requestRenderAll();
     }
 
-    let isDragging = false;
+    let isEditKanbanMode = false;
     let targetElement = null;
     let originalPosition = null;
 
+    let sepInitPositions;
+
+    function getObjectById(id) {
+        return canvas.getObjects().find(obj => obj.id === id) || null;
+    }
+
+    function adjustColumns() {
+        var cols = canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));
     
+        cols.forEach((col, index) => {
+            var sepLeft = index === 0 ? 0 : getObjectById('sep' + index).left;
+            var nextSep = getObjectById('sep' + (index + 1));
+            var nextSepLeft = nextSep ? nextSep.left : canvas.width;
+    
+            col.left = sepLeft;
+            col.width = nextSepLeft - sepLeft;
+        });
+    
+        canvas.renderAll();
+    }
+
     function moveRelatedElements(id, deltaX) {
         let movedIndex =  parseInt(id.replace(/[^\d]/g, ''), 10);
     
         canvas.forEachObject(function(obj) {
-            if (obj.id && (obj.id.startsWith('sep') || obj.id.startsWith('col'))) {
+            if (obj.id && (obj.id.startsWith('sep'))) {
                 let objIndex = parseInt(obj.id.replace(/[^\d]/g, ''));
-                if (objIndex >= movedIndex && obj.id != id) {
+
+                console.log(objIndex + ' ' + sepInitPositions[objIndex-1]);
+
+                if (objIndex > movedIndex && obj.id != id) {
                     obj.set({
-                        left: obj.left + deltaX,
+                        left: sepInitPositions[objIndex-1] + deltaX,
                     });
                 }
             }
-            
+
+            adjustColumns();
+
         });
     
         canvas.renderAll();
+    }
+
+    function getSeparatorsPositionsArray() {
+        var separatorsPositions = [];
+        var objects = canvas.getObjects();
+    
+        for (var i = 0; i < objects.length; i++) {
+            if (objects[i].id && objects[i].id.startsWith('sep')) {
+                separatorsPositions.push(objects[i].left);
+            }
+        }
+        return separatorsPositions;
     }
 
     function assignEventListeners() {
 
         document.addEventListener('keydown', onKeyPress);
 
-        function isDraggableElement(object) {
-            return object.cl === 'k' && object.id.startsWith('col');
+        function isSeparatorElement(object) {
+            return object.cl === 'k' && object.id.startsWith('sep');
         }
 
         canvas.on('mouse:down', function (options) {
             let target = canvas.findTarget(options.e);
-            if (target && isDraggableElement(target)) {
-                isDragging = true;
+            if (target && isSeparatorElement(target)) {
+                isEditKanbanMode = true;
+                canvas.selection = false;
                 targetElement = target;
                 targetElement.selectable = false; 
                 originalPosition = { x: target.left };
+                sepInitPositions = getSeparatorsPositionsArray();
             }
         });
 
         canvas.on('mouse:move', function (options) {
-            if (isDragging && targetElement) {
+            if (isEditKanbanMode && targetElement) {
                 let pointer = canvas.getPointer(options.e);
                 targetElement.set({
                     left: pointer.x
                 });
+                let deltaX = pointer.x - originalPosition.x;
+                moveRelatedElements (targetElement.id, deltaX);
                 canvas.renderAll();
             }
         });
 
         canvas.on('mouse:up', function (options) {
-            isDragging = false;
+            isEditKanbanMode = false;
             if (targetElement) {
                 targetElement.selectable = false;
                 let pointer = canvas.getPointer(options.e);
@@ -115,31 +156,34 @@
             }
         });
 
-    
-        canvas.on('selection:created', function() {
-            fabric.ActiveSelection.hasControls = false;
-        });
-        
         canvas.on('mouse:wheel', function(opt) {
 
-            var deltaX = -opt.e.deltaX;
-            var deltaY = -opt.e.deltaY;
-          
-            var currentX = canvas.viewportTransform[4];
-            var currentY = canvas.viewportTransform[5];
-          
-            var newX = currentX + deltaX;
-            var newY = currentY + deltaY;
-          
-            if (newX > 0) newX = 0;
-            if (newY > 0) newY = 0;
-            if (newX < -2000) newX = -2000;
-            if (newY < -2000) newY = -2000;
-          
-            canvas.relativePan(new fabric.Point(newX - currentX, newY - currentY));
-          
-            opt.e.preventDefault();
-            opt.e.stopPropagation();
+            var zoom = canvas.getZoom();
+
+            if (opt.e.ctrlKey) {
+                var evt = opt.e;
+                var deltaY = evt.deltaY;
+                zoom = zoom - deltaY / 100;
+
+                if (zoom > 3) zoom = 3;
+                if (zoom < 0.4) zoom = 0.4;
+
+                canvas.zoomToPoint(new fabric.Point(evt.offsetX, evt.offsetY), zoom);
+              } else {
+                var deltaX = -opt.e.deltaX;
+                var deltaY = -opt.e.deltaY;
+            
+                var currentX = canvas.viewportTransform[4];
+                var currentY = canvas.viewportTransform[5];
+            
+                var newX = currentX + deltaX;
+                var newY = currentY + deltaY;
+            
+                canvas.relativePan(new fabric.Point(newX - currentX, newY - currentY));
+              }
+                opt.e.preventDefault();
+                opt.e.stopPropagation();
+            
           });
 
           let pausePanning = false;
@@ -171,13 +215,8 @@
             },
             'touch:drag': function(e) {
                 
-                if (!canvas.selection && pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
+                if (!isEditKanbanMode && !canvas.selection && !canvas.isDrawingMode && pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
                     var target = canvas.findTarget(e.e);
-            
-                    if (canvas.isDrawingMode) {
-                        pausePanning = true;
-                        return;
-                    }
             
                     if (target && (target.cl === 'n' || target.cl === 'd' || target.type == 'path')) {
                         pausePanning = true;
@@ -193,11 +232,6 @@
                         var currentViewPort = canvas.viewportTransform;
                         var newX = currentViewPort[4] + xChange;
                         var newY = currentViewPort[5] + yChange;
-            
-                        if (newX > 0) newX = 0;
-                        if (newY > 0) newY = 0;
-                        if (newX < -2000) newX = -2000;
-                        if (newY < -2000) newY = -2000;
             
                         var delta = new fabric.Point(newX - currentViewPort[4], newY - currentViewPort[5]);
                         canvas.relativePan(delta);
@@ -222,11 +256,13 @@
             if (activeObject.type === 'group') {
                 canvas.bringToFront(activeObject);
 
-                let randomAngle = (Math.random() * 6) - 3; 
-                activeObject.animate('angle', randomAngle, {
-                    duration: 300, 
-                    onChange: canvas.renderAll.bind(canvas)
-                });
+                //let intangle = activeObject.getObjects().find(obj => obj.type === 'textbox').angle;
+                //console.log(activeObject.getObjects().find(obj => obj.type === 'textbox').angle);
+
+                // activeObject.animate('angle', randomAngle - intangle, {
+                //       duration: 300, 
+                //       onChange: canvas.renderAll.bind(canvas)
+                // });
 
                 if (activeObject.top < 10) {
                     activeObject.animate({
@@ -265,15 +301,15 @@
 
         let separators = columnConfigurations.map(col => col.separator).filter(id => id).map(id => canvas.getObjects().find(obj => obj.id === id));
     
-        canvas.getObjects().forEach(obj => {
-            if (obj.cl==='n') {
-                let columnIndex = separators.findIndex(sep => sep && obj.left < sep.left);
-                if (columnIndex === -1) {
-                    columnIndex = separators.length;
-                }
-                columnConfigurations[columnIndex].count++;
-            }
-        });
+        // canvas.getObjects().forEach(obj => {
+        //     if (obj.cl==='n') {
+        //         let columnIndex = separators.findIndex(sep => sep && obj.left < sep.left);
+        //         if (columnIndex === -1) {
+        //             columnIndex = separators.length;
+        //         }
+        //         columnConfigurations[columnIndex].count++;
+        //     }
+        // });
     
         columnConfigurations.forEach(column => {
             updateColumnTitle(column.id, column.count);
@@ -303,9 +339,9 @@
 
     function getColumnConfiguration () {
         return [
-            { id: 'col1', title: 'Todo', count: 0, separator: 'sep1', proportion: 0.35 },
-            { id: 'col2', title: 'In Progress', count: 0, separator: 'sep2', colorThreshold: 3, proportion: 0.35 },
-            { id: 'col3', title: 'Done', count: 0, separator: 'sep3', proportion: 0.3 }
+            { id: 'col1', title: 'Todo', count: 0, proportion: 0.35 },
+            { id: 'col2', title: 'In Progress', count: 0, colorThreshold: 3, proportion: 0.35 },
+            { id: 'col3', title: 'Done', count: 0, proportion: 0.3 }
         ];
     }
 
@@ -393,7 +429,9 @@
             var noteHeight = size === 'small' ? 75 : 150; 
 
             var text = new fabric.Textbox('To Do', {
-                fontSize: 20,
+                originX: 'center',
+                originY: 'top',
+                fontSize: 24,
                 width: 150, 
                 height: noteHeight,
                 fontFamily: 'Kalam',
@@ -403,6 +441,8 @@
               });
 
             var square = new fabric.Rect({
+                originX: 'center',
+                originY: 'top',
                 left: 0, 
                 top: 0,  
                 width: 150,
@@ -459,8 +499,7 @@
 
             group.set({ left: newLeft, top: newTop });
 
-            let randomAngle = Math.floor((Math.random() * 6) + 1) - 3; 
-            group.set('angle', 0);
+            let randomAngle = 0; // Math.floor((Math.random() * 6) + 1) - 3; 
 
             group.animate('opacity', 1, {
                 duration: 300, 
@@ -473,7 +512,8 @@
                 onChange: canvas.renderAll.bind(canvas)
             });
 
-            group.on('mousedblclick', editNote);
+            group.on('mouseup', editNote);
+
             canvas.add(group);
             updateNoteCounters();
             saveCanvas();
@@ -544,6 +584,13 @@
 
         let target = opt.target;
         var text = target.getObjects().find(obj => obj.type === 'textbox');
+        var rect = target.getObjects().find(obj => obj.type === 'rect');
+        
+        rect.angle = 0;
+        target.angle = 0;
+        text.angle = 0;
+
+        canvas.renderAll();
 
         let textForEditing = new fabric.Textbox(text.text, {
             originX: 'center',
@@ -556,7 +603,6 @@
             splitByGrapheme: 'split',
             left: target.left,
             top: target.top,
-            angle: target.angle,
             editingBorderColor: 'rgba(255,255,255,0)',
             fill: text.fill
         })
@@ -567,6 +613,8 @@
         textForEditing.visible = true;
         textForEditing.hasConstrols = false;
         
+        textForEditing.angle = 0;
+
         canvas.add(textForEditing);
         canvas.setActiveObject(textForEditing);
         isEditMode = true;
@@ -579,13 +627,13 @@
             
             text.set({
                 text: newVal,
-                visible: true,
+                visible: true
             });
             target.addWithUpdate();
             
             textForEditing.visible = false;
             canvas.remove(textForEditing);
-            
+            canvas.requestRenderAll();
             canvas.setActiveObject(target);
             saveCanvas();
         })
@@ -704,12 +752,31 @@
     };
 
     function clearAllCanvas() {
-        canvas.clear();
-        initKanbanBoard();
-        if (isEraserMode) {
-            toggleEraserMode(); 
-        }
-        saveCanvas();
+
+
+        $( "#dialog-confirm" ).dialog({
+            resizable: false,
+            height: "auto",
+            width: 400,
+            modal: true,
+            buttons: {
+              "Delete Board": function() {
+
+                canvas.clear();
+                initKanbanBoard();
+                if (isEraserMode) {
+                    toggleEraserMode(); 
+                }
+                saveCanvas();
+                $( this ).dialog( "close" );
+              },
+              Cancel: function() {
+                $( this ).dialog( "close" );
+              }
+            }
+          });
+
+       
     };
 
     function toggleNotesVisibility() {
@@ -755,24 +822,24 @@
             return;
         }
     
-        let canvasWidth = 2000;
+        
         let separatorYPosition = 4000;
         let columnConfigurations = getColumnConfiguration();
     
         let currentLeft = 0;
     
         columnConfigurations.forEach((column, index) => {
-            let columnWidth = canvasWidth * column.proportion;
+            let columnWidth = CANVAS_WIDTH * column.proportion;
             let text = new fabric.Textbox(column.title, {
                 originX: 'left',
-                left: currentLeft + (columnWidth / 2) - 150,
+                left: currentLeft,
                 top: 10,
                 fontSize: 30,
                 fontWeight: 'bold',
                 fontFamily: 'PermanentMarker',
                 selectable: false,
-                width: 300,
-                textAlign: 'left',
+                width: columnWidth,
+                textAlign: 'center',
                 id: column.id,
                 cl: 'k'
             });
@@ -785,7 +852,7 @@
                 selectable: false,
                 strokeWidth: 4,
                 cl: 'k',
-                id: column.separator
+                id: 'sep' + (index+1)
             });
             canvas.add(separator);
     
@@ -836,7 +903,7 @@
                             cl: 'n'
                         });
 
-                        obj.on('mousedblclick', editNote);
+                        obj.on('mouseup', editNote);
                     }
 
                     if (obj.cl === 'd') {
@@ -856,8 +923,6 @@
                             lockRotation: true,
                             selectable: false
                         });
-
-                        obj.on('mousedblclick', editNote);
                     }
                 });
                 canvas.requestRenderAll();
