@@ -15,27 +15,6 @@ $(document).ready(function() {
         event.stopPropagation();
     });
 
-    $('.marker-grid .dash').on('touchend click', function() {
-        var action = $(this).data('action');
-        
-        var colorMap = {
-            'black': 0,
-            'blue': 1,
-            'red': 2,
-            'green': 3,
-            'eraser': 'eraser',
-            'pointer': 'pointer',
-            'selection': 'selection'
-        };
-        var colorValue = colorMap[action];
-        Sketch.changeColor(colorValue);
-    });
-
-    $('.marker-grid .dash').each(function () {
-        var gridItem = new GridItem($(this)); 
-        Taskboard.addObserver(gridItem);
-    });
-
     var toolboxGrid = $('.switch-dashboard');
 
     for (var i = 1; i <= 5; i++) {
@@ -56,11 +35,34 @@ $(document).ready(function() {
         toolboxGrid.append(toolDiv);
     }
 
-    $('.tool').on('click touchend', function() {
-        $('#hamburgerMenu').toggleClass('active');
+    $('.tool').on('click touchend', function(e) {
+        e.stopPropagation();
+        
         var toolFunction = $(this).data('action');
 
         switch (toolFunction) {
+            case 'black':
+            case 'blue':
+            case 'red': 
+            case 'green':
+            case 'eraser': 
+            case 'pointer':
+            case 'selection':
+
+            var selectionMap = {
+                'black': 0,
+                'blue': 1,
+                'red': 2,
+                'green': 3,
+                'eraser': 'eraser',
+                'pointer': 'pointer',
+                'selection': 'selection'
+            };
+
+            var selection = selectionMap[toolFunction];
+            Sketch.changeColor(selection);
+            break;
+
             case 'toggleFullScreen':
                 Taskboard.toggleFullscreen();
                 break;
@@ -70,8 +72,8 @@ $(document).ready(function() {
             case 'toggleNotes':
                 Sketch.toggleNotesVisibility();
                 break;
-            case 'openHelp':
-                Taskboard.showHelpNote();
+            case 'welcome':
+                Sketch.showWelcome();
                 break;
             case 'removeNotes':
                 Sketch.clearAllCanvas();
@@ -86,6 +88,8 @@ $(document).ready(function() {
                 Pomodoro.startLong();
                 break;
         }
+        $('#hamburgerMenu').toggleClass('active');
+
     });
 
     function GridItem(element) {

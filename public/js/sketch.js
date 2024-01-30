@@ -284,9 +284,10 @@
                 // });
 
                 if (activeObject.top < 10) {
+                    activeObject.evented = false;
                     activeObject.animate({
                         'top': activeObject.top - 250, 
-                        'opacity': 0 // Desvanecer
+                        'opacity': 0 
                     }, {
                         duration: 500,
                         easing: fabric.util.ease['easeOutExpo'],
@@ -426,7 +427,7 @@
         };
     }
 
-    function Welcome () {
+    function showWelcome () {
         let colors = getColors();
 
         var gradient = new fabric.Gradient({
@@ -689,6 +690,8 @@
     function editNote (opt) {
 
         let target = opt.target;
+        if (!target.evented) return;
+
         var text = target.getObjects().find(obj => obj.type === 'textbox');
         var rect = target.getObjects().find(obj => obj.type === 'rect');
         
@@ -963,7 +966,7 @@
             currentLeft += columnWidth;
         });
 
-        if (currentCanvasId==1) Welcome();
+        if (currentCanvasId==1) showWelcome();
     }
    
     function loadCanvas(id) {
@@ -1055,5 +1058,5 @@
         return colors[index];
     }
 
-    return { init, loadCanvas, clearCanvas, changeColor, clearAllCanvas, toggleNotesVisibility };
+    return { init, loadCanvas, clearCanvas, changeColor, clearAllCanvas, toggleNotesVisibility, showWelcome };
 })();
