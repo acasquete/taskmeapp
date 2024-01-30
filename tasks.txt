@@ -39,9 +39,9 @@ OK Guardar canvas al cambiar columnas
 OK Corregir Contador de columnas
 OK No mostrar numero si es cero
 OK Confirmacion al borrar dashboards
+OK Nota de presentacion centrada 
 
 MVP
-Nota de presentacion centrada 
 Reorganizar menu
 Bug en tactil al pulsar opcion selecciona ocultar
 Pan en tactil
@@ -56,7 +56,7 @@ Ventana de ayuda
 Normalizar puntos
 Ocultar statusbar en mobile
 Link policy funcional
-Guardar en local posicion pan, zoom
+Guardar en local posicion pan, zoom segun orientacion
 
 NICE TO HAVE
 Ajustar notas de columna a la nueva posicion
