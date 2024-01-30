@@ -35,6 +35,7 @@ OK Pinch Zoom
 
 MVP
 Resize de columna
+Tamano minimo de columna
 Ajustar titulos al cambiar ancho de columna
 Guardar canvas al cambiar columnas
 Corregir Contador de columnas

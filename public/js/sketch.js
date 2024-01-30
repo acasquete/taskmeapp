@@ -67,9 +67,23 @@
         var cols = canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));
     
         cols.forEach((col, index) => {
+            var minColumnWidth = 400;
             var sepLeft = index === 0 ? 0 : getObjectById('sep' + index).left;
             var nextSep = getObjectById('sep' + (index + 1));
             var nextSepLeft = nextSep ? nextSep.left : canvas.width;
+    
+            if (nextSepLeft - sepLeft < minColumnWidth) {
+                if (nextSep && nextSep.left + minColumnWidth <= canvas.width) {
+                    nextSep.set({ left: sepLeft + minColumnWidth });
+                    nextSepLeft = nextSep.left;
+                } else if (sepLeft - minColumnWidth >= 0) {
+                    sepLeft = nextSepLeft - minColumnWidth;
+                    var prevSep = getObjectById('sep' + index);
+                    if (prevSep) {
+                        prevSep.set({ left: sepLeft });
+                    }
+                }
+            }
     
             col.left = sepLeft;
             col.width = nextSepLeft - sepLeft;
@@ -85,17 +99,13 @@
             if (obj.id && (obj.id.startsWith('sep'))) {
                 let objIndex = parseInt(obj.id.replace(/[^\d]/g, ''));
 
-                console.log(objIndex + ' ' + sepInitPositions[objIndex-1]);
-
                 if (objIndex > movedIndex && obj.id != id) {
                     obj.set({
                         left: sepInitPositions[objIndex-1] + deltaX,
                     });
                 }
             }
-
             adjustColumns();
-
         });
     
         canvas.renderAll();
@@ -153,6 +163,7 @@
                 let deltaX = pointer.x - originalPosition.x;
                 moveRelatedElements (targetElement.id, deltaX);
                 targetElement = null;
+                saveCanvas();
             }
         });
 
