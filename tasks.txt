@@ -44,17 +44,14 @@ OK Reorganizar menu
 OK Ocultar statusbar en mobile
 OK Link policy funcional
 OK Bug en tactil al pulsar opcion selecciona ocultar
+OK Pan en tactil
 
 MVP
-Pan en tactil
 Zoom tactil
 Anadir angulo al crear nota
-Eraser mode cursor
-Drag and Drop Dots
-Anadir columna
+Eraser mode con cursor
+Drag and Drop Dots / Normalizar puntos
 Compartir taskboard
-Ventana de ayuda
-Normalizar puntos
 Guardar en local posicion pan, zoom segun orientacion
 
 NICE TO HAVE
@@ -70,4 +67,5 @@ Al hacer dobleclic en una nota moverla a la columna de la derecha si hay
 Swimlines
 Padding en la nota
 Menu responsive
-
+Anadir columna
+Ventana de ayuda
