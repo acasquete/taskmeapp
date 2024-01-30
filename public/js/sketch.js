@@ -171,6 +171,11 @@
                 let deltaX = pointer.x - originalPosition.x;
                 moveRelatedElements (targetElement.id, deltaX);
                 targetElement = null;
+
+                // Kludge to force refresh
+                canvas.relativePan(new fabric.Point(1, 0));
+                canvas.relativePan(new fabric.Point(-1, 0));
+
                 saveCanvas();
             }
         });
