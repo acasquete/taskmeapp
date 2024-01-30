@@ -187,8 +187,9 @@ body {
 #statusbar {
     font-size: 1.125rem;
     bottom: 0.5rem;
-    right: 2rem;
-    position: fixed;
+    right: 1rem;
+    position: absolute;
+    z-index: 1000;
     -webkit-user-select: none; 
     -moz-user-select: none;   
     user-select: none;
@@ -204,4 +205,10 @@ body {
 
 #dialog-confirm {
     display: none;
+}
+
+@media screen and (max-width: 600px) {
+    #statusbar {
+        display: none;
+    }
 }
