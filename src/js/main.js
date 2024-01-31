@@ -1,6 +1,4 @@
 ﻿
-import './jquery-1.8.3.js';
-import './fabric.min.js';
 import '../css/taskboard.css';
 import '../css/menu.css';
 import '../css/pomodoro.css';

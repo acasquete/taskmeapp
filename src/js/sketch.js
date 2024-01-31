@@ -360,9 +360,9 @@ const Sketch = (function () {
         if (column) {
             let baseText = column.text.split(' - ')[0];
             if (counter > 0) {
-                column.setText(baseText + ' - ' + counter);
+                column.text = baseText + ' - ' + counter;
             } else {
-                column.setText(baseText);
+                column.text = baseText;
             }
             canvas.requestRenderAll();
         }
