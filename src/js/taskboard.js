@@ -109,3 +109,4 @@
 })();
 
 
+window.Taskboard = Taskboard; 

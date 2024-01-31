@@ -1,4 +1,7 @@
-﻿const Sketch = (function () {
+﻿import kalamFontURL from '../assets/fonts/Kalam-Regular.ttf';
+import permanentMarkerFontURL from '../assets/fonts/PermanentMarker-Regular.ttf';
+
+const Sketch = (function () {
     "use strict";
     let canvas, currentColorIndex;
     let isEraserMode = false;
@@ -357,9 +360,9 @@
         if (column) {
             let baseText = column.text.split(' - ')[0];
             if (counter > 0) {
-                column.setText(baseText + ' - ' + counter);
+                column.text = baseText + ' - ' + counter;
             } else {
-                column.setText(baseText);
+                column.text = baseText;
             }
             canvas.requestRenderAll();
         }
@@ -974,12 +977,12 @@
         if (currentCanvasId==1) showWelcome();
     }
    
-    function loadCanvas(id) {
+    async function loadCanvas(id) {
         currentCanvasId = id;
 
-        const font1 = new FontFace('Kalam', 'url(/fonts/Kalam-Regular.ttf)');
-        const font2 = new FontFace('PermanentMarker', 'url(/fonts/PermanentMarker-Regular.ttf)');
-    
+        const font1 = new FontFace('Kalam', `url(${kalamFontURL})`);
+        const font2 = new FontFace('PermanentMarker', `url(${permanentMarkerFontURL})`);
+
         const promesasDeCarga = [
             font1.load(),
             font2.load(),
@@ -1065,3 +1068,5 @@
 
     return { init, loadCanvas, clearCanvas, changeColor, clearAllCanvas, toggleNotesVisibility, showWelcome };
 })();
+
+window.Sketch = Sketch;

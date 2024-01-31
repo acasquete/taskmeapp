@@ -191,3 +191,5 @@
     };
 
 })();
+
+window.Pomodoro = Pomodoro;

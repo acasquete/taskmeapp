@@ -1,0 +1,14 @@
+{
+  "name": "taskmeapp",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite serve ./src",
+    "build": "vite build ./src",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8"
+  }
+}

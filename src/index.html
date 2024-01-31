@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>TaskMe: The Natural Kanban Way</title>
+    <meta name="description" content="TaskMe: The Natural Kanban Way for task and project management. Discover the ease of organizing and boosting productivity with our intuitive Kanban board.">
+    <meta name="keywords" content="TaskMe, Natural Kanban Way, Easy Task Management, Efficient Project Management, Kanban Board, Productivity, User-Friendly, Task Organizer, Pomodoro Technique">
+    <meta name="author" content="TaskMe">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+    <meta property="og:title" content="TaskMe - The Natural Kanban Way">
+    <meta property="og:description" content="Embrace The Natural Kanban Way with TaskMe for seamless task and project management. Experience the ultimate simplicity and productivity in one intuitive app.">
+    <meta property="og:image" content="https://taskmeapp.com/images/apple-touch-icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.taskmeapp.com">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="TaskMe – Embrace The Natural Kanban Way">
+    <meta name="twitter:description" content="TaskMe redefines task management with The Natural Kanban Way. Streamline your projects with our easy-to-use, productivity-enhancing Kanban board.">
+    <meta name="twitter:image" content="https://taskmeapp.com/images/apple-touch-icon.png">
+    <meta name="twitter:site" content="@TaskMeApp">
+    <meta name="robots" content="index, follow">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js" integrity="sha512-CeIsOAsgJnmevfCi2C7Zsyy6bQKi43utIjdA87Q0ZY84oDqnI0uwfM9+bKiIkI75lUeI00WG/+uJzOmuHlesMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <script type="module" src="js/main.js"></script>
+    <meta name="google-signin-client_id" content="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com">
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="shortcut icon" href="https://taskmeapp.com/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="https://taskmeapp.com/images/apple-touch-icon.png">
+  </head>
+</head>
+    <body>
+        <div class="hamburger-icon">
+            <button class="hamburger-button"><i class="fas fa-bars"></i></button>
+        </div>
+        <div id="hamburgerMenu" class="hamburger-menu">
+            <h1>Task<span class="accent1">Me</span></h1>
+            <h2>The Natural Kanban Way</h2>
+            <div class="menu-content">
+                
+                <div class="toolbox-grid">
+                    <div class="tool" data-action="black" title="Color Black (C)"><i class="fas fa-circle"></i><span></span></div>
+                    <div class="tool" data-action="blue" title="Color Blue (C)"><i class="fas fa-circle"></i><span></span></div>
+                    <div class="tool" data-action="red" title="Color Red (C)"><i class="fas fa-circle"></i><span></span></div>
+                    <div class="tool" data-action="green" title="Color Green (C)"><i class="fas fa-circle"></i><span></span></div>
+                    <div class="tool" data-action="eraser" title="Eraser (C)"><i class="fa-regular fa-eraser"></i><span></span></div>
+                    <div class="tool" data-action="pointer" title="Pointer (P)"><i class="fas fa-arrow-pointer"></i><span></span></div>
+                    <div class="tool" data-action="selection" title="Selection (S)"><i class="fas fa-hand-pointer"></i><span></span></div>
+                    <div class="tool" data-action="toggleNotes" title="Toggle Notes (H)"><i class="fas fa-eye"></i><span></span></div>
+                    <div class="tool" data-action="toggleFullScreen" title="Fullscreen (F)"><i class="fas fa-expand"></i><span></span></div>
+                    <div class="tool" data-action="eraseDashboard" title="Clear Board (K)"><i class="far fa-broom"></i><span></span></div>
+                    <div class="tool" data-action="removeNotes" title="Reset Board"><i class="fas fa-trash-alt"></i><span></span></div>
+                    <div class="tool" data-action="startPomodoro" title="Start Pomodoro"><i class="fas fa-clock"></i><span></span></div>
+                    <div class="tool" data-action="startBreakShort" title="Short Break"><i class="fas fa-coffee"></i><span></span></div>
+                    <div class="tool" data-action="startBreakLong" title="Long Break"><i class="fas fa-utensils"></i><span></span></div>
+                    <div class="tool" data-action="welcome" title="Help Note"><i class="fa-solid fa-question"></i></i><span></span></div>
+                </div>
+
+                <div class="dashboard-grid switch-dashboard"></div>
+                
+                <div class="g_id_signin"
+                        data-type="standard"
+                        data-shape="pill"
+                        data-theme="outline"
+                        data-text="signin_with"
+                        data-size="large"
+                        data-logo_alignment="center" style="padding-bottom: 1em; ">
+                </div>
+            
+                <div id="g_id_onload"
+                    data-client_id="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-ux_mode="popup"
+                    data-callback="onSignIn"
+                    data-auto_select="true"
+                    data-itp_support="true" style="position: absolute; bottom: 100px; height: 0; width: 0; ">
+                </div>
+            </div>
+            
+        </div>
+    
+        <div id="dashboard-number"></div>
+
+        <div id="statusbar">
+            <i id="localmode" class="fas fa-hard-drive"></i>
+            <a href="/privacy.html" target="_blank"><i class="fa-regular fa-circle-question"></i></a>
+        </div>
+
+        <div id="newbuttons">
+            <div class="new-normal yellow"></div>
+            <div class="new-small yellow"></div>
+            <div class="new-normal blue"></div>
+            <div class="new-small blue"></div>
+            <div class="new-normal rose"></div>
+            <div class="new-small rose"></div>
+            <div class="new-normal violet"></div>
+            <div class="new-small violet"></div>
+            <div class="new-normal green"></div>
+            <div class="new-small green"></div>
+            <div class="new-normal orange"></div>
+            <div class="new-small orange"></div>
+            <div class="new-dot red"></div>
+        </div>
+    
+        <div id="pomodoro">
+            <div id="overlay"></div>
+            <div class="layer">
+                <div class="content">
+                    <h2 id="status"></h2> 
+                    <div id="time">25:00</div> 
+                    <div class="buttons">
+                        <button id="butCancel">Stop</button>
+                        <button id="butHide">Hide</button>
+                    </div>
+                </div> 
+            </div>
+        </div>
+        
+        <div id="dialog-confirm" title="Just Checking!">
+            <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Heads up! Everything on this board will be gone for good. You sure you want to do this?</p>
+        </div>
+       
+
+        <div id="wrapper">
+            <canvas id="c"></canvas>
+        </div>
+        
+    </body>
+</html>
