@@ -56,3 +56,5 @@ var Notifications = (function() {
         cancelNotification: cancelNotification
     };
 })();
+
+window.Notifications = Notifications;

@@ -126,6 +126,7 @@ const Data = (function () {
         saveDashboard: saveDashboard,
         saveCanvas: saveCanvas,
         setUserId: setUserId,
-        onSignIn: onSignIn
     };
 })();
+
+window.Data = Data;

@@ -5,12 +5,12 @@
 
 @font-face {
     font-family: 'Kalam'; 
-    src: url('/fonts/Kalam-Regular.ttf') format('truetype');
+    src: url('../assets/fonts/Kalam-Regular.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'PermanentMarker'; 
-    src: url('/fonts/PermanentMarker-Regular.ttf') format('truetype');
+    src: url('../assets/fonts/PermanentMarker-Regular.ttf') format('truetype');
 }
 
 body {

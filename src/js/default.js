@@ -1,4 +1,22 @@
-﻿document.addEventListener('DOMContentLoaded', function() {
+﻿
+import './jquery-1.8.3.js';
+import './fabric.min.js';
+import '../css/taskboard.css';
+import '../css/menu.css';
+import '../css/pomodoro.css';
+import '../css/fa/css/fontawesome.min.css';
+import '../css/fa/css/brands.min.css';
+import '../css/fa/css/solid.min.css';
+import './taskboard.js';
+import './config.js';
+import './utils.js';
+import './pomodoro.js';
+import './menu.js';
+import './notificationsweb.js';
+import './sketch.js';
+import './data.js';
+
+document.addEventListener('DOMContentLoaded', function() {
 
     var params = new URLSearchParams(window.location.search);
 
@@ -48,8 +66,6 @@ firebase.auth().signInWithCredential(credential)
         showStatusBarIcon();
     });
 }
-
-
 
 function showStatusBarIcon() {
     $("#localmode").show();
