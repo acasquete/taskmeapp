@@ -1,8 +1,10 @@
 import path from 'path';
 
 export default {
+  root: "src",
   build: {
-    outDir: 'public',
+    outDir: '../public',
+    emptyOutDir: true,
     sourcemap: true,
     minify: true,
     rollupOptions: {
