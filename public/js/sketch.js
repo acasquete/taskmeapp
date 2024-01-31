@@ -11,7 +11,7 @@
         assignEventListeners();
     }
 
-    function initCanvas() {
+    function initCanvas() { 
         if (canvas) canvas.dispose();
     
         canvas = new fabric.Canvas('c', { allowTouchScrolling: true, selection: false });
@@ -187,10 +187,10 @@
             if (opt.e.ctrlKey) {
                 var evt = opt.e;
                 var deltaY = evt.deltaY;
-                zoom = zoom - deltaY / 100;
+                zoom = zoom - deltaY / 400;
 
                 if (zoom > 3) zoom = 3;
-                if (zoom < 0.4) zoom = 0.4;
+                if (zoom < 0.2) zoom = 0.2;
 
                 canvas.zoomToPoint(new fabric.Point(evt.offsetX, evt.offsetY), zoom);
               } else {
@@ -850,7 +850,7 @@
             changeColor('selection');
         } else if (e.key === 'p') {
             changeColor('pointer');
-        } else if (e.key === 'a') {
+        } else if (e.key === 'k') {
             clearCanvas(); 
         } else if (e.key === 'h') {
             toggleNotesVisibility(); 

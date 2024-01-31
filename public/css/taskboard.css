@@ -193,10 +193,11 @@ body {
     -webkit-user-select: none; 
     -moz-user-select: none;   
     user-select: none;
+    color: gray;
 }
 
 #statusbar a {
-    color: black;
+    color: gray;
 }
 
 #statusbar a:hover {
