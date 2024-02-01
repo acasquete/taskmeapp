@@ -1,5 +1,4 @@
 MVP
-Touch Zoom
 Save in local pan position, zoom according to orientation
 Undo
 Eraser mode with cursor
