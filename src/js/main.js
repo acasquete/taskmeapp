@@ -1,5 +1,4 @@
-﻿
-import '../css/taskboard.css';
+﻿import '../css/taskboard.css';
 import '../css/menu.css';
 import '../css/pomodoro.css';
 import '../css/fa/css/fontawesome.min.css';
