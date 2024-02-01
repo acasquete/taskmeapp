@@ -21,12 +21,13 @@ const Sketch = (function () {
 
         resizeCanvas();
 
-        $(window).resize(resizeCanvas);
+        $(window).on('resize orientationchange', resizeCanvas);
 
         adjustCanvasZoom();
     }
     
     function resizeCanvas() {
+        console.log('cambio');
         canvas.setWidth($(window).width());
         canvas.setHeight($(window).height());
         canvas.requestRenderAll();
@@ -54,6 +55,7 @@ const Sketch = (function () {
     
         canvas.setZoom(zoomLevel);
         canvas.requestRenderAll();
+        //alert(zoomLevel);
     }
 
     let isEditKanbanMode = false;
@@ -220,17 +222,20 @@ const Sketch = (function () {
           let lastY;
           let xChange;
           let yChange;
+          let zoomStartScale;
 
           canvas.on({
             'touch:gesture': function(e) {
                 if (e.e.touches && e.e.touches.length == 2) {
+                    console.log('touch');
                     pausePanning = true;
                     var point = new fabric.Point(e.self.x, e.self.y);
                     if (e.self.state == "start") {
-                       // zoomStartScale = self.canvas.getZoom();
+                        zoomStartScale = canvas.getZoom();
+                       
                     }
-                    var delta = canvas.getZoom() * e.self.scale;
-                    canvas.zoomToPoint(point, e.self.scale);
+                    var delta = zoomStartScale * e.self.scale;
+                    canvas.zoomToPoint(point, delta);
                     pausePanning = false;
                 }
             },
@@ -342,7 +347,7 @@ const Sketch = (function () {
             if (column.colorThreshold && column.count > column.colorThreshold) {
                 setColorForColumn(column.id, '#ef3340');
             } else {
-                setColorForColumn(column.id, 'default'); // Cambiar 'default' por el color original
+                setColorForColumn(column.id, 'default');
             }
         });
     }
