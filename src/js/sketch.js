@@ -244,6 +244,7 @@ const Sketch = (function () {
             },
             'selection:cleared': function() {
                 pausePanning = false;
+                updateNoteCounters();
             },
             'touch:drag': function(e) {
                 
@@ -277,7 +278,8 @@ const Sketch = (function () {
 
         canvas.on('object:moving', function(e) {
             var obj = e.target;
-    
+            console.log(obj.type);
+
             if (obj.cl ==='n') {
                 updateNoteCounters();
             }
