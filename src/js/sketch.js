@@ -22,12 +22,9 @@ const Sketch = (function () {
         resizeCanvas();
 
         $(window).on('resize orientationchange', resizeCanvas);
-
-        adjustCanvasZoom();
     }
     
     function resizeCanvas() {
-        console.log('cambio');
         canvas.setWidth($(window).width());
         canvas.setHeight($(window).height());
         canvas.requestRenderAll();
@@ -49,13 +46,45 @@ const Sketch = (function () {
         return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
     }
     
-    function adjustCanvasZoom() {
-        let viewportWidth = window.innerWidth; 
-        let zoomLevel = viewportWidth / CANVAS_WIDTH;
+    function getUserOrientation() {
+        if ('orientation' in window) {
+            // Check for the `window.orientation` property
+            if (window.orientation === 0 || window.orientation === 180) {
+                // Portrait orientation (vertical)
+                return 'portrait';
+            } else if (window.orientation === 90 || window.orientation === -90) {
+                // Landscape orientation (horizontal)
+                return 'landscape';
+            }
+        }
     
-        canvas.setZoom(zoomLevel);
-        canvas.requestRenderAll();
-        //alert(zoomLevel);
+        // If `window.orientation` is not available or inconclusive, use media queries
+        if (window.matchMedia("(orientation: portrait)").matches) {
+            return 'portrait';
+        } else if (window.matchMedia("(orientation: landscape)").matches) {
+            return 'landscape';
+        }
+    
+        // Default to portrait if neither method provides a clear result
+        return 'portrait';
+    }
+
+    
+    function adjustCanvasZoom() {
+        var currentOrientation = getUserOrientation(); 
+        var savedConfiguration = retrieveConfiguration(currentOrientation);
+
+        if (savedConfiguration) {
+            // If there's a saved configuration for the current orientation, apply it
+            canvas.setViewportTransform(savedConfiguration.vpt);
+            canvas.setZoom(savedConfiguration.zoom);
+
+        } else {
+            let viewportWidth = window.innerWidth; 
+            let zoomLevel = viewportWidth / CANVAS_WIDTH;
+            canvas.setZoom(zoomLevel);
+        }
+        //canvas.requestRenderAll();
     }
 
     let isEditKanbanMode = false;
@@ -198,6 +227,7 @@ const Sketch = (function () {
                 if (zoom < 0.2) zoom = 0.2;
 
                 canvas.zoomToPoint(new fabric.Point(evt.offsetX, evt.offsetY), zoom);
+                saveViewPortConfiguration();
               } else {
                 var deltaX = -opt.e.deltaX;
                 var deltaY = -opt.e.deltaY;
@@ -209,6 +239,7 @@ const Sketch = (function () {
                 var newY = currentY + deltaY;
             
                 canvas.relativePan(new fabric.Point(newX - currentX, newY - currentY));
+                saveViewPortConfiguration();
               }
                 opt.e.preventDefault();
                 opt.e.stopPropagation();
@@ -227,7 +258,6 @@ const Sketch = (function () {
           canvas.on({
             'touch:gesture': function(e) {
                 if (e.e.touches && e.e.touches.length == 2) {
-                    console.log('touch');
                     pausePanning = true;
                     var point = new fabric.Point(e.self.x, e.self.y);
                     if (e.self.state == "start") {
@@ -237,6 +267,7 @@ const Sketch = (function () {
                     var delta = zoomStartScale * e.self.scale;
                     canvas.zoomToPoint(point, delta);
                     pausePanning = false;
+                    saveViewPortConfiguration();
                 }
             },
             'object:selected': function() {
@@ -268,6 +299,7 @@ const Sketch = (function () {
             
                         var delta = new fabric.Point(newX - currentViewPort[4], newY - currentViewPort[5]);
                         canvas.relativePan(delta);
+                        saveViewPortConfiguration();
                     }
             
                     lastX = e.e.layerX;
@@ -278,7 +310,6 @@ const Sketch = (function () {
 
         canvas.on('object:moving', function(e) {
             var obj = e.target;
-            console.log(obj.type);
 
             if (obj.cl ==='n') {
                 updateNoteCounters();
@@ -1011,6 +1042,8 @@ const Sketch = (function () {
         canvas.freeDrawingBrush.width = 4;
         canvas.freeDrawingBrush.color = getColorByIndex(currentColorIndex);
 
+        adjustCanvasZoom();
+
         if (storeCanvas.content) {
             var jsonString = storeCanvas.content;
             canvas.loadFromJSON(JSON.parse(jsonString), function() {
@@ -1062,12 +1095,39 @@ const Sketch = (function () {
     function saveCanvas() {
         const currentMode = canvas.isDrawingMode;
         canvas.isDrawingMode = false;
+        
+        saveViewPortConfiguration();
+
         let jsonCanvas = canvas.toJSON(['cl', 'id']);
-        let storeCanvas = { colorIndex: currentColorIndex, content:  JSON.stringify(jsonCanvas) };
+        let storeCanvas = { colorIndex: currentColorIndex, content:  JSON.stringify(jsonCanvas) };     
+        
         Config.saveCanvas(currentCanvasId, storeCanvas);
         canvas.isDrawingMode = currentMode;
     }
 
+    function saveViewPortConfiguration() {
+        let zoom = canvas.getZoom();
+        let viewPortTransform = canvas.viewportTransform;
+        let orientation = getUserOrientation();
+
+        const key = `c_${currentCanvasId}_${orientation}`;
+        const configuration = {
+            zoom: zoom,
+            vpt: viewPortTransform,
+        };
+        localStorage.setItem(key, JSON.stringify(configuration));
+    }
+
+    function retrieveConfiguration(orientation) {
+        
+        const key = `c_${currentCanvasId}_${orientation}`;
+        const savedConfiguration = localStorage.getItem(key);
+        if (savedConfiguration) {
+            return JSON.parse(savedConfiguration);
+        }
+        return null; // Return null if no configuration is found
+    }
+    
     function getColorByIndex (index) {
         const colors = ['#000000', '#0047bb', '#ef3340', '#00a651'];
         return colors[index];

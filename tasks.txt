@@ -1,5 +1,4 @@
 MVP
-Save in local pan position, zoom according to orientation
 Undo
 Eraser mode with cursor
 Drag and Drop Dots / Normalize dots
