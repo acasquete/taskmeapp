@@ -227,10 +227,10 @@ const Sketch = (function () {
                     pausePanning = true;
                     var point = new fabric.Point(e.self.x, e.self.y);
                     if (e.self.state == "start") {
-                        zoomStartScale = self.canvas.getZoom();
+                       // zoomStartScale = self.canvas.getZoom();
                     }
-                    var delta = zoomStartScale * e.self.scale;
-                    self.canvas.zoomToPoint(point, delta);
+                    var delta = canvas.getZoom() * e.self.scale;
+                    canvas.zoomToPoint(point, e.self.scale);
                     pausePanning = false;
                 }
             },
