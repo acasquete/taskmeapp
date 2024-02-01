@@ -51,13 +51,13 @@
         start({ duration: longBreakDuration, type: "long" });
     }
 
-    function start(config) {
+    function start(configuration) {
         show();
 
         if (!pomodoroStartTime) {
             pomodoroStartTime = new Date();
-            pomodoroEndTime = new Date(pomodoroStartTime.getTime() + config.duration * 60000);
-            pomodoroType = config.type;
+            pomodoroEndTime = new Date(pomodoroStartTime.getTime() + configuration.duration * 60000);
+            pomodoroType = configuration.type;
 
             initInterval();
 
@@ -66,7 +66,7 @@
             var body = 'Pomodoro Finished!';
             var dir = 'ltr';
             
-            Notifications.scheduleNotification('TaskMe', { icon, dir, body }, config.duration * 60000);
+            Notifications.scheduleNotification('TaskMe', { icon, dir, body }, configuration.duration * 60000);
         }
 
         saveState();
