@@ -43,25 +43,27 @@ function onSignIn(response) {
     signInWithFirebase(jwt);
 }
 
+window.onSignIn = onSignIn;
+
 function signInWithFirebase(googleToken) {
     if (isTokenExpired(googleToken)) {
         localStorage.removeItem('googleToken');
         return;
     }
 
-const credential = firebase.auth.GoogleAuthProvider.credential(googleToken);
+    const credential = firebase.auth.GoogleAuthProvider.credential(googleToken);
 
-firebase.auth().signInWithCredential(credential)
-    .then((result) => {
-        const user = result.user;
-        Data.setUserId(user.uid);
-        Taskboard.loadCurrentDashboard();
-        isSigned = true;
-        hideStatusBarIcon();
-    }).catch((error) => {
-        console.error("Error en la autenticación con Firebase:", error);
-        showStatusBarIcon();
-    });
+    firebase.auth().signInWithCredential(credential)
+        .then((result) => {
+            const user = result.user;
+            Data.setUserId(user.uid);
+            Taskboard.loadCurrentDashboard();
+            isSigned = true;
+            hideStatusBarIcon();
+        }).catch((error) => {
+            console.error("Authentication Error Firebase:", error);
+            showStatusBarIcon();
+        });
 }
 
 function showStatusBarIcon() {

@@ -1,9 +1,17 @@
 MVP
-Undo
+OK. No seleccion al seleccionar nota (al menos en tactil).
+OK Break line.
+OK Implementar Control+C + Control+V
+Touch doubletap.
+BUG. Al hacer click en tablero se desplaza revisar Drag.
+Undo.
+Centrar texto en nota.
+Add date to dashbord for conflict resolution
 Eraser mode with cursor
 Drag and Drop Dots / Normalize dots
 Add angle when creating note
 Share taskboard
+AI Suggestions (key in localstorage)
 
 NICE TO HAVE
 Refactor to Typescript

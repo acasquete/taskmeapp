@@ -8,10 +8,20 @@ const Sketch = (function () {
     let currentCanvasId;
     let isEditMode = false;
     const CANVAS_WIDTH = 2000;
+    var state = [];
+    var mods = 0;
 
     async function init() {
         initCanvas();
         assignEventListeners();
+    }
+
+    function saveState() {
+        if (mods < state.length) {
+            state = state.slice(0, mods + 1);
+        }
+        state.push(canvas.toJSON());
+        mods++;
     }
 
     function initCanvas() { 
@@ -69,6 +79,7 @@ const Sketch = (function () {
         return 'portrait';
     }
 
+    
     
     function adjustCanvasZoom() {
         var currentOrientation = getUserOrientation(); 
@@ -316,7 +327,14 @@ const Sketch = (function () {
             }
         });
 
+        canvas.on('object:added', function () {
+            saveState();
+        });
+
         canvas.on('object:modified', function(event) {
+
+            saveState();
+
             var activeObject = event.target;
             if (activeObject.type === 'group') {
                 canvas.bringToFront(activeObject);
@@ -492,7 +510,7 @@ const Sketch = (function () {
             ]
         });
 
-        const content = `\nYou're the best! Thanks for trying TaskMe, The Natural Kanban Board!\n\n 1. Create a note by selecting a color on the left of the screen. \n 2. Edit a note by clicking on it. \n 3. Remove a note by dragging it to the top of the screen. \n\n(c)hange pen color - (e)raser - (k)lear board \n (h)ide notes - (f)ull screen - (s)election - (p)ointer\n [Ctrl]+1..5 Switch Board \n\n If you have any questions, ideas or suggestions, please feel free \n to contact me at x.com/acasquetenotes \n or open an issue on GitHub at github.com/acasquete/taskmeapp`;
+        const content = `\nYou're the best! Thanks for trying TaskMe, The Natural Kanban Board!\n\n 1. Create a note by selecting a color on the left of the screen. \n 2. Edit a note by double tapping on it. \n 3. Remove a note by dragging it to the top of the screen. \n\n(c)hange pen color - (e)raser - (k)lear board \n (h)ide notes - (f)ull screen - (s)election - (p)ointer\n [Ctrl]+1..5 Switch Board \n\n If you have any questions, ideas or suggestions, please feel free \n to contact me at x.com/acasquetenotes \n or open an issue on GitHub at github.com/acasquete/taskmeapp`;
 
         var text = new fabric.Textbox(content, {
             originX: 'center',
@@ -501,7 +519,7 @@ const Sketch = (function () {
             width: 900, 
             height: 500,
             fontFamily: 'Kalam',
-            splitByGrapheme: 'split',
+            splitByGrapheme: false,
             textAlign: 'center',
             fill: colors['yellow'].text 
           });
@@ -541,7 +559,7 @@ const Sketch = (function () {
             onChange: canvas.renderAll.bind(canvas)
         });
 
-        group.on('mouseup', editNote);
+        group.on('mousedblclick', editNote);
         canvas.viewportCenterObject(group);
         canvas.add(group);
         
@@ -589,7 +607,7 @@ const Sketch = (function () {
                 width: 150, 
                 height: noteHeight,
                 fontFamily: 'Kalam',
-                splitByGrapheme: 'split',
+                splitByGrapheme: false,
                 textAlign: 'center',
                 fill: colors[color].text 
               });
@@ -666,11 +684,47 @@ const Sketch = (function () {
                 onChange: canvas.renderAll.bind(canvas)
             });
 
-            group.on('mouseup', editNote);
+
+            assignConfigToObject (group);
 
             canvas.add(group);
             updateNoteCounters();
             saveCanvas();
+    }
+
+    function assignConfigToObject (obj) {
+
+        if (obj.type === 'group') {
+            obj.set({
+                hasControls: false,
+                hasBorders: false,
+                lockRotation: true,
+                visible: true,
+                cl: 'n'
+            });
+            obj.on('mousedblclick', editNote);
+           
+        }
+
+        if (obj.cl === 'd') {
+            obj.set({
+                hasControls: false,
+                hasBorders: false,
+                visible: true,
+            });
+
+            obj.on('mousedblclick', removeDot);
+        }
+
+        if (obj.cl==='k') {
+            obj.set({
+                hasControls: false,
+                hasBorders: false,
+                lockRotation: true,
+                selectable: false
+            });
+        }
+        
     }
 
     function onNewDot () {
@@ -755,7 +809,7 @@ const Sketch = (function () {
             fontFamily: 'Kalam',
             width: text.width,
             height: text.height,
-            splitByGrapheme: 'split',
+            splitByGrapheme: false,
             left: target.left,
             top: target.top,
             editingBorderColor: 'rgba(255,255,255,0)',
@@ -782,7 +836,8 @@ const Sketch = (function () {
             
             text.set({
                 text: newVal,
-                visible: true
+                visible: true,
+                splitByGrapheme: false
             });
             target.addWithUpdate();
             
@@ -828,6 +883,51 @@ const Sketch = (function () {
 
     }
     
+        var _clipboard;  
+
+        function Copy() {
+            var activeObject = canvas.getActiveObject();
+
+            if (activeObject) {
+                activeObject.clone(function(cloned) {
+                _clipboard = cloned;
+                });
+            }
+        }
+
+        function Paste() {
+            if (_clipboard) {
+              _clipboard.clone(function(clonedObj) {
+                canvas.discardActiveObject();
+          
+                clonedObj.set({
+                  left: clonedObj.left + 10, 
+                  top: clonedObj.top + 10,
+                  evented: true, 
+                });
+          
+                if (clonedObj.type === 'activeSelection') {
+                  clonedObj.canvas = canvas;
+                  clonedObj.forEachObject(function(obj) {
+                    assignConfigToObject(obj);
+                    canvas.add(obj);
+                  });
+                  clonedObj.setCoords();
+                } else {
+                    assignConfigToObject(clonedObj);
+                    canvas.add(clonedObj);
+                }
+
+                _clipboard.top += 10;
+                _clipboard.left += 10;
+          
+                canvas.setActiveObject(clonedObj);
+                canvas.requestRenderAll();
+              });
+            }
+          }
+
+
     function setDrawingMode(colorIndex) {
         canvas.freeDrawingBrush.color = getColorByIndex(colorIndex);
         canvas.isDrawingMode = true;
@@ -882,7 +982,13 @@ const Sketch = (function () {
     function onKeyPress (e) {
         if (isEditMode) return;
 
-        if (e.key === 'c') {
+        if ((e.metaKey || e.ctrlKey) && (e.keyCode===67)) {
+            Copy();
+            e.preventDefault();
+        } else if ((e.metaKey || e.ctrlKey) && (e.keyCode== 86)) {
+            Paste();
+            e.preventDefault();
+        } else if (e.key === 'c') {
             if (canvas.isDrawingMode) { currentColorIndex = (currentColorIndex + 1) % 4; }
             changeColor(currentColorIndex);
         } else if (e.key === 'e') {
@@ -900,6 +1006,9 @@ const Sketch = (function () {
         } else if (e.keyCode == 90 && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             Undo();
+        } else if (e.keyCode == 89 && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            Redo();
         } else if (e.key === 'Delete' || e.key === 'Backspace') {
             deleteSelectedObjects();
             e.preventDefault();
@@ -965,9 +1074,21 @@ const Sketch = (function () {
     }
       
     function Undo() {
-        pathsArray.splice(-1,1);
-        drawPaths();
-        saveCanvas();
+        if (mods > 0) {
+            canvas.loadFromJSON(state[mods - 1], function () {
+                canvas.renderAll();
+                mods--;
+            });
+        }
+    }
+    
+    function Redo() {
+        if (mods < state.length - 1) {
+            canvas.loadFromJSON(state[mods + 1], function () {
+                canvas.renderAll();
+                mods++;
+            });
+        }
     }
 
    
@@ -1048,37 +1169,7 @@ const Sketch = (function () {
             var jsonString = storeCanvas.content;
             canvas.loadFromJSON(JSON.parse(jsonString), function() {
                 canvas.forEachObject(function(obj) {
-
-                    if (obj.type === 'group') {
-                        obj.set({
-                            hasControls: false,
-                            hasBorders: false,
-                            lockRotation: true,
-                            visible: true,
-                            cl: 'n'
-                        });
-
-                        obj.on('mouseup', editNote);
-                    }
-
-                    if (obj.cl === 'd') {
-                        obj.set({
-                            hasControls: false,
-                            hasBorders: false,
-                            visible: true,
-                        });
-
-                        obj.on('mousedblclick', removeDot);
-                    }
-
-                    if (obj.cl==='k') {
-                        obj.set({
-                            hasControls: false,
-                            hasBorders: false,
-                            lockRotation: true,
-                            selectable: false
-                        });
-                    }
+                    assignConfigToObject (obj);
                 });
                 canvas.requestRenderAll();
             });
