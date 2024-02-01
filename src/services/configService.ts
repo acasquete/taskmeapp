@@ -1,19 +1,8 @@
-﻿interface Dashboard {
-    notes: any[];
-    dots: any[];
-    screenWidth: number | null;
-}
+﻿import { Dashboard } from "../types/dashboard";
+import { Canvas } from "../types/canvas";
+import { PomodoroState } from "../types/pomodoroState";
 
-interface Canvas {
-    content: string;
-    colorIndex: number;
-}
-
-interface PomodoroState {
-
-}
-
-class Config {
+export class Config {
     constructor() {
     }
 
@@ -71,5 +60,3 @@ class Config {
     }
 }
 
-const configInstance = new Config();
-(window as any).Config = configInstance;

@@ -12,9 +12,10 @@ Drag and Drop Dots / Normalize dots
 Add angle when creating note
 Share taskboard
 AI Suggestions (key in localstorage)
+Refactor to Typescript
 
 NICE TO HAVE
-Refactor to Typescript
+
 When deleting the whole dashboard keep kanban elements
 Load SVG as drawn line
 Avoid rotating, scaling on selection
