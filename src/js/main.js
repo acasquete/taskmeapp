@@ -5,6 +5,7 @@ import '../css/fa/css/fontawesome.min.css';
 import '../css/fa/css/brands.min.css';
 import '../css/fa/css/solid.min.css';
 import '../index.ts';
+import '../services/ConfigService.ts';
 import './taskboard.js';
 import './utils.js';
 import './pomodoro.js';
