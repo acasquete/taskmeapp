@@ -27,11 +27,11 @@ $(document).ready(function() {
         toolDiv.on('click touchend', function(e) {
             e.preventDefault();
             var dashboardNumber = $(this).text();
-            Taskboard.switch(dashboardNumber);
+            Sketch.switch(dashboardNumber);
         });
     
         var gridItem = new GridItem(toolDiv);
-        Taskboard.addObserver(gridItem);
+        Sketch.addObserver(gridItem);
         toolboxGrid.append(toolDiv);
     }
 

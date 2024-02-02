@@ -10,10 +10,17 @@ const Sketch = (function () {
     const CANVAS_WIDTH = 2000;
     var state = [];
     var mods = 0;
+    let observers = []; 
 
     async function init() {
         initCanvas();
         assignEventListeners();
+        loadCurrentDashboard();
+    }
+
+    async function loadCurrentDashboard() {
+        currentCanvasId = Config.getActiveDashboard();
+        await switchDashboard(currentCanvasId, true);
     }
 
     function saveState() {
@@ -40,6 +47,31 @@ const Sketch = (function () {
         canvas.requestRenderAll();
     }
 
+    function toggleFullscreen ()
+    {
+        if (!document.fullscreenElement) {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) {
+                document.documentElement.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }
+
     function darkenColor(color, amount) {
         let usePound = false;
         if (color[0] === "#") {
@@ -57,29 +89,13 @@ const Sketch = (function () {
     }
     
     function getUserOrientation() {
-        if ('orientation' in window) {
-            // Check for the `window.orientation` property
-            if (window.orientation === 0 || window.orientation === 180) {
-                // Portrait orientation (vertical)
-                return 'portrait';
-            } else if (window.orientation === 90 || window.orientation === -90) {
-                // Landscape orientation (horizontal)
-                return 'landscape';
-            }
-        }
-    
-        // If `window.orientation` is not available or inconclusive, use media queries
         if (window.matchMedia("(orientation: portrait)").matches) {
             return 'portrait';
         } else if (window.matchMedia("(orientation: landscape)").matches) {
             return 'landscape';
         }
-    
-        // Default to portrait if neither method provides a clear result
         return 'portrait';
     }
-
-    
     
     function adjustCanvasZoom() {
         var currentOrientation = getUserOrientation(); 
@@ -979,10 +995,43 @@ const Sketch = (function () {
         canvas.requestRenderAll(); 
       }
 
+    async function switchDashboard(id, initial) {
+
+        if (!initial) { 
+            $("#dashboard-number").stop(); 
+            $("#dashboard-number").text(id); 
+            $("#dashboard-number").fadeIn(100).delay(700).fadeOut(100);
+        }
+
+        if (currentCanvasId==id && !initial) return;
+
+        currentCanvasId = id;
+
+        loadCanvas(currentCanvasId);
+        Config.saveActiveDashboard(currentCanvasId);
+        notifyAllObservers();
+    }
+
+    function addObserver (observer) {
+        observers.push(observer);
+    }
+
+    function notifyAllObservers (observer) {
+        observers.forEach(function(observer) {
+            observer.update(currentDashboardId);
+        });
+    }
+
     function onKeyPress (e) {
         if (isEditMode) return;
 
-        if ((e.metaKey || e.ctrlKey) && (e.keyCode===67)) {
+        if ((e.ctrlKey || e.metaKey) && !isNaN(e.key)) {
+            let num = parseInt(e.key);
+            if (num >= 1 && num <= 5) {
+                switchDashboard(num);
+                e.preventDefault();
+            }
+        } else if ((e.metaKey || e.ctrlKey) && (e.keyCode===67)) {
             Copy();
             e.preventDefault();
         } else if ((e.metaKey || e.ctrlKey) && (e.keyCode== 86)) {
@@ -1002,7 +1051,7 @@ const Sketch = (function () {
         } else if (e.key === 'h') {
             toggleNotesVisibility(); 
          } else if (e.key === 'f') {
-            Taskboard.toggleFullscreen(); 
+            toggleFullscreen(); 
         } else if (e.keyCode == 90 && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             Undo();
@@ -1136,8 +1185,7 @@ const Sketch = (function () {
         if (currentCanvasId==1) showWelcome();
     }
    
-    async function loadCanvas(id) {
-        currentCanvasId = id;
+    async function loadCanvas() {
 
         const font1 = new FontFace('Kalam', `url(${kalamFontURL})`);
         const font2 = new FontFace('PermanentMarker', `url(${permanentMarkerFontURL})`);
@@ -1224,7 +1272,8 @@ const Sketch = (function () {
         return colors[index];
     }
 
-    return { init, loadCanvas, clearCanvas, changeColor, clearAllCanvas, toggleNotesVisibility, showWelcome };
+    return { init, loadCanvas, clearCanvas, changeColor, clearAllCanvas, toggleNotesVisibility, showWelcome, 
+        addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard };
 })();
 
 window.Sketch = Sketch;

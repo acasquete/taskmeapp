@@ -6,7 +6,6 @@ import '../css/fa/css/brands.min.css';
 import '../css/fa/css/solid.min.css';
 import '../services/configService.ts';
 import '../index.ts';
-import './taskboard.js';
 import './utils.js';
 import './pomodoro.js';
 import './menu.js';
@@ -20,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var sharedId = params.get('sid');
     
-    Taskboard.init(sharedId);
+    Sketch.init(sharedId);
     Pomodoro.init();
 
     const googleToken = localStorage.getItem('googleToken');
@@ -58,7 +57,7 @@ function signInWithFirebase(googleToken) {
         .then((result) => {
             const user = result.user;
             Data.setUserId(user.uid);
-            Taskboard.loadCurrentDashboard();
+            Sketch.loadCurrentDashboard();
             isSigned = true;
             hideStatusBarIcon();
         }).catch((error) => {
