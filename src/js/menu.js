@@ -27,7 +27,7 @@ $(document).ready(function() {
         toolDiv.on('click touchend', function(e) {
             e.preventDefault();
             var dashboardNumber = $(this).text();
-            Sketch.switch(dashboardNumber);
+            Sketch.switchDashboard(dashboardNumber);
         });
     
         var gridItem = new GridItem(toolDiv);

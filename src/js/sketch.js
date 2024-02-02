@@ -1018,7 +1018,7 @@ const Sketch = (function () {
 
     function notifyAllObservers (observer) {
         observers.forEach(function(observer) {
-            observer.update(currentDashboardId);
+            observer.update(currentCanvasId);
         });
     }
 
@@ -1273,7 +1273,7 @@ const Sketch = (function () {
     }
 
     return { init, loadCanvas, clearCanvas, changeColor, clearAllCanvas, toggleNotesVisibility, showWelcome, 
-        addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard };
+        addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard };
 })();
 
 window.Sketch = Sketch;
