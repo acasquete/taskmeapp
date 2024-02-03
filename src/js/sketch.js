@@ -28,6 +28,7 @@ const Sketch = (function () {
     async function loadCurrentDashboard() {
         currentCanvasId = Config.getActiveDashboard();
         await switchDashboard(currentCanvasId, true);
+        
     }
 
     function initCanvas() { 
@@ -85,83 +86,15 @@ const Sketch = (function () {
             let zoomLevel = viewportWidth / CANVAS_WIDTH;
             canvas.setZoom(zoomLevel);
         }
-        //canvas.requestRenderAll();
     }
 
-    let pausePanning;
-    let currentX;
-    let currentY;
-    let lastX;
-    let lastY;
-    let xChange;
-    let yChange;
-    let zoomStartScale;
-
     function assignDOMEventListeners() {
-
         document.addEventListener('keydown', onKeyPress);
+        
         $(".new-small").on('mousedown', onNew);
         $('.new-normal').on('mousedown', onNew);
         $('.new-dot').on('mousedown', onNewDot);
-   
-
-        //   canvas.on({
-        //     'touch:gesture': function(e) {
-        //         if (e.e.touches && e.e.touches.length == 2) {
-        //             pausePanning = true;
-        //             var point = new fabric.Point(e.self.x, e.self.y);
-        //             if (e.self.state == "start") {
-        //                 zoomStartScale = canvas.getZoom();
-                       
-        //             }
-        //             var delta = zoomStartScale * e.self.scale;
-        //             canvas.zoomToPoint(point, delta);
-        //             pausePanning = false;
-        //             saveViewPortConfiguration();
-        //         }
-        //     },
-        //     'object:selected': function() {
-        //         pausePanning = true;
-        //     },
-        //     'selection:cleared': function() {
-        //         pausePanning = false;
-        //         //updateNoteCounters();
-        //     },
-        //     'touch:drag': function(e) {
-        //         console.log('dentro');
-        //         if (!isEditKanbanMode && !canvas.selection && !canvas.isDrawingMode && pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
-        //             var target = canvas.findTarget(e.e);
-            
-        //             if (target && (target.cl === 'n' || target.cl === 'd' || target.type == 'path')) {
-        //                 pausePanning = true;
-        //                 return;
-        //             }
-            
-        //             currentX = e.e.layerX;
-        //             currentY = e.e.layerY;
-        //             xChange = currentX - lastX;
-        //             yChange = currentY - lastY;
-            
-        //             if ((Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
-        //                 var currentViewPort = canvas.viewportTransform;
-        //                 var newX = currentViewPort[4] + xChange;
-        //                 var newY = currentViewPort[5] + yChange;
-            
-        //                 var delta = new fabric.Point(newX - currentViewPort[4], newY - currentViewPort[5]);
-        //                 canvas.relativePan(delta);
-        //                 saveViewPortConfiguration();
-        //             }
-            
-        //             lastX = e.e.layerX;
-        //             lastY = e.e.layerY;
-        //         }
-        //     }
-        //});
-
-
     }
-
-
 
     function createWelcomeNote () {
         let colors = CanvasUtilities.getColors();
@@ -237,124 +170,123 @@ const Sketch = (function () {
 
         canvasController.normalizeZIndex ();
         
-            let colors = CanvasUtilities.getColors();
+        let colors = CanvasUtilities.getColors();
 
-            let str = $(this).attr("class");
-            let regex = /new-(\w+)\s+(\w+)/;
-            
-            let matches = str.match(regex);
-            
-            let size = matches[1];
-            let color = matches[2];
+        let str = $(this).attr("class");
+        let regex = /new-(\w+)\s+(\w+)/;
+        
+        let matches = str.match(regex);
+        
+        let size = matches[1];
+        let color = matches[2];
 
-            var gradient = new fabric.Gradient({
-                type: 'radial',
-                coords: {
-                    x1: 75,
-                    y1: noteHeight / 2,
-                    x2: 75,
-                    y2: noteHeight / 2,
-                    r1: 60,
-                    r2: noteHeight,
-                },
-                colorStops: [
-                { offset: 0, color: colors[color].primary }, // Color de inicio
-                { offset: 1, color:  colors[color].secondary }  // Color de fin
-                ]
+        var gradient = new fabric.Gradient({
+            type: 'radial',
+            coords: {
+                x1: 75,
+                y1: noteHeight / 2,
+                x2: 75,
+                y2: noteHeight / 2,
+                r1: 60,
+                r2: noteHeight,
+            },
+            colorStops: [
+            { offset: 0, color: colors[color].primary }, // Color de inicio
+            { offset: 1, color:  colors[color].secondary }  // Color de fin
+            ]
+        });
+
+        var noteHeight = size === 'small' ? 75 : 150; 
+
+        var text = new fabric.Textbox('To Do', {
+            originX: 'center',
+            originY: 'top',
+            fontSize: 24,
+            width: 150, 
+            height: noteHeight,
+            fontFamily: 'Kalam',
+            splitByGrapheme: false,
+            textAlign: 'center',
+            fill: colors[color].text 
             });
 
-            var noteHeight = size === 'small' ? 75 : 150; 
+        var square = new fabric.Rect({
+            originX: 'center',
+            originY: 'top',
+            left: 0, 
+            top: 0,  
+            width: 150,
+            height: noteHeight,
+            fill: gradient,
+            shadow: 'rgba(0,0,0,0.6) 0px 0px 5px'
+        });
 
-            var text = new fabric.Textbox('To Do', {
-                originX: 'center',
-                originY: 'top',
-                fontSize: 24,
-                width: 150, 
-                height: noteHeight,
-                fontFamily: 'Kalam',
-                splitByGrapheme: false,
-                textAlign: 'center',
-                fill: colors[color].text 
-              });
+        var group = new fabric.Group([square, text], {
+            originX: 'center',
+            originY: 'top',
+            left: 170,
+            top: 170,
+            hasControls: false, 
+            hasBorders: false,
+            opacity: 0,
+            cl: 'n'
+        });
 
-            var square = new fabric.Rect({
-                originX: 'center',
-                originY: 'top',
-                left: 0, 
-                top: 0,  
-                width: 150,
-                height: noteHeight,
-                fill: gradient,
-                shadow: 'rgba(0,0,0,0.6) 0px 0px 5px'
-            });
+        const noteWidth = 150;
+        const margin = 5;
 
-            var group = new fabric.Group([square, text], {
-                originX: 'center',
-                originY: 'top',
-                left: 170,
-                top: 170,
-                hasControls: false, 
-                hasBorders: false,
-                opacity: 0,
-                cl: 'n'
-            });
+        let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
+        let separatorLeft = separator1 ? separator1.left : canvas.width / 3;
 
-            const noteWidth = 150;
-            const margin = 5;
+        let notesInFirstCol = canvas.getObjects().filter(obj => obj.cl ==='n' && obj.left < separatorLeft);
 
-            let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
-            let separatorLeft = separator1 ? separator1.left : canvas.width / 3;
+        let newLeft = 150;
+        let newTop = 150;
+        let placed = false;
 
-            let notesInFirstCol = canvas.getObjects().filter(obj => obj.cl ==='n' && obj.left < separatorLeft);
+        for (let top = 80; top < separator1.height - noteHeight; top += margin) {
+            for (let left = 150; left < separatorLeft - (noteWidth * 0.5); left += margin) {
+                let potentialSpace = { left: left, top: top };
+                let isSpaceOccupied = notesInFirstCol.some(note => {
+                    return isOverlapping(note, potentialSpace, noteWidth, noteHeight);
+                });
 
-            let newLeft = 150;
-            let newTop = 150;
-            let placed = false;
-
-            for (let top = 80; top < separator1.height - noteHeight; top += margin) {
-                for (let left = 150; left < separatorLeft - (noteWidth * 0.5); left += margin) {
-                    let potentialSpace = { left: left, top: top };
-                    let isSpaceOccupied = notesInFirstCol.some(note => {
-                        return isOverlapping(note, potentialSpace, noteWidth, noteHeight);
-                    });
-
-                    if (!isSpaceOccupied) {
-                        newLeft = left;
-                        newTop = top;
-                        placed = true;
-                        break;
-                    }
+                if (!isSpaceOccupied) {
+                    newLeft = left;
+                    newTop = top;
+                    placed = true;
+                    break;
                 }
-
-                if (placed) break;
             }
 
-            if (!placed) {
-                let lastNote = notesInFirstCol.sort((a, b) => b.top - a.top)[0];
-                newTop = lastNote ? lastNote.top + lastNote.height + margin : margin;
-            }
+            if (placed) break;
+        }
 
-            group.set({ left: newLeft, top: newTop });
+        if (!placed) {
+            let lastNote = notesInFirstCol.sort((a, b) => b.top - a.top)[0];
+            newTop = lastNote ? lastNote.top + lastNote.height + margin : margin;
+        }
 
-            let randomAngle = 0; // Math.floor((Math.random() * 6) + 1) - 3; 
+        group.set({ left: newLeft, top: newTop });
 
-            group.animate('opacity', 1, {
-                duration: 300, 
-                onChange: canvas.renderAll.bind(canvas),
-                onComplete: function () {  group.set('opacity', 1);  canvasController.saveCanvas() }
-            });
+        let randomAngle = 0;
 
-            group.animate('angle', randomAngle, {
-                duration: 200, 
-                onChange: canvas.renderAll.bind(canvas)
-            });
+        group.animate('opacity', 1, {
+            duration: 300, 
+            onChange: canvas.renderAll.bind(canvas),
+            onComplete: function () {  group.set('opacity', 1);  canvasController.saveCanvas() }
+        });
 
+        group.animate('angle', randomAngle, {
+            duration: 200, 
+            onChange: canvas.renderAll.bind(canvas)
+        });
 
-            assignConfigToObject (group);
+        assignConfigToObject (group);
 
-            canvas.add(group);
-            canvasController.updateNoteCounters();
-            canvasController.saveCanvas();
+        canvas.add(group);
+        canvasController.updateNoteCounters();
+        canvasController.saveCanvas();
     }
 
     function assignConfigToObject (obj) {
@@ -389,7 +321,6 @@ const Sketch = (function () {
                 selectable: false
             });
         }
-        
     }
 
     function onNewDot () {
@@ -397,52 +328,52 @@ const Sketch = (function () {
 
         canvasController.normalizeZIndex ();
 
-            const colors = {
-                red: {
-                    primary: '#ff0000',
-                    secondary: CanvasUtilities.darkenColor('#ff0000', 20)
-                }
-            };
-            
-            let color = 'red';
+        const colors = {
+            red: {
+                primary: '#ff0000',
+                secondary: CanvasUtilities.darkenColor('#ff0000', 20)
+            }
+        };
+        
+        let color = 'red';
 
-            var gradient = new fabric.Gradient({
-                type: 'radial',
-                coords: {
-                    x1: 25,
-                    y1: 25,
-                    x2: 25,
-                    y2: 25,
-                    r1: 20,
-                    r2: 50,
-                },
-                colorStops: [
-                { offset: 0, color: colors[color].primary }, // Color de inicio
-                { offset: 1, color:  colors[color].secondary }  // Color de fin
-                ]
-            });
+        var gradient = new fabric.Gradient({
+            type: 'radial',
+            coords: {
+                x1: 25,
+                y1: 25,
+                x2: 25,
+                y2: 25,
+                r1: 20,
+                r2: 50,
+            },
+            colorStops: [
+            { offset: 0, color: colors[color].primary }, 
+            { offset: 1, color:  colors[color].secondary }  
+            ]
+        });
 
-            let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
-            let firstColWidth = separator1 ? separator1.left : canvas.width / 3; // o cualquier otro cálculo para la primera columna
-            let firstColHeight = separator1 ? separator1.height / 3 : canvas.height / 4; // o cualquier otro cálculo para la primera columna
+        let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
+        let firstColWidth = separator1 ? separator1.left : canvas.width / 3; 
+        let firstColHeight = separator1 ? separator1.height / 3 : canvas.height / 4;
 
-            let randomLeft = Math.random() * (firstColWidth - 150) + 150; // 28 es el diámetro del círculo (2 * radio)
-            let randomTop = Math.random() * (firstColHeight - 28) + 100; // Asumiendo que quieres que pueda aparecer en cualquier parte de la altura del canvas
+        let randomLeft = Math.random() * (firstColWidth - 150) + 150; 
+        let randomTop = Math.random() * (firstColHeight - 28) + 100; 
 
-            var circle = new fabric.Circle({
-                left: randomLeft, 
-                top: randomTop,  
-                radius: 14,
-                fill: gradient,
-                shadow: 'rgba(0,0,0,0.6) 0px 0px 3px',
-                hasControls: false, 
-                hasBorders: false,
-                cl: 'd'
-            });
+        var circle = new fabric.Circle({
+            left: randomLeft, 
+            top: randomTop,  
+            radius: 14,
+            fill: gradient,
+            shadow: 'rgba(0,0,0,0.6) 0px 0px 3px',
+            hasControls: false, 
+            hasBorders: false,
+            cl: 'd'
+        });
 
-            circle.on('mousedblclick', removeDot);
-            canvas.add(circle);
-            canvasController.saveCanvas();
+        circle.on('mousedblclick', removeDot);
+        canvas.add(circle);
+        canvasController.saveCanvas();
     }
 
     function isOverlapping(note, space, width, height) {
@@ -597,7 +528,7 @@ const Sketch = (function () {
         loadCanvas(currentCanvasId);
 
         Config.saveActiveDashboard(currentCanvasId);
-        
+        canvasController.switchDashboard(currentCanvasId, initial);
         notifyAllObservers();
     }
 

@@ -18,6 +18,7 @@ export class CanvasController {
     private currentColorIndex: number = 0;
     private state: any = [];
     private mods = 0;
+    private currentCanvasId: number = 0;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -33,6 +34,10 @@ export class CanvasController {
         }
         this.state.push(this.canvas.toJSON());
         this.mods++;
+    }
+
+    public switchDashboard(id: number, initial: boolean) {
+        this.currentCanvasId = id;
     }
 
     public assignCanvasEventListeners(): void {
@@ -225,8 +230,7 @@ export class CanvasController {
         const viewPortTransform = this.canvas.viewportTransform;
         const orientation: string = CanvasUtilities.getUserOrientation();
     
-        const currentCanvasId = 1;
-        const key: string = `c_${currentCanvasId}_${orientation}`;
+        const key: string = `c_${this.currentCanvasId}_${orientation}`;
         const configuration: { zoom: number; vpt: any } = {
             zoom: zoom,
             vpt: viewPortTransform,
@@ -430,7 +434,7 @@ export class CanvasController {
         let jsonCanvas = this.canvas.toJSON(['cl', 'id']);
         let storeCanvas = { colorIndex: this.currentColorIndex, content:  JSON.stringify(jsonCanvas) };     
         
-        Config.saveCanvas(1, storeCanvas);
+        Config.saveCanvas(this.currentCanvasId, storeCanvas);
         this.canvas.isDrawingMode = currentMode;
     }
 }
