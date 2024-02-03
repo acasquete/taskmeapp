@@ -29,7 +29,7 @@ export class Config {
         return dashboardString ? JSON.parse(dashboardString) : { notes: [], dots: [], screenWidth: null };
     }
 
-    saveCanvas(id: string, canvas: Canvas): void {
+    public static saveCanvas(id: number, canvas: Canvas): void {
         localStorage.setItem("c" + id, JSON.stringify(canvas));
         Data.saveCanvas(id, canvas);
     }

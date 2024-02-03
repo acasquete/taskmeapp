@@ -1,5 +1,7 @@
 ﻿import kalamFontURL from '../assets/fonts/Kalam-Regular.ttf';
 import permanentMarkerFontURL from '../assets/fonts/PermanentMarker-Regular.ttf';
+import { CanvasUtilities } from '../services/canvasUtilities.ts';
+import { CanvasController } from '../services/canvasController';
 
 const Sketch = (function () {
     "use strict";
@@ -11,24 +13,21 @@ const Sketch = (function () {
     var state = [];
     var mods = 0;
     let observers = []; 
+    let canvasController;
 
     async function init() {
         initCanvas();
-        assignEventListeners();
+        assignDOMEventListeners();
+
+        canvasController = new CanvasController(canvas);
+        canvasController.assignCanvasEventListeners();
+
         loadCurrentDashboard();
     }
 
     async function loadCurrentDashboard() {
         currentCanvasId = Config.getActiveDashboard();
         await switchDashboard(currentCanvasId, true);
-    }
-
-    function saveState() {
-        if (mods < state.length) {
-            state = state.slice(0, mods + 1);
-        }
-        state.push(canvas.toJSON());
-        mods++;
     }
 
     function initCanvas() { 
@@ -71,34 +70,9 @@ const Sketch = (function () {
             }
         }
     }
-
-    function darkenColor(color, amount) {
-        let usePound = false;
-        if (color[0] === "#") {
-            color = color.slice(1);
-            usePound = true;
-        }
-        let num = parseInt(color, 16);
-        let r = (num >> 16) - amount;
-        let b = ((num >> 8) & 0x00FF) - amount;
-        let g = (num & 0x0000FF) - amount;
-        r = Math.max(Math.min(255, r), 0);
-        b = Math.max(Math.min(255, b), 0);
-        g = Math.max(Math.min(255, g), 0);
-        return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
-    }
-    
-    function getUserOrientation() {
-        if (window.matchMedia("(orientation: portrait)").matches) {
-            return 'portrait';
-        } else if (window.matchMedia("(orientation: landscape)").matches) {
-            return 'landscape';
-        }
-        return 'portrait';
-    }
-    
+       
     function adjustCanvasZoom() {
-        var currentOrientation = getUserOrientation(); 
+        var currentOrientation = CanvasUtilities.getUserOrientation(); 
         var savedConfiguration = retrieveConfiguration(currentOrientation);
 
         if (savedConfiguration) {
@@ -114,402 +88,84 @@ const Sketch = (function () {
         //canvas.requestRenderAll();
     }
 
-    let isEditKanbanMode = false;
-    let targetElement = null;
-    let originalPosition = null;
+    let pausePanning;
+    let currentX;
+    let currentY;
+    let lastX;
+    let lastY;
+    let xChange;
+    let yChange;
+    let zoomStartScale;
 
-    let sepInitPositions;
-
-    function getObjectById(id) {
-        return canvas.getObjects().find(obj => obj.id === id) || null;
-    }
-
-    function adjustColumns() {
-        var cols = canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));
-    
-        cols.forEach((col, index) => {
-            var minColumnWidth = 400;
-            var sepLeft = index === 0 ? 0 : getObjectById('sep' + index).left;
-            var nextSep = getObjectById('sep' + (index + 1));
-            var nextSepLeft = nextSep ? nextSep.left : canvas.width;
-    
-            if (nextSepLeft - sepLeft < minColumnWidth) {
-                nextSep.set({ left: sepLeft + minColumnWidth });
-                nextSepLeft = nextSep.left;
-            }
-                
-            col.left = sepLeft;
-            col.width = nextSepLeft - sepLeft;
-        });
-        updateNoteCounters();
-        canvas.requestRenderAll();
-    }
-
-    function moveRelatedElements(id, deltaX) {
-        let movedIndex =  parseInt(id.replace(/[^\d]/g, ''), 10);
-    
-        canvas.forEachObject(function(obj) {
-            if (obj.id && (obj.id.startsWith('sep'))) {
-                let objIndex = parseInt(obj.id.replace(/[^\d]/g, ''));
-
-                if (objIndex > movedIndex && obj.id != id) {
-                    obj.set({
-                        left: sepInitPositions[objIndex-1] + deltaX,
-                    });
-                }
-            }
-            adjustColumns();
-        });
-    
-        canvas.renderAll();
-    }
-
-    function getSeparatorsPositionsArray() {
-        var separatorsPositions = [];
-        var objects = canvas.getObjects();
-    
-        for (var i = 0; i < objects.length; i++) {
-            if (objects[i].id && objects[i].id.startsWith('sep')) {
-                separatorsPositions.push(objects[i].left);
-            }
-        }
-        return separatorsPositions;
-    }
-
-    function assignEventListeners() {
+    function assignDOMEventListeners() {
 
         document.addEventListener('keydown', onKeyPress);
-
-        function isSeparatorElement(object) {
-            return object.cl === 'k' && object.id.startsWith('sep');
-        }
-
-        canvas.on('mouse:over', function(e) {
-            var objeto = e.target;
-            if (objeto && objeto.id && objeto.id.startsWith('sep')) {
-                objeto.set('stroke', 'green');
-                canvas.renderAll();
-            }
-        });
-        
-        canvas.on('mouse:out', function(e) {
-            var objeto = e.target;
-            if (objeto && objeto.id && objeto.id.startsWith('sep')) {
-                objeto.set('stroke', 'gray');
-                canvas.renderAll();
-            }
-        });
-
-        canvas.on('mouse:down', function (options) {
-            let target = canvas.findTarget(options.e);
-            if (target && isSeparatorElement(target)) {
-                isEditKanbanMode = true;
-                canvas.selection = false;
-                targetElement = target;
-                targetElement.selectable = false; 
-                originalPosition = { x: target.left };
-                sepInitPositions = getSeparatorsPositionsArray();
-            }
-        });
-
-        canvas.on('mouse:move', function (options) {
-            if (isEditKanbanMode && targetElement) {
-                let pointer = canvas.getPointer(options.e);
-                targetElement.set({
-                    left: pointer.x
-                });
-                let deltaX = pointer.x - originalPosition.x;
-                moveRelatedElements (targetElement.id, deltaX);
-                canvas.requestRenderAll();
-            }
-        });
-
-        canvas.on('mouse:up', function (options) {
-            isEditKanbanMode = false;
-            if (targetElement) {
-                targetElement.selectable = false;
-                let pointer = canvas.getPointer(options.e);
-                let deltaX = pointer.x - originalPosition.x;
-                moveRelatedElements (targetElement.id, deltaX);
-                targetElement = null;
-
-                // Kludge to force refresh
-                canvas.relativePan(new fabric.Point(1, 0));
-                canvas.relativePan(new fabric.Point(-1, 0));
-
-                saveCanvas();
-            }
-        });
-
-        canvas.on('mouse:wheel', function(opt) {
-
-            var zoom = canvas.getZoom();
-
-            if (opt.e.ctrlKey) {
-                var evt = opt.e;
-                var deltaY = evt.deltaY;
-                zoom = zoom - deltaY / 400;
-
-                if (zoom > 3) zoom = 3;
-                if (zoom < 0.2) zoom = 0.2;
-
-                canvas.zoomToPoint(new fabric.Point(evt.offsetX, evt.offsetY), zoom);
-                saveViewPortConfiguration();
-              } else {
-                var deltaX = -opt.e.deltaX;
-                var deltaY = -opt.e.deltaY;
-            
-                var currentX = canvas.viewportTransform[4];
-                var currentY = canvas.viewportTransform[5];
-            
-                var newX = currentX + deltaX;
-                var newY = currentY + deltaY;
-            
-                canvas.relativePan(new fabric.Point(newX - currentX, newY - currentY));
-                saveViewPortConfiguration();
-              }
-                opt.e.preventDefault();
-                opt.e.stopPropagation();
-            
-          });
-
-          let pausePanning = false;
-          let currentX;
-          let currentY;
-          let lastX;
-          let lastY;
-          let xChange;
-          let yChange;
-          let zoomStartScale;
-
-          canvas.on({
-            'touch:gesture': function(e) {
-                if (e.e.touches && e.e.touches.length == 2) {
-                    pausePanning = true;
-                    var point = new fabric.Point(e.self.x, e.self.y);
-                    if (e.self.state == "start") {
-                        zoomStartScale = canvas.getZoom();
-                       
-                    }
-                    var delta = zoomStartScale * e.self.scale;
-                    canvas.zoomToPoint(point, delta);
-                    pausePanning = false;
-                    saveViewPortConfiguration();
-                }
-            },
-            'object:selected': function() {
-                pausePanning = true;
-            },
-            'selection:cleared': function() {
-                pausePanning = false;
-                updateNoteCounters();
-            },
-            'touch:drag': function(e) {
-                
-                if (!isEditKanbanMode && !canvas.selection && !canvas.isDrawingMode && pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
-                    var target = canvas.findTarget(e.e);
-            
-                    if (target && (target.cl === 'n' || target.cl === 'd' || target.type == 'path')) {
-                        pausePanning = true;
-                        return;
-                    }
-            
-                    currentX = e.e.layerX;
-                    currentY = e.e.layerY;
-                    xChange = currentX - lastX;
-                    yChange = currentY - lastY;
-            
-                    if ((Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
-                        var currentViewPort = canvas.viewportTransform;
-                        var newX = currentViewPort[4] + xChange;
-                        var newY = currentViewPort[5] + yChange;
-            
-                        var delta = new fabric.Point(newX - currentViewPort[4], newY - currentViewPort[5]);
-                        canvas.relativePan(delta);
-                        saveViewPortConfiguration();
-                    }
-            
-                    lastX = e.e.layerX;
-                    lastY = e.e.layerY;
-                }
-            }
-        });
-
-        canvas.on('object:moving', function(e) {
-            var obj = e.target;
-
-            if (obj.cl ==='n') {
-                updateNoteCounters();
-            }
-        });
-
-        canvas.on('object:added', function () {
-            saveState();
-        });
-
-        canvas.on('object:modified', function(event) {
-
-            saveState();
-
-            var activeObject = event.target;
-            if (activeObject.type === 'group') {
-                canvas.bringToFront(activeObject);
-
-                //let intangle = activeObject.getObjects().find(obj => obj.type === 'textbox').angle;
-                //console.log(activeObject.getObjects().find(obj => obj.type === 'textbox').angle);
-
-                // activeObject.animate('angle', randomAngle - intangle, {
-                //       duration: 300, 
-                //       onChange: canvas.renderAll.bind(canvas)
-                // });
-
-                if (activeObject.top < 10) {
-                    activeObject.evented = false;
-                    activeObject.animate({
-                        'top': activeObject.top - 250, 
-                        'opacity': 0 
-                    }, {
-                        duration: 500,
-                        easing: fabric.util.ease['easeOutExpo'],
-                        onChange: canvas.renderAll.bind(canvas),
-                        onComplete: function() {
-                            canvas.remove(activeObject);
-                            normalizeZIndex();
-                            saveCanvas();
-                        }
-                    });
-                    return;
-                }
-            }
-            normalizeZIndex();
-            saveCanvas();
-        });
-
-        canvas.on('path:created', function(event) {
-            normalizeZIndex();
-            saveCanvas();
-        });
-        
         $(".new-small").on('mousedown', onNew);
         $('.new-normal').on('mousedown', onNew);
         $('.new-dot').on('mousedown', onNewDot);
+   
+
+        //   canvas.on({
+        //     'touch:gesture': function(e) {
+        //         if (e.e.touches && e.e.touches.length == 2) {
+        //             pausePanning = true;
+        //             var point = new fabric.Point(e.self.x, e.self.y);
+        //             if (e.self.state == "start") {
+        //                 zoomStartScale = canvas.getZoom();
+                       
+        //             }
+        //             var delta = zoomStartScale * e.self.scale;
+        //             canvas.zoomToPoint(point, delta);
+        //             pausePanning = false;
+        //             saveViewPortConfiguration();
+        //         }
+        //     },
+        //     'object:selected': function() {
+        //         pausePanning = true;
+        //     },
+        //     'selection:cleared': function() {
+        //         pausePanning = false;
+        //         //updateNoteCounters();
+        //     },
+        //     'touch:drag': function(e) {
+        //         console.log('dentro');
+        //         if (!isEditKanbanMode && !canvas.selection && !canvas.isDrawingMode && pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
+        //             var target = canvas.findTarget(e.e);
+            
+        //             if (target && (target.cl === 'n' || target.cl === 'd' || target.type == 'path')) {
+        //                 pausePanning = true;
+        //                 return;
+        //             }
+            
+        //             currentX = e.e.layerX;
+        //             currentY = e.e.layerY;
+        //             xChange = currentX - lastX;
+        //             yChange = currentY - lastY;
+            
+        //             if ((Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
+        //                 var currentViewPort = canvas.viewportTransform;
+        //                 var newX = currentViewPort[4] + xChange;
+        //                 var newY = currentViewPort[5] + yChange;
+            
+        //                 var delta = new fabric.Point(newX - currentViewPort[4], newY - currentViewPort[5]);
+        //                 canvas.relativePan(delta);
+        //                 saveViewPortConfiguration();
+        //             }
+            
+        //             lastX = e.e.layerX;
+        //             lastY = e.e.layerY;
+        //         }
+        //     }
+        //});
+
+
     }
 
-    function updateNoteCounters() {
-        let columnConfigurations = getColumnConfiguration();
 
-        let separators =  canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('sep'));
-    
-        canvas.getObjects().forEach(obj => {
-            if (obj.cl==='n') {
-                let columnIndex = separators.findIndex(sep => sep && obj.left < sep.left);
-                if (columnIndex > -1) {
-                    columnConfigurations[columnIndex].count++;
-                }
-            }
-        });
-    
-        columnConfigurations.forEach(column => {
-            updateColumnTitle(column.id, column.count);
-            if (column.colorThreshold && column.count > column.colorThreshold) {
-                setColorForColumn(column.id, '#ef3340');
-            } else {
-                setColorForColumn(column.id, 'default');
-            }
-        });
-    }
 
-    function setColorForColumn(columnId, color) {
-        let columnTitle = canvas.getObjects().find(obj => obj.id === columnId);
-        if (columnTitle) {
-            columnTitle.set('fill', color === 'default' ? 'black' : color); 
-            canvas.requestRenderAll();
-        }
-    }
-
-    function updateColumnTitle(columnId, counter) {
-        let column = canvas.getObjects().find(obj => obj.id === columnId);
-        if (column) {
-            let baseText = column.text.split(' - ')[0];
-            if (counter > 0) {
-                column.text = baseText + ' - ' + counter;
-            } else {
-                column.text = baseText;
-            }
-            canvas.requestRenderAll();
-        }
-    }
-
-    function getColumnConfiguration () {
-        return [
-            { id: 'col1', title: 'Todo', count: 0, proportion: 0.35 },
-            { id: 'col2', title: 'In Progress', count: 0, colorThreshold: 3, proportion: 0.35 },
-            { id: 'col3', title: 'Done', count: 0, proportion: 0.3 }
-        ];
-    }
-
-    function normalizeZIndex() {
-        let maxPathIndex = -1;
-        let objects = canvas.getObjects();
-    
-        objects.forEach((object, index) => {
-            if (object.type === 'path') {
-                maxPathIndex = Math.max(maxPathIndex, index);
-            }
-        });
-    
-        objects.forEach(object => {
-            if (object.type === 'group' && canvas.getObjects().indexOf(object) <= maxPathIndex) {
-                canvas.bringToFront(object);
-            }
-        });
-    
-        canvas.renderAll();
-    }
-
-    function getColors () {
-        return {
-            yellow: {
-                primary: '#fef639',
-                secondary: darkenColor('#fef639', 20),
-                text: '#000000'
-            },
-            blue: {
-                primary: '#34afd8',
-                secondary: darkenColor('#34afd8', 20),
-                text: '#ffffff'
-            },
-            rose: {
-                primary: '#fd4289',
-                secondary: darkenColor('#fd4289', 20),
-                text: '#ffffff'
-            },
-            violet: {
-                primary: '#cf7aef',
-                secondary: darkenColor('#cf7aef', 20),
-                text: '#ffffff'
-            },
-            green: {
-                primary: '#bdda1e',
-                secondary: darkenColor('#bdda1e', 20),
-                text: '#000000'
-            },
-            orange: {
-                primary: '#ffca20',
-                secondary: darkenColor('#ffca20', 20),
-                text: '#000000'
-            },
-            welcome: {
-                primary: '#ffffff',
-                secondary: darkenColor('#ffffff', 20),
-                text: '#000000'
-            }
-        };
-    }
-
-    function showWelcome () {
-        let colors = getColors();
-
+    function createWelcomeNote () {
+        let colors = CanvasUtilities.getColors();
+        
         var gradient = new fabric.Gradient({
             type: 'radial',
             coords: {
@@ -562,33 +218,26 @@ const Sketch = (function () {
             cl: 'n'
         });
 
-        let randomAngle = 0; // Math.floor((Math.random() * 6) + 1) - 3; 
-
         group.animate('opacity', 1, {
             duration: 300, 
             onChange: canvas.renderAll.bind(canvas),
-            onComplete: function () {  group.set('opacity', 1);  saveCanvas() }
-        });
-
-        group.animate('angle', randomAngle, {
-            duration: 200, 
-            onChange: canvas.renderAll.bind(canvas)
+            onComplete: function () {  group.set('opacity', 1); canvasController.saveCanvas() }
         });
 
         group.on('mousedblclick', editNote);
         canvas.viewportCenterObject(group);
         canvas.add(group);
         
-        updateNoteCounters();
-        saveCanvas();
+        canvasController.updateNoteCounters();
+        canvasController.saveCanvas();
     }
 
     function onNew () {
         showNotes();
 
-        normalizeZIndex ();
+        canvasController.normalizeZIndex ();
         
-            let colors = getColors();
+            let colors = CanvasUtilities.getColors();
 
             let str = $(this).attr("class");
             let regex = /new-(\w+)\s+(\w+)/;
@@ -692,7 +341,7 @@ const Sketch = (function () {
             group.animate('opacity', 1, {
                 duration: 300, 
                 onChange: canvas.renderAll.bind(canvas),
-                onComplete: function () {  group.set('opacity', 1);  saveCanvas() }
+                onComplete: function () {  group.set('opacity', 1);  canvasController.saveCanvas() }
             });
 
             group.animate('angle', randomAngle, {
@@ -704,8 +353,8 @@ const Sketch = (function () {
             assignConfigToObject (group);
 
             canvas.add(group);
-            updateNoteCounters();
-            saveCanvas();
+            canvasController.updateNoteCounters();
+            canvasController.saveCanvas();
     }
 
     function assignConfigToObject (obj) {
@@ -746,12 +395,12 @@ const Sketch = (function () {
     function onNewDot () {
         showNotes();
 
-        normalizeZIndex ();
+        canvasController.normalizeZIndex ();
 
             const colors = {
                 red: {
                     primary: '#ff0000',
-                    secondary: darkenColor('#ff0000', 20)
+                    secondary: CanvasUtilities.darkenColor('#ff0000', 20)
                 }
             };
             
@@ -793,7 +442,7 @@ const Sketch = (function () {
 
             circle.on('mousedblclick', removeDot);
             canvas.add(circle);
-            saveCanvas();
+            canvasController.saveCanvas();
     }
 
     function isOverlapping(note, space, width, height) {
@@ -861,118 +510,56 @@ const Sketch = (function () {
             canvas.remove(textForEditing);
             canvas.requestRenderAll();
             canvas.setActiveObject(target);
-            saveCanvas();
+            canvasController.saveCanvas();
         })
     }
-
     
-    function setPointerMode() {
-        canvas.isDrawingMode = false;
-        canvas.selection = false;
+    var _clipboard;  
+
+    function Copy() {
+        var activeObject = canvas.getActiveObject();
+
+        if (activeObject) {
+            activeObject.clone(function(cloned) {
+            _clipboard = cloned;
+            });
+        }
     }
 
-    function setSelectionMode() {
-        canvas.isDrawingMode = false;
-        canvas.selection = true;
-    }
-    
-    function setEraserMode() {
+    function Paste() {
+        if (_clipboard) {
+            _clipboard.clone(function(clonedObj) {
+            canvas.discardActiveObject();
         
-        // Crear un objeto de círculo en Fabric.js
-        var circle = new fabric.Circle({
-            radius: 10,
-            fill: 'white',
-            stroke: 'black',
-            strokeWidth: 1,
-            left: 100,
-            top: 100,
-            selectable: false,
-            hasBorders: false,
-            hasControls: false
-        });
-        canvas.add(circle);
-
-        // Ocultar el cursor real
-        canvas.getElement().style.cursor = "none";
-
-
-
-    }
-    
-        var _clipboard;  
-
-        function Copy() {
-            var activeObject = canvas.getActiveObject();
-
-            if (activeObject) {
-                activeObject.clone(function(cloned) {
-                _clipboard = cloned;
+            clonedObj.set({
+                left: clonedObj.left + 10, 
+                top: clonedObj.top + 10,
+                evented: true, 
+            });
+        
+            if (clonedObj.type === 'activeSelection') {
+                clonedObj.canvas = canvas;
+                clonedObj.forEachObject(function(obj) {
+                assignConfigToObject(obj);
+                canvas.add(obj);
                 });
+                clonedObj.setCoords();
+            } else {
+                assignConfigToObject(clonedObj);
+                canvas.add(clonedObj);
             }
+
+            _clipboard.top += 10;
+            _clipboard.left += 10;
+        
+            canvas.setActiveObject(clonedObj);
+            canvas.requestRenderAll();
+            });
         }
-
-        function Paste() {
-            if (_clipboard) {
-              _clipboard.clone(function(clonedObj) {
-                canvas.discardActiveObject();
-          
-                clonedObj.set({
-                  left: clonedObj.left + 10, 
-                  top: clonedObj.top + 10,
-                  evented: true, 
-                });
-          
-                if (clonedObj.type === 'activeSelection') {
-                  clonedObj.canvas = canvas;
-                  clonedObj.forEachObject(function(obj) {
-                    assignConfigToObject(obj);
-                    canvas.add(obj);
-                  });
-                  clonedObj.setCoords();
-                } else {
-                    assignConfigToObject(clonedObj);
-                    canvas.add(clonedObj);
-                }
-
-                _clipboard.top += 10;
-                _clipboard.left += 10;
-          
-                canvas.setActiveObject(clonedObj);
-                canvas.requestRenderAll();
-              });
-            }
-          }
-
-
-    function setDrawingMode(colorIndex) {
-        canvas.freeDrawingBrush.color = getColorByIndex(colorIndex);
-        canvas.isDrawingMode = true;
-        canvas.selection = false;
-    
-        if (isEraserMode) {
-            toggleEraserMode();
         }
-    }
-    
+   
     function changeColor(color) {
-        switch (color) {
-            case 'pointer':
-                setPointerMode();
-                break;
-            case 'selection':
-                setSelectionMode();
-                break;
-            case 'eraser':
-                setEraserMode();
-                break;
-            default:
-                currentColorIndex = color;
-                setDrawingMode(currentColorIndex);
-                break;
-        }
-
-        
-        canvas.requestRenderAll();
+       canvasController.changeColor(color);
     }
 
     function deleteSelectedObjects() {
@@ -990,7 +577,7 @@ const Sketch = (function () {
           canvas.remove(activeObject);
         }
 
-        saveCanvas();
+        canvasController.saveCanvas();
         canvas.discardActiveObject(); 
         canvas.requestRenderAll(); 
       }
@@ -1008,7 +595,9 @@ const Sketch = (function () {
         currentCanvasId = id;
 
         loadCanvas(currentCanvasId);
+
         Config.saveActiveDashboard(currentCanvasId);
+        
         notifyAllObservers();
     }
 
@@ -1039,13 +628,13 @@ const Sketch = (function () {
             e.preventDefault();
         } else if (e.key === 'c') {
             if (canvas.isDrawingMode) { currentColorIndex = (currentColorIndex + 1) % 4; }
-            changeColor(currentColorIndex);
+            canvasController.changeColor(currentColorIndex);
         } else if (e.key === 'e') {
             setEraserMode();
         } else if (e.key === 's') {
-            changeColor('selection');
+            canvasController.changeColor('selection');
         } else if (e.key === 'p') {
-            changeColor('pointer');
+            canvasController.changeColor('pointer');
         } else if (e.key === 'k') {
             clearCanvas(); 
         } else if (e.key === 'h') {
@@ -1080,7 +669,8 @@ const Sketch = (function () {
                 if (isEraserMode) {
                     toggleEraserMode(); 
                 }
-                saveCanvas();
+                canvasController.saveCanvas();
+
                 $( this ).dialog( "close" );
               },
               Cancel: function() {
@@ -1088,7 +678,6 @@ const Sketch = (function () {
               }
             }
           });
-
        
     };
 
@@ -1119,7 +708,7 @@ const Sketch = (function () {
                 canvas.remove(obj);
             }
         }
-        saveCanvas();
+        canvasController.saveCanvas();
     }
       
     function Undo() {
@@ -1139,7 +728,6 @@ const Sketch = (function () {
             });
         }
     }
-
    
     function initKanbanBoard() {
         let kanbanElements = canvas.getObjects().filter(obj => obj.cl === 'k');
@@ -1148,7 +736,7 @@ const Sketch = (function () {
         }
         
         let separatorYPosition = 4000;
-        let columnConfigurations = getColumnConfiguration();
+        let columnConfigurations =canvasController.getColumnConfiguration();
     
         let currentLeft = 0;
     
@@ -1182,7 +770,7 @@ const Sketch = (function () {
             currentLeft += columnWidth;
         });
 
-        if (currentCanvasId==1) showWelcome();
+        if (currentCanvasId==1) createWelcomeNote();
     }
    
     async function loadCanvas() {
@@ -1209,7 +797,7 @@ const Sketch = (function () {
         let storeCanvas = await Config.getCanvas(currentCanvasId); 
         currentColorIndex = storeCanvas.colorIndex;
         canvas.freeDrawingBrush.width = 4;
-        canvas.freeDrawingBrush.color = getColorByIndex(currentColorIndex);
+        canvas.freeDrawingBrush.color = CanvasUtilities.getColorByIndex(currentColorIndex);
 
         adjustCanvasZoom();
 
@@ -1231,32 +819,6 @@ const Sketch = (function () {
         canvas.remove(object);
     }
 
-    function saveCanvas() {
-        const currentMode = canvas.isDrawingMode;
-        canvas.isDrawingMode = false;
-        
-        saveViewPortConfiguration();
-
-        let jsonCanvas = canvas.toJSON(['cl', 'id']);
-        let storeCanvas = { colorIndex: currentColorIndex, content:  JSON.stringify(jsonCanvas) };     
-        
-        Config.saveCanvas(currentCanvasId, storeCanvas);
-        canvas.isDrawingMode = currentMode;
-    }
-
-    function saveViewPortConfiguration() {
-        let zoom = canvas.getZoom();
-        let viewPortTransform = canvas.viewportTransform;
-        let orientation = getUserOrientation();
-
-        const key = `c_${currentCanvasId}_${orientation}`;
-        const configuration = {
-            zoom: zoom,
-            vpt: viewPortTransform,
-        };
-        localStorage.setItem(key, JSON.stringify(configuration));
-    }
-
     function retrieveConfiguration(orientation) {
         
         const key = `c_${currentCanvasId}_${orientation}`;
@@ -1264,16 +826,11 @@ const Sketch = (function () {
         if (savedConfiguration) {
             return JSON.parse(savedConfiguration);
         }
-        return null; // Return null if no configuration is found
+        return null; 
     }
     
-    function getColorByIndex (index) {
-        const colors = ['#000000', '#0047bb', '#ef3340', '#00a651'];
-        return colors[index];
-    }
-
-    return { init, loadCanvas, clearCanvas, changeColor, clearAllCanvas, toggleNotesVisibility, showWelcome, 
-        addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard };
+    return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
+        addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor };
 })();
 
 window.Sketch = Sketch;

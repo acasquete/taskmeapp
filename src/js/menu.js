@@ -60,11 +60,11 @@ $(document).ready(function() {
             };
 
             var selection = selectionMap[toolFunction];
-            Sketch.changeColor(selection);
+            Sketch.changeColor(selection, );
             break;
 
             case 'toggleFullScreen':
-                Taskboard.toggleFullscreen();
+                Sketch.toggleFullscreen();
                 break;
             case 'eraseDashboard':
                 Sketch.clearCanvas();
@@ -73,7 +73,7 @@ $(document).ready(function() {
                 Sketch.toggleNotesVisibility();
                 break;
             case 'welcome':
-                Sketch.showWelcome();
+                Sketch.createWelcomeNote();
                 break;
             case 'removeNotes':
                 Sketch.clearAllCanvas();

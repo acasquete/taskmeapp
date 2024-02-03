@@ -112,14 +112,6 @@ const Data = (function () {
         userId = newUserId;
     }
     
-    function convertNestedArrayForFirestore(nestedArray) {
-        return nestedArray.map(subArray => JSON.stringify(subArray));
-    }
-
-    function revertFirestoreDataToNestedArray(data) {
-        return data.map(subArrayString => JSON.parse(subArrayString));
-    }
-
     return {
         getDashboard: getDashboard,
         getCanvas: getCanvas,
