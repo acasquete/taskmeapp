@@ -2,7 +2,9 @@ import { CanvasUtilities } from './canvasUtilities';
 import { Config } from './configService';
 
 export class CanvasController {
+    
     private canvas: fabric.Canvas;
+    public isLoading: boolean = true;
     private isEditKanbanMode: boolean = false;
     private targetElement!: fabric.Object | null;
     private originalPosition: { x: number } = { x: 0 };
@@ -149,7 +151,6 @@ export class CanvasController {
         });
 
         this.canvas.on('touch:drag', (e: fabric.IEvent) => {
-            console.log('dentro');
             if (!this.isEditKanbanMode && !this.canvas.selection && !this.canvas.isDrawingMode && !this.pausePanning && e.e.layerX !== undefined && e.e.layerY !== undefined) {
                 const target = this.canvas.findTarget(e.e, true);
                 if (target && target.cl && (['n', 'd'].includes(target.cl) || target.type === 'path')) { 
@@ -177,15 +178,27 @@ export class CanvasController {
             }
         });
 
-        this.canvas.on('object:moving', (e: fabric.IEvent) => {
-            const obj = e.target as fabric.Object & { cl?: string };
-            
-            if (obj && obj.cl === 'n') {
-                this.updateNoteCounters();
-            }
-        });
+        
+        this.canvas.on('object:scaling', this.onUpdatingObject.bind(this));
+        this.canvas.on('object:moving', this.onUpdatingObject.bind(this));
+        this.canvas.on('object:rotating', this.onUpdatingObject.bind(this));
 
-        this.canvas.on('object:added', () => {
+        this.canvas.on('object:added', (event: fabric.IEvent) => {
+            
+            if (this.isLoading) return;
+
+            const uniqueId = this.genId();
+            const obj = event.target; 
+
+            if (obj.virtual) return;
+
+            obj.set({ id: uniqueId }); 
+
+            const objData = obj.toJSON(['id','virtual','left','top']); 
+
+            console.log(objData);
+            Data.sendCanvasObject({ a: 'oa', d: JSON.stringify(objData) } );
+
             this.saveState();
         });
 
@@ -217,12 +230,30 @@ export class CanvasController {
             this.normalizeZIndex();
             this.saveCanvas();
         });
+    }
 
-        this.canvas.on('path:created', (event: fabric.IEvent) => {
-            this.normalizeZIndex();
-            this.saveCanvas();
-        });
+    genId() : string {
+        return Math.random().toString(36).substr(2, 9);
+    }
 
+    private onUpdatingObject (e: fabric.IEvent) {
+        const obj = e.target as fabric.Object & { cl?: string };
+        
+        let objectData = { 
+            id: obj.id, 
+            l: obj.left?.toFixed(2), 
+            t: obj.top?.toFixed(2), 
+            sx: obj.scaleX?.toFixed(2),
+            sy: obj.scaleY?.toFixed(2),
+            an: obj.angle?.toFixed(2),
+            a: 'om' 
+        };
+            
+        Data.sendCanvasObject(objectData);
+
+        if (obj && obj.cl === 'n') {
+            this.updateNoteCounters();
+        }
     }
 
     public saveViewPortConfiguration(): void {
@@ -250,6 +281,7 @@ export class CanvasController {
                     obj.set({
                         left: this.sepInitPositions[objIndex - 1] + deltaX,
                     });
+                    
                 }
             }
         });
@@ -258,26 +290,56 @@ export class CanvasController {
         this.canvas.renderAll();
     }
 
+    deleteSelectedObjects(): void {
+        const activeObject = this.canvas.getActiveObject();
+      
+        if (!activeObject) {
+          return;
+        }
+      
+        if (activeObject.type === 'activeSelection') {
+          activeObject.forEachObject((object: fabric.Object) => {
+            Data.sendCanvasObject({a:'do', d: object.id });
+            this.canvas.remove(object);
+          });
+        } else {
+            Data.sendCanvasObject({a:'do', d: activeObject.id })
+            this.canvas.remove(activeObject);
+        }
+      
+        this.saveCanvas();
+        this.canvas.discardActiveObject();
+        this.canvas.requestRenderAll();
+      }
+
     public adjustColumns(): void {
         const cols = this.canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));
 
+        let colData: any[] = [];
+        
         cols.forEach((col, index) => {
             const minColumnWidth = 400;
             const sepLeft = index === 0 ? 0 : (this.getObjectById('sep' + index) as fabric.Object).left as number;
             const nextSep = this.getObjectById('sep' + (index + 1)) as fabric.Object;
             let nextSepLeft = nextSep ? nextSep.left as number : this.canvas.width as number;
 
-            
             if (nextSepLeft - sepLeft < minColumnWidth) {
                 nextSep.set({ left: sepLeft + minColumnWidth });
                 nextSepLeft = nextSep.left as number;
             }
 
-            col.set({
+            col.set({ 
                 left: sepLeft,
                 width: nextSepLeft - sepLeft
             });
+
+            colData.push({i: (index +1 ), l: sepLeft.toFixed(2), w: col.width?.toFixed(2) });
+           
         });
+    
+        if (this.isEditKanbanMode) {
+            Data.sendCanvasObject({a: 'cm', d: JSON.stringify(colData) });
+        }
 
         this.updateNoteCounters();
         this.canvas.requestRenderAll();

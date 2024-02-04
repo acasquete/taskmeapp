@@ -2,6 +2,7 @@ const Data = (function () {
     "use strict";
 
     var userId = null;
+    var externalId = null;
     var lastRequestTime = 0;
     var queue = {};
     var timeoutId = null;
@@ -14,11 +15,36 @@ const Data = (function () {
         storageBucket: "taskmeapp.appspot.com",
         messagingSenderId: "368293194406",
         appId: "1:368293194406:web:57077c53432ff205362267",
-        measurementId: "G-T0P2XSLXT5"
+        measurementId: "G-T0P2XSLXT5",
+        databaseURL: "https://taskmeapp-default-rtdb.firebaseio.com/"
     };
     
     firebase.initializeApp(firebaseConfig);
-    var db = firebase.firestore();
+    let db = firebase.firestore();
+    let realTimeDb = firebase.database();
+
+    function saveToRealtimeDatabase(path, data) {
+        realTimeDb.ref(path).set(data, error => {
+            if (error) {
+                console.error(error);
+            }
+        });
+    }
+
+    function listenToRealtimeDatabase(path, callback) {
+        realTimeDb.ref(path).on('value', snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                callback(data);
+            }
+        }, error => {
+            console.error(error);
+        });
+    }
+
+    function stopListeningToRealtimeDatabase(path) {
+        realTimeDb.ref(path).off('value');
+    }
 
     function saveToFirestore(collectionPath, docId, data) {
         return db.collection(collectionPath).doc(docId).set(data)
@@ -103,14 +129,64 @@ const Data = (function () {
             return null;
         }
 
+        let path = `dashboard_test`;
+        listenToRealtimeDatabase(path, (data) => {
+            if (data.uid != externalId) {
+                switch (data.a) {
+                    case 'om': // Object moving
+                        Sketch.updatePositionRealTime (data);
+                        break;
+                    case 'cm': // Column moving
+                        let colData = JSON.parse(data.d);
+                        colData.forEach((canvasObj) => {
+                            Sketch.updatePositionRealTime ({id: 'sep'+canvasObj.i, l: (+canvasObj.l) + (+canvasObj.w)});
+                            Sketch.updatePositionRealTime ({id: 'col'+canvasObj.i, l: canvasObj.l, w: canvasObj.w});
+                        });
+                        break;
+                    case 'oa': // Object added
+                        Sketch.addObjectRealTime ( JSON.parse(data.d) );
+                        break;
+                    case 'do': // Delete object
+                        Sketch.removeObjectRealTime ( data.d );
+                        break;
+                    case 'tu': // Text Update
+                        Sketch.updateTextRealTime ( data.id, data.d );
+                        break;
+                }
+            }
+        });
+
         const docId = `c${id}`;
         const collectionPath = `users/${userId}/canvas`;
         return fetchFirestoreDocument(collectionPath, docId);
     }
 
+    function genId() {
+        return Math.random().toString(36).substr(2, 9);
+    }
+
     function setUserId(newUserId) {
         userId = newUserId;
+        externalId = genId();
     }
+
+    let lastEventTime = 0; 
+    const throttleDelay = 100; 
+
+    function sendCanvasObject(data) {
+        const currentTime = Date.now();
+        
+        if (currentTime - lastEventTime > throttleDelay) {
+            lastEventTime = currentTime;
+
+            const path = `dashboard_test`;
+            data.uid = externalId;
+
+            saveToRealtimeDatabase(path, data); 
+        }
+    }
+
+    
     
     return {
         getDashboard: getDashboard,
@@ -118,6 +194,7 @@ const Data = (function () {
         saveDashboard: saveDashboard,
         saveCanvas: saveCanvas,
         setUserId: setUserId,
+        sendCanvasObject: sendCanvasObject
     };
 })();
 

@@ -9,6 +9,7 @@ declare module 'fabric' {
     interface Object {
       cl: string;
       id: string;
+      virtual: boolean;
     }
   }
 }

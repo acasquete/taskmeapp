@@ -165,6 +165,10 @@ const Sketch = (function () {
         canvasController.saveCanvas();
     }
 
+    function genId() {
+        return Math.random().toString(36).substr(2, 9);
+    }
+
     function onNew () {
         showNotes();
 
@@ -198,6 +202,17 @@ const Sketch = (function () {
 
         var noteHeight = size === 'small' ? 75 : 150; 
 
+        var square = new fabric.Rect({
+            originX: 'center',
+            originY: 'top',
+            left: 0, 
+            top: 0,  
+            width: 150,
+            height: noteHeight,
+            fill: gradient,
+            shadow: 'rgba(0,0,0,0.6) 0px 0px 5px'
+        });
+
         var text = new fabric.Textbox('To Do', {
             originX: 'center',
             originY: 'top',
@@ -210,17 +225,6 @@ const Sketch = (function () {
             fill: colors[color].text 
             });
 
-        var square = new fabric.Rect({
-            originX: 'center',
-            originY: 'top',
-            left: 0, 
-            top: 0,  
-            width: 150,
-            height: noteHeight,
-            fill: gradient,
-            shadow: 'rgba(0,0,0,0.6) 0px 0px 5px'
-        });
-
         var group = new fabric.Group([square, text], {
             originX: 'center',
             originY: 'top',
@@ -229,11 +233,14 @@ const Sketch = (function () {
             hasControls: false, 
             hasBorders: false,
             opacity: 0,
-            cl: 'n'
+            cl: 'n',
+            id: genId()
         });
 
         const noteWidth = 150;
         const margin = 5;
+
+        text.set({ top: square.top + (square.height - text.getScaledHeight()) / 2});
 
         let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
         let separatorLeft = separator1 ? separator1.left : canvas.width / 3;
@@ -293,6 +300,8 @@ const Sketch = (function () {
 
         if (obj.type === 'group') {
             obj.set({
+                originX: 'center',
+                originY: 'top',
                 hasControls: false,
                 hasBorders: false,
                 lockRotation: true,
@@ -301,26 +310,23 @@ const Sketch = (function () {
             });
             obj.on('mousedblclick', editNote);
            
-        }
-
-        if (obj.cl === 'd') {
+        } else if (obj.cl === 'd') {
             obj.set({
+
                 hasControls: false,
                 hasBorders: false,
                 visible: true,
             });
 
             obj.on('mousedblclick', removeDot);
-        }
-
-        if (obj.cl==='k') {
+        } else if (obj.cl==='k') {
             obj.set({
                 hasControls: false,
                 hasBorders: false,
                 lockRotation: true,
                 selectable: false
             });
-        }
+        } 
     }
 
     function onNewDot () {
@@ -435,15 +441,24 @@ const Sketch = (function () {
                 visible: true,
                 splitByGrapheme: false
             });
+
+            var centeredTop = rect.top + (rect.height - textForEditing.getScaledHeight()) / 2;
+            text.set('top', centeredTop);
+
             target.addWithUpdate();
             
             textForEditing.visible = false;
+
+            Data.sendCanvasObject({a:'tu', id: opt.target.id, d: newVal });
+
             canvas.remove(textForEditing);
             canvas.requestRenderAll();
             canvas.setActiveObject(target);
             canvasController.saveCanvas();
         })
     }
+
+    
     
     var _clipboard;  
 
@@ -492,26 +507,6 @@ const Sketch = (function () {
     function changeColor(color) {
        canvasController.changeColor(color);
     }
-
-    function deleteSelectedObjects() {
-        var activeObject = canvas.getActiveObject();
-      
-        if (!activeObject) {
-          return;
-        }
-      
-        if (activeObject.type === 'activeSelection') {
-          activeObject.forEachObject(function(object) {
-            canvas.remove(object);
-          });
-        } else {
-          canvas.remove(activeObject);
-        }
-
-        canvasController.saveCanvas();
-        canvas.discardActiveObject(); 
-        canvas.requestRenderAll(); 
-      }
 
     async function switchDashboard(id, initial) {
 
@@ -579,7 +574,7 @@ const Sketch = (function () {
             e.preventDefault();
             Redo();
         } else if (e.key === 'Delete' || e.key === 'Backspace') {
-            deleteSelectedObjects();
+            canvasController.deleteSelectedObjects();
             e.preventDefault();
         }
     };
@@ -661,6 +656,9 @@ const Sketch = (function () {
     }
    
     function initKanbanBoard() {
+
+        canvasController.isLoading = true;
+
         let kanbanElements = canvas.getObjects().filter(obj => obj.cl === 'k');
         if (kanbanElements.length > 0) {
             return;
@@ -702,6 +700,8 @@ const Sketch = (function () {
         });
 
         if (currentCanvasId==1) createWelcomeNote();
+
+        canvasController.isLoading = false;
     }
    
     async function loadCanvas() {
@@ -725,6 +725,8 @@ const Sketch = (function () {
             
     async function loadCanvasAsync() {
 
+        canvasController.isLoading = true;
+
         let storeCanvas = await Config.getCanvas(currentCanvasId); 
         currentColorIndex = storeCanvas.colorIndex;
         canvas.freeDrawingBrush.width = 4;
@@ -743,6 +745,8 @@ const Sketch = (function () {
 
             initKanbanBoard();
         }
+
+        canvasController.isLoading = false;
     }
 
     function removeDot(e) {
@@ -759,9 +763,103 @@ const Sketch = (function () {
         }
         return null; 
     }
+
+    function updatePositionRealTime (data)
+    {
+        console.log(data);
+
+        const object = canvas.getObjects().find(obj => obj.id === data.id);
+
+        if (!object) return;
+
+        const updates = {};
+        if (typeof data.l !== 'undefined') {
+            updates.left = +data.l;
+        }
+        if (typeof data.t !== 'undefined') {
+            updates.top = +data.t;
+        }
+        if (typeof data.w !== 'undefined') {
+            updates.width = +data.w;
+        }
+        if (typeof data.sx !== 'undefined') {
+            updates.scaleX = +data.sx;
+        }
+        if (typeof data.sy !== 'undefined') {
+            updates.scaleY = +data.sy;
+        }
+        if (typeof data.an !== 'undefined') {
+            updates.angle = +data.an;
+        }
+        
+        if (Object.keys(updates).length > 0) {
+            object.set(updates);
+            object.setCoords();
+        }
+
+        canvasController.updateNoteCounters();
+        canvas.requestRenderAll();
+    }
+
+    function removeObjectRealTime (id)
+    {
+        const object = canvas.getObjects().find(obj => obj.id === id);
+
+        canvas.remove(object);
+
+        canvasController.updateNoteCounters();
+        canvas.requestRenderAll();
+    }
+
+    function updateTextRealTime (id, newVal)
+    {
+        console.log(id);
+        const target = canvas.getObjects().find(obj => obj.id === id);
+        var text = target.getObjects().find(obj => obj.type === 'textbox');
+        var rect = target.getObjects().find(obj => obj.type === 'rect');
+
+        text.set({text:newVal});
+
+        var centeredTop = rect.top + (rect.height - text.getScaledHeight()) / 2;
+            text.set('top', centeredTop);
+
+        canvas.requestRenderAll();
+    }
+
+
+    function addObjectRealTime(data) {
+    
+
+        if (data.type==='group') {
+            fabric.util.enlivenObjects(data.objects, function(objects) {
+                console.log(data);
+                console.log(objects);
+                var group = new fabric.Group(objects, {
+                    left: data.left,
+                    top: data.top,
+                    id: data.id,
+                    cl: data.cl
+                    
+                });
+                group.set({virtual: true});
+                assignConfigToObject(group);
+                canvas.add(group);
+                canvas.renderAll();
+            });
+        } else if (data.type === 'path') {
+            fabric.Path.fromObject(data, function(path) {
+                path.set({virtual: true});
+                canvas.add(path);
+                canvas.renderAll();
+            });
+        }
+
+        
+    }
     
     return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
-        addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor };
+        addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor, 
+        addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateTextRealTime};
 })();
 
 window.Sketch = Sketch;

@@ -1,34 +1,33 @@
 MVP
-OK. No seleccion al seleccionar nota (al menos en tactil).
-OK Break line.
-OK Implementar Control+C + Control+V
+SHARE - Generar id
+SHARE - Leer id 
+SHARE - Dejar de compartir
+SHARE - Solo enviar si hay alguien conectado
+
 Touch doubletap.
 BUG. Al hacer click en tablero se desplaza revisar Drag.
 Undo.
-Centrar texto en nota.
 Add date to dashbord for conflict resolution
 Eraser mode with cursor
 Drag and Drop Dots / Normalize dots
 Add angle when creating note
-Share taskboard
 AI Suggestions (key in localstorage)
 Refactor to Typescript
+Responsive menu
 
 NICE TO HAVE
-
-When deleting the whole dashboard keep kanban elements
-Load SVG as drawn line
+Use compression to store data
+When doubleclicking on a note move it to the right column if there is
 Avoid rotating, scaling on selection
+Add column
+Edit column name
+Help window
 Limit length
 Avoid double shading when editing
 Thumbnail Dashboard
-Dark mode
-When doubleclicking on a note move it to the right column if there is
 Padding in the note
-Responsive menu
-Add column
-Help window
 Swimlines
-Edit column name
+When deleting the whole dashboard keep kanban elements
 Adjust column notes to new position
-Use compression to store data
+Dark mode
+Load SVG as drawn line
