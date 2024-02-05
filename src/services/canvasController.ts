@@ -21,6 +21,7 @@ export class CanvasController {
     private state: any = [];
     private mods = 0;
     private currentCanvasId: number = 0;
+    private sharedCanvasId: string = '';
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -494,9 +495,15 @@ export class CanvasController {
         this.saveViewPortConfiguration();
 
         let jsonCanvas = this.canvas.toJSON(['cl', 'id']);
-        let storeCanvas = { colorIndex: this.currentColorIndex, content:  JSON.stringify(jsonCanvas) };     
+        let storeCanvas = { sharedCanvasId: this.sharedCanvasId, colorIndex: this.currentColorIndex, content:  JSON.stringify(jsonCanvas) };     
         
         Config.saveCanvas(this.currentCanvasId, storeCanvas);
         this.canvas.isDrawingMode = currentMode;
+    }
+
+    public setSharedId (sharedId: string) : void {
+        this.sharedCanvasId = sharedId;
+
+        this.saveCanvas();
     }
 }

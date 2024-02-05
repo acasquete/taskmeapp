@@ -14,21 +14,33 @@ const Sketch = (function () {
     var mods = 0;
     let observers = []; 
     let canvasController;
+    let sharedCanvasId = '';
 
-    async function init() {
+    async function init(sharedId) {
+
         initCanvas();
         assignDOMEventListeners();
 
         canvasController = new CanvasController(canvas);
         canvasController.assignCanvasEventListeners();
 
-        loadCurrentDashboard();
+        console.log('init');
+        loadCurrentDashboard(sharedId);
     }
 
-    async function loadCurrentDashboard() {
-        currentCanvasId = Config.getActiveDashboard();
-        await switchDashboard(currentCanvasId, true);
+    async function loadCurrentDashboard(sharedId) {
         
+        console.log('loadCurrentDashboard');
+        if (sharedId && sharedId!='') {
+            sharedCanvasId = sharedId
+            currentCanvasId = 10; 
+            console.log('sharedCanvasId-A0-'+sharedCanvasId);
+        } else {
+            currentCanvasId = Config.getActiveDashboard();
+        }
+
+        console.log('sharedCanvasId-A1-'+sharedCanvasId);
+        await switchDashboard(currentCanvasId, sharedCanvasId, true);
     }
 
     function initCanvas() { 
@@ -148,7 +160,8 @@ const Sketch = (function () {
             hasControls: false, 
             hasBorders: false,
             opacity: 0,
-            cl: 'n'
+            cl: 'n',
+            id: genId()
         });
 
         group.animate('opacity', 1, {
@@ -508,22 +521,24 @@ const Sketch = (function () {
        canvasController.changeColor(color);
     }
 
-    async function switchDashboard(id, initial) {
-
+    async function switchDashboard(id, sharedId, initial) {
+        
+        console.log('kkk3' + sharedId);
         if (!initial) { 
             $("#dashboard-number").stop(); 
             $("#dashboard-number").text(id); 
             $("#dashboard-number").fadeIn(100).delay(700).fadeOut(100);
         }
 
-        if (currentCanvasId==id && !initial) return;
-
         currentCanvasId = id;
+        sharedCanvasId = sharedId
 
-        loadCanvas(currentCanvasId);
+        console.log('kkk2' + sharedCanvasId);
+        await loadCanvas(sharedCanvasId);
 
-        Config.saveActiveDashboard(currentCanvasId);
-        canvasController.switchDashboard(currentCanvasId, initial);
+        canvasController.switchDashboard(currentCanvasId, sharedCanvasId, initial);
+        Config.saveActiveDashboard(currentCanvasId,);
+
         notifyAllObservers();
     }
 
@@ -531,7 +546,7 @@ const Sketch = (function () {
         observers.push(observer);
     }
 
-    function notifyAllObservers (observer) {
+    function notifyAllObservers () {
         observers.forEach(function(observer) {
             observer.update(currentCanvasId);
         });
@@ -704,7 +719,7 @@ const Sketch = (function () {
         canvasController.isLoading = false;
     }
    
-    async function loadCanvas() {
+    async function loadCanvas(sharedId) {
 
         const font1 = new FontFace('Kalam', `url(${kalamFontURL})`);
         const font2 = new FontFace('PermanentMarker', `url(${permanentMarkerFontURL})`);
@@ -717,18 +732,23 @@ const Sketch = (function () {
         Promise.all(promesasDeCarga).then((fuentesCargadas) => {
             fuentesCargadas.forEach((fuente) => document.fonts.add(fuente));
     
-            loadCanvasAsync();
+            loadCanvasAsync(sharedId);
         }).catch((error) => {
             console.error("Error al cargar las fuentes", error);
         });
     }
             
-    async function loadCanvasAsync() {
+    async function loadCanvasAsync(sharedId) {
 
         canvasController.isLoading = true;
 
-        let storeCanvas = await Config.getCanvas(currentCanvasId); 
+        console.log('ddd'+sharedId);
+        let storeCanvas = await Config.getCanvas(currentCanvasId, sharedCanvasId);
+
         currentColorIndex = storeCanvas.colorIndex;
+        sharedCanvasId = storeCanvas.sharedCanvasId;
+        canvasController.sharedCanvasId = sharedCanvasId;
+
         canvas.freeDrawingBrush.width = 4;
         canvas.freeDrawingBrush.color = CanvasUtilities.getColorByIndex(currentColorIndex);
 
@@ -826,6 +846,23 @@ const Sketch = (function () {
         canvas.requestRenderAll();
     }
 
+    function createShareSketch () {
+
+        if (!sharedCanvasId) {
+            sharedCanvasId = generateCompactGUID();
+            canvasController.setSharedId(sharedCanvasId);
+        }
+
+        return sharedCanvasId;
+
+    }
+
+    function generateCompactGUID() {
+        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+        });
+    }
 
     function addObjectRealTime(data) {
     
@@ -859,7 +896,8 @@ const Sketch = (function () {
     
     return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
         addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor, 
-        addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateTextRealTime};
+        addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateTextRealTime,
+        createShareSketch};
 })();
 
 window.Sketch = Sketch;

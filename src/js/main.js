@@ -6,19 +6,22 @@ import '../css/fa/css/brands.min.css';
 import '../css/fa/css/solid.min.css';
 import '../services/configService.ts';
 import '../index.ts';
+import './menu.js';
 import './utils.js';
 import './pomodoro.js';
-import './menu.js';
 import './notificationsweb.js';
 import './sketch.js';
 import './data.js';
+
+let sharedId = '';
 
 document.addEventListener('DOMContentLoaded', function() {
 
     var params = new URLSearchParams(window.location.search);
 
-    var sharedId = params.get('sid');
-    
+    sharedId = params.get('sid') ?? '';
+
+    MenuController.init();
     Sketch.init(sharedId);
     Pomodoro.init();
 
@@ -29,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.removeItem('googleToken');
     }
     
+    document.body.style.display = 'block';
 });
 
 
@@ -57,7 +61,7 @@ function signInWithFirebase(googleToken) {
         .then((result) => {
             const user = result.user;
             Data.setUserId(user.uid);
-            Sketch.loadCurrentDashboard();
+            Sketch.loadCurrentDashboard(sharedId);
             isSigned = true;
             hideStatusBarIcon();
         }).catch((error) => {

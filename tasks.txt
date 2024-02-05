@@ -1,4 +1,10 @@
 MVP
+
+Guardar dashboard como global
+Marcar dashboard 6 que es compartido
+
+
+
 SHARE - Generar id
 SHARE - Leer id 
 SHARE - Dejar de compartir
