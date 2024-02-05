@@ -99,7 +99,7 @@
     border-radius: 0.5rem;
     cursor: pointer;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    height: 45px;
+    height: 3rem;
 }
 
 .dash {
@@ -144,3 +144,76 @@
 .tool[data-action="red"] i { color: #ef3340; }
 .tool[data-action="green"] i { color: #00a651; }
 .tool[data-action="eraser"] i { color: black; }
+
+.sharing-dashboard button {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    height: 3rem;
+    font-family: "PermanentMarker", sans-serif;
+    font-size: 1.5rem;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.sharing-dashboard button i {
+    font-size: 1.25rem;
+    vertical-align: middle;
+}
+
+/* Modal */
+
+  /* Modal Backdrop Styles */
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(128, 128, 128, 0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+
+/* Modal Styles */
+.modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    max-width: 600px;
+    position: fixed;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+}
+
+/* Close Button Style */
+.close-button {
+    float: right;
+    cursor: pointer;
+
+}
+
+/* Input Group Styles */
+.input-group {
+    display: flex;
+    margin-top: 20px;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.input-group button {
+    cursor: pointer;
+    width: 3rem;
+}

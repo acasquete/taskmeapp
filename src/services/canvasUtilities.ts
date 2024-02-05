@@ -1,5 +1,5 @@
 export class CanvasUtilities {
-    static CANVAS_WIDTH: number = 2000; // Asumiendo una constante para el ancho del lienzo
+    static CANVAS_WIDTH: number = 2000; 
 
     static darkenColor(color: string, amount: number): string {
         let usePound = false;

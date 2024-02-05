@@ -27,12 +27,13 @@
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
     <link rel="manifest" href="/manifest.json">
     <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="shortcut icon" href="https://taskmeapp.com/assets/images/apple-touch-icon.png">
     <link rel="apple-touch-icon" href="https://taskmeapp.com/assets/images/apple-touch-icon.png">
     </head>
-    <body>
+    <body style="display: none;">
         <div class="hamburger-icon">
             <button class="hamburger-button"><i class="fas fa-bars"></i></button>
         </div>
@@ -60,6 +61,10 @@
                 </div>
 
                 <div class="dashboard-grid switch-dashboard"></div>
+
+                <div class="sharing-dashboard">
+                    <button id="shareBoardButton"><i class="fa-solid fa-users"></i> Share Board</button>
+                </div>
                 
                 <div class="g_id_signin"
                         data-type="standard"
@@ -123,6 +128,17 @@
             <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Heads up! Everything on this board will be gone for good. You sure you want to do this?</p>
         </div>
        
+
+        <div class="modal-backdrop" id="modalBackdrop">
+            <div class="modal">
+                <span class="close-button" id="closeButton">&times;</span>
+                <h2>Share dashboard</h2>
+                <div class="input-group">
+                    <input type="text" id="urlInput" value="Generated URL will appear here" readonly>
+                    <button id="copyButton"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+        </div>
 
         <div id="wrapper">
             <canvas id="c"></canvas>

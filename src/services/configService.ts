@@ -34,14 +34,14 @@ export class Config {
         Data.saveCanvas(id, canvas);
     }
 
-    async getCanvas(id: string): Promise<Canvas> {
-        const canvasRemote: Canvas | null = await Data.getCanvas(id);
+    async getCanvas(id: string, sharedId: string): Promise<Canvas> {
+        const canvasRemote: Canvas | null = await Data.getCanvas(id, sharedId);
         if (canvasRemote != null) {
             return canvasRemote;
         }
     
         const canvasString = localStorage.getItem("c" + id);
-        return canvasString ? JSON.parse(canvasString) : { content: '{}', colorIndex: 0 };
+        return canvasString ? JSON.parse(canvasString) : { content: '{}', colorIndex: 0, sharedCanvasId: '' };
     }
 
     getPomodoroState(): PomodoroState {
