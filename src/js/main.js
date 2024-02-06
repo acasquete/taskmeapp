@@ -21,14 +21,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     sharedId = params.get('sid') ?? '';
 
+    Notifications.init();
     MenuController.init();
-    Sketch.init(sharedId);
-    Pomodoro.init();
+    Pomodoro.init(); 
 
     const googleToken = localStorage.getItem('googleToken');
     if (googleToken && !isTokenExpired(googleToken)) {
         signInWithFirebase(googleToken);
     } else {
+        Sketch.init(sharedId);
         localStorage.removeItem('googleToken');
     }
     
@@ -50,6 +51,7 @@ function onSignIn(response) {
 window.onSignIn = onSignIn;
 
 function signInWithFirebase(googleToken) {
+    
     if (isTokenExpired(googleToken)) {
         localStorage.removeItem('googleToken');
         return;
@@ -60,8 +62,9 @@ function signInWithFirebase(googleToken) {
     firebase.auth().signInWithCredential(credential)
         .then((result) => {
             const user = result.user;
+            Sketch.init(sharedId);
             Data.setUserId(user.uid);
-            Sketch.loadCurrentDashboard(sharedId);
+            //Sketch.loadCurrentDashboard(sharedId);
             isSigned = true;
             hideStatusBarIcon();
         }).catch((error) => {

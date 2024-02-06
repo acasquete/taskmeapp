@@ -192,6 +192,10 @@
     cursor: pointer;
 }
 
+.modal p {
+    font-size: 0.8rem;
+}
+
 /* Close Button Style */
 .close-button {
     float: right;
@@ -216,4 +220,7 @@
 .input-group button {
     cursor: pointer;
     width: 3rem;
+    font-size: 1rem;
+    background-color: #eee;
+    border: solid 1px #aaa;
 }

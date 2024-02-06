@@ -16,7 +16,6 @@ export class Config {
 
     saveDashboard(id: string, dashboard: Dashboard): void {
         localStorage.setItem("d" + id, JSON.stringify(dashboard));
-        Data.saveDashboard(id, dashboard);
     }
 
     async getDashboard(id: string): Promise<Dashboard> {

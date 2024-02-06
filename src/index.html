@@ -50,6 +50,7 @@
                     <div class="tool" data-action="eraser" title="Eraser (C)"><i class="fa-regular fa-eraser"></i><span></span></div>
                     <div class="tool" data-action="pointer" title="Pointer (P)"><i class="fas fa-arrow-pointer"></i><span></span></div>
                     <div class="tool" data-action="selection" title="Selection (S)"><i class="fas fa-hand-pointer"></i><span></span></div>
+                    <div class="tool" data-action="text" title="Text (T)"><i class="fa-solid fa-font"></i><span></span></div>
                     <div class="tool" data-action="toggleNotes" title="Toggle Notes (H)"><i class="fas fa-eye"></i><span></span></div>
                     <div class="tool" data-action="toggleFullScreen" title="Fullscreen (F)"><i class="fas fa-expand"></i><span></span></div>
                     <div class="tool" data-action="eraseDashboard" title="Clear Board (K)"><i class="far fa-broom"></i><span></span></div>
@@ -63,7 +64,7 @@
                 <div class="dashboard-grid switch-dashboard"></div>
 
                 <div class="sharing-dashboard">
-                    <button id="shareBoardButton"><i class="fa-solid fa-users"></i> Share Board</button>
+                    <button id="shareBoardButton"><i class="fa-solid fa-users"></i> Live Board</button>
                 </div>
                 
                 <div class="g_id_signin"
@@ -87,6 +88,8 @@
             
         </div>
     
+        <div id="dashboard-notification"></div>
+        
         <div id="dashboard-number"></div>
 
         <div id="statusbar">
@@ -132,10 +135,12 @@
         <div class="modal-backdrop" id="modalBackdrop">
             <div class="modal">
                 <span class="close-button" id="closeButton">&times;</span>
-                <h2>Share dashboard</h2>
+                <h2>Share Live Board</h2>
+                <p>Invite others to collaborate in real time on your Kanban board by sharing this URL.</p>
+                <p>This URL provides direct access to your board for real-time collaboration.</p>
                 <div class="input-group">
                     <input type="text" id="urlInput" value="Generated URL will appear here" readonly>
-                    <button id="copyButton"><i class="fas fa-copy"></i></button>
+                    <button id="copyButton" alt="Copy URL"><i class="fas fa-copy"></i></button>
                 </div>
             </div>
         </div>

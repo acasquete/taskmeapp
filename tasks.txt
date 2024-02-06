@@ -1,30 +1,22 @@
 MVP
-
-Guardar dashboard como global
-Marcar dashboard 6 que es compartido
-
-
-
-SHARE - Generar id
-SHARE - Leer id 
+SHARE - Al borrar nota por arriba sincronizar
 SHARE - Dejar de compartir
 SHARE - Solo enviar si hay alguien conectado
-
 Touch doubletap.
 BUG. Al hacer click en tablero se desplaza revisar Drag.
-Undo.
-Add date to dashbord for conflict resolution
+Undo
 Eraser mode with cursor
 Drag and Drop Dots / Normalize dots
 Add angle when creating note
 AI Suggestions (key in localstorage)
 Refactor to Typescript
 Responsive menu
+Add date to dashbord for conflict resolution
 
 NICE TO HAVE
 Use compression to store data
 When doubleclicking on a note move it to the right column if there is
-Avoid rotating, scaling on selection
+Avoid rotating, scaling on selection ()
 Add column
 Edit column name
 Help window
