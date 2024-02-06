@@ -95,10 +95,15 @@ const Sketch = (function () {
             canvas.setZoom(savedConfiguration.zoom);
 
         } else {
-            let viewportWidth = window.innerWidth; 
-            let zoomLevel = viewportWidth / CANVAS_WIDTH;
-            canvas.setZoom(zoomLevel);
+            defaultZoom();
         }
+    }
+
+    function defaultZoom() {
+        let viewportWidth = window.innerWidth; 
+        let zoomLevel = viewportWidth / CANVAS_WIDTH;
+        canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+        canvas.setZoom(zoomLevel);
     }
 
     function assignDOMEventListeners() {
@@ -621,6 +626,9 @@ const Sketch = (function () {
             Redo();
         } else if (e.key === 'Delete' || e.key === 'Backspace') {
             canvasController.deleteSelectedObjects();
+            e.preventDefault();
+        } else if (e.keyCode === 32) {
+            defaultZoom();
             e.preventDefault();
         }
     };
