@@ -23,6 +23,7 @@ export class CanvasController {
     private currentCanvasId: number = 0;
     private sharedCanvasId: string = '';
     private isTextMode = false;
+    private shouldCancelMouseDown = false;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -62,19 +63,29 @@ export class CanvasController {
             }
         });
 
+        
+
+        this.canvas.on('mouse:down:before', (options: fabric.IEvent) => {
+            this.shouldCancelMouseDown = this.isEditingMode();
+        });
+
         this.canvas.on('mouse:down', (options: fabric.IEvent) => {
             let target = this.canvas.findTarget(options.e, true);
-            if (target && this.isSeparatorElement(target)) {
+
+            if (this.shouldCancelMouseDown) {
+                this.shouldCancelMouseDown = false;
+                return;
+            }
+            
+            if (this.isTextMode && target == undefined) {
+                this.addTextObject(options);
+            } else if (target && this.isSeparatorElement(target)) {
                 this.isEditKanbanMode = true;
                 this.canvas.selection = false;
                 this.targetElement = target;
                 this.targetElement.selectable = false;
                 this.originalPosition = { x: target.left || 0 };
                 this.sepInitPositions = this.getSeparatorsPositionsArray(); 
-            } else {
-                if (this.isTextMode && target == undefined) {
-                    this.addTextObject(options);
-                }
             }
         });
 
@@ -259,6 +270,8 @@ export class CanvasController {
             fill: 'black',
             left: pointer.x,
             top: pointer.y,
+            lockSkewingX: true,
+            lockSkewingY: true,
             cl: 't',
             id: this.genId()
           });
