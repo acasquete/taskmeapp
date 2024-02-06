@@ -22,6 +22,7 @@ export class CanvasController {
     private mods = 0;
     private currentCanvasId: number = 0;
     private sharedCanvasId: string = '';
+    private isTextMode = false;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -70,10 +71,15 @@ export class CanvasController {
                 this.targetElement.selectable = false;
                 this.originalPosition = { x: target.left || 0 };
                 this.sepInitPositions = this.getSeparatorsPositionsArray(); 
+            } else {
+                if (this.isTextMode && target == undefined) {
+                    this.addTextObject(options);
+                }
             }
         });
 
         this.canvas.on('mouse:move', (options: fabric.IEvent) => {
+
             if (this.isEditKanbanMode && this.targetElement) {
                 let pointer = this.canvas.getPointer(options.e);
                 this.targetElement.set({
@@ -86,7 +92,9 @@ export class CanvasController {
         });
 
         this.canvas.on('mouse:up', (options: fabric.IEvent) => {
+            
             this.isEditKanbanMode = false;
+
             if (this.targetElement) {
                 this.targetElement.selectable = false;
                 const pointer = this.canvas.getPointer(options.e);
@@ -153,8 +161,10 @@ export class CanvasController {
 
         this.canvas.on('touch:drag', (e: fabric.IEvent) => {
             if (!this.isEditKanbanMode && !this.canvas.selection && !this.canvas.isDrawingMode && !this.pausePanning && e.e.layerX !== undefined && e.e.layerY !== undefined) {
+                
                 const target = this.canvas.findTarget(e.e, true);
-                if (target && target.cl && (['n', 'd'].includes(target.cl) || target.type === 'path')) { 
+                
+                if (target && target.cl && (['n', 'd', 't'].includes(target.cl) || target.type === 'path')) { 
                     this.pausePanning = true;
                     return;
                 }
@@ -197,7 +207,6 @@ export class CanvasController {
 
             const objData = obj.toJSON(['id','virtual','left','top']); 
 
-            console.log(objData);
             Data.sendCanvasObject({ a: 'oa', d: JSON.stringify(objData) } );
 
             this.saveState();
@@ -237,7 +246,49 @@ export class CanvasController {
         return Math.random().toString(36).substr(2, 9);
     }
 
+    public addTextObject (e: fabric.IEvent) {
+
+        var pointer = this.canvas.getPointer(e);
+
+        var text = new fabric.IText('Start typing...', {
+            originX: 'left',
+            originY: 'top',
+            fontSize: 36,
+            fontFamily: 'Kalam',
+            textAlign: 'center',
+            fill: 'black',
+            left: pointer.x,
+            top: pointer.y,
+            cl: 't',
+            id: this.genId()
+          });
+
+        
+        this.canvas.add(text);
+        
+        this.canvas.setActiveObject(text);
+        text.enterEditing();
+        text.selectAll();
+
+        this.saveCanvas();
+    }
+
+    public isEditingMode(): boolean {
+        const objects = this.canvas.getObjects();
+    
+        const isEditing = objects.some((obj: fabric.Object) => {
+            return (
+                (obj.type === 'textbox' || obj.type === 'i-text') &&
+                (obj as fabric.IText).isEditing === true
+            );
+        });
+
+        return isEditing;
+    }
+
     private onUpdatingObject (e: fabric.IEvent) {
+
+
         const obj = e.target as fabric.Object & { cl?: string };
         
         let objectData = { 
@@ -455,9 +506,13 @@ export class CanvasController {
             case 'eraser':
                 this.setEraserMode();
                 break;
+            case 'text':
+                this.setTextMode();
+                break;
             default:
                 this.currentColorIndex = color;
                 this.setDrawingMode(this.currentColorIndex);
+                Notifications.showAppNotification('Remember, you can draw a straight line by holding down the Shift key while drawing', 'small', 16000);
                 break;
         }
 
@@ -465,13 +520,31 @@ export class CanvasController {
     }
 
     private setPointerMode(): void {
+        console.debug('pointer mode');
+        
         this.canvas.isDrawingMode = false;
         this.canvas.selection = false;
+        this.isTextMode = false;
+        this.canvas.defaultCursor = 'pointerpp';
     }
 
     private setSelectionMode(): void {
+        console.debug('selection mode');
+
         this.canvas.isDrawingMode = false;
         this.canvas.selection = true;
+        this.isTextMode = false;
+        this.canvas.defaultCursor = 'default';
+    }
+
+    private setTextMode(): void {
+        console.debug('text mode');
+        
+        this.canvas.isDrawingMode = false;
+        this.canvas.selection = false;
+        this.isTextMode = true;
+
+        this.canvas.defaultCursor = 'crosshair';
     }
 
     private setDrawingMode(colorIndex: number) {
@@ -505,5 +578,9 @@ export class CanvasController {
         this.sharedCanvasId = sharedId;
 
         this.saveCanvas();
+    }
+
+    public getLastKnownPos () {
+        return { x: this.lastKnownPosX, y: this.lastKnownPosY }; 
     }
 }

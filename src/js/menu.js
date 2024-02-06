@@ -35,7 +35,7 @@ const MenuController = (function () {
             toolDiv.on('click touchend', function(e) {
                 e.preventDefault();
                 var dashboardNumber = $(this).text();
-                Sketch.switchDashboard(dashboardNumber);
+                Sketch.switchDashboard(dashboardNumber, '', false);
             });
         
             var gridItem = new GridItem(toolDiv);
@@ -57,6 +57,7 @@ const MenuController = (function () {
                 case 'eraser': 
                 case 'pointer':
                 case 'selection':
+                case 'text':
     
                 var selectionMap = {
                     'black': 0,
@@ -65,7 +66,8 @@ const MenuController = (function () {
                     'green': 3,
                     'eraser': 'eraser',
                     'pointer': 'pointer',
-                    'selection': 'selection'
+                    'selection': 'selection',
+                    'text': 'text'
                 };
     
                 var selection = selectionMap[toolFunction];
@@ -102,6 +104,11 @@ const MenuController = (function () {
         });
 
         document.getElementById('shareBoardButton').addEventListener('click', function() {
+            if (!Data.isLogged()) {
+                Notifications.showAppNotification ('You need to log in to share a dashboard', 'regular', 8000)
+                return;
+            }
+
             let sharedId = Sketch.createShareSketch();
             showModal(sharedId);
         });
@@ -162,6 +169,7 @@ const MenuController = (function () {
     }
     
     function showModal(sharedId) {
+
         const currentDomain = window.location.origin; 
         const fullURL = `${currentDomain}?sid=${sharedId}`;
         document.getElementById('modalBackdrop').style.display = 'flex';

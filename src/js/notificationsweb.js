@@ -1,7 +1,15 @@
 var Notifications = (function() {
     'use strict';
 
+    let timeoutId;
+
     var notification;
+
+    function init() {
+        document.getElementById("dashboard-notification").onclick = function() {
+           this.style.display = "none";
+        }
+    }
 
     function isSupported() {
         return "Notification" in window;
@@ -45,15 +53,34 @@ var Notifications = (function() {
     {
         if (notification) {
             window.clearTimeout(notification);
-            notification = null; // Restablece el identificador del temporizador
+            notification = null; 
         } 
     }
 
+    function showAppNotification (message, size, timeout = 20000) {
+        var notification = document.getElementById("dashboard-notification");
+        notification.style.display = "block";
+        notification.textContent = message;
+        notification.className = size ?? '';
+
+        console.info(message); 
+
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+
+        timeoutId = setTimeout(function() {
+            notification.style.display = "none";
+        }, timeout);
+    }
+
     return {
+        init: init,
         requestPermission: requestPermission,
         sendNotification: sendNotification,
         scheduleNotification: scheduleNotification,
-        cancelNotification: cancelNotification
+        cancelNotification: cancelNotification,
+        showAppNotification: showAppNotification
     };
 })();
 

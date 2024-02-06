@@ -8,7 +8,6 @@ const Sketch = (function () {
     let canvas, currentColorIndex;
     let isEraserMode = false;
     let currentCanvasId;
-    let isEditMode = false;
     const CANVAS_WIDTH = 2000;
     var state = [];
     var mods = 0;
@@ -24,22 +23,24 @@ const Sketch = (function () {
         canvasController = new CanvasController(canvas);
         canvasController.assignCanvasEventListeners();
 
-        console.log('init');
         loadCurrentDashboard(sharedId);
     }
 
     async function loadCurrentDashboard(sharedId) {
-        
-        console.log('loadCurrentDashboard');
         if (sharedId && sharedId!='') {
             sharedCanvasId = sharedId
-            currentCanvasId = 10; 
-            console.log('sharedCanvasId-A0-'+sharedCanvasId);
+            currentCanvasId = 10; // 10 Start shared dashboards
         } else {
             currentCanvasId = Config.getActiveDashboard();
+
+            if (currentCanvasId>9) {
+                if (!Data.isLogged()) {
+                    Notifications.showAppNotification('You are working on local dashboard now!', 'regular', 8000);
+                    currentCanvasId = 1;
+                }
+            }
         }
 
-        console.log('sharedCanvasId-A1-'+sharedCanvasId);
         await switchDashboard(currentCanvasId, sharedCanvasId, true);
     }
 
@@ -106,6 +107,30 @@ const Sketch = (function () {
         $(".new-small").on('mousedown', onNew);
         $('.new-normal').on('mousedown', onNew);
         $('.new-dot').on('mousedown', onNewDot);
+    }
+
+    function addTextObject () {
+
+        var cursorPosition = canvasController.getLastKnownPos ();
+
+        var text = new fabric.IText('Start typing...', {
+            originX: 'center',
+            originY: 'top',
+            fontSize: 36,
+           
+            fontFamily: 'Kalam',
+            splitByGrapheme: false,
+            textAlign: 'center',
+            fill: 'black',
+            left: cursorPosition.x,
+            top: cursorPosition.y,
+            cl: 't',
+            id: genId()
+          });
+
+        canvas.add(text);
+        
+        canvasController.saveCanvas();
     }
 
     function createWelcomeNote () {
@@ -325,7 +350,6 @@ const Sketch = (function () {
            
         } else if (obj.cl === 'd') {
             obj.set({
-
                 hasControls: false,
                 hasBorders: false,
                 visible: true,
@@ -339,8 +363,17 @@ const Sketch = (function () {
                 lockRotation: true,
                 selectable: false
             });
+        } else if (obj.cl==='t') {
+            obj.set({
+                hasControls: true,
+                hasBorders: true,
+                lockRotation: false,
+                selectable: true
+            });
         } 
     }
+
+
 
     function onNewDot () {
         showNotes();
@@ -441,12 +474,10 @@ const Sketch = (function () {
 
         canvas.add(textForEditing);
         canvas.setActiveObject(textForEditing);
-        isEditMode = true;
         textForEditing.enterEditing();
         textForEditing.selectAll();
 
         textForEditing.on('editing:exited', () =>{
-            isEditMode = false;
             let newVal = textForEditing.text;
             
             text.set({
@@ -523,7 +554,6 @@ const Sketch = (function () {
 
     async function switchDashboard(id, sharedId, initial) {
         
-        console.log('kkk3' + sharedId);
         if (!initial) { 
             $("#dashboard-number").stop(); 
             $("#dashboard-number").text(id); 
@@ -533,7 +563,6 @@ const Sketch = (function () {
         currentCanvasId = id;
         sharedCanvasId = sharedId
 
-        console.log('kkk2' + sharedCanvasId);
         await loadCanvas(sharedCanvasId);
 
         canvasController.switchDashboard(currentCanvasId, sharedCanvasId, initial);
@@ -553,7 +582,7 @@ const Sketch = (function () {
     }
 
     function onKeyPress (e) {
-        if (isEditMode) return;
+        if (canvasController.isEditingMode()) return;
 
         if ((e.ctrlKey || e.metaKey) && !isNaN(e.key)) {
             let num = parseInt(e.key);
@@ -582,6 +611,8 @@ const Sketch = (function () {
             toggleNotesVisibility(); 
          } else if (e.key === 'f') {
             toggleFullscreen(); 
+        } else if (e.key === 't') { 
+            canvasController.changeColor('text');
         } else if (e.keyCode == 90 && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             Undo();
@@ -742,8 +773,7 @@ const Sketch = (function () {
 
         canvasController.isLoading = true;
 
-        console.log('ddd'+sharedId);
-        let storeCanvas = await Config.getCanvas(currentCanvasId, sharedCanvasId);
+        let storeCanvas = await Config.getCanvas(currentCanvasId, sharedId);
 
         currentColorIndex = storeCanvas.colorIndex;
         sharedCanvasId = storeCanvas.sharedCanvasId;
@@ -786,8 +816,6 @@ const Sketch = (function () {
 
     function updatePositionRealTime (data)
     {
-        console.log(data);
-
         const object = canvas.getObjects().find(obj => obj.id === data.id);
 
         if (!object) return;
@@ -833,7 +861,6 @@ const Sketch = (function () {
 
     function updateTextRealTime (id, newVal)
     {
-        console.log(id);
         const target = canvas.getObjects().find(obj => obj.id === id);
         var text = target.getObjects().find(obj => obj.type === 'textbox');
         var rect = target.getObjects().find(obj => obj.type === 'rect');
@@ -866,11 +893,8 @@ const Sketch = (function () {
 
     function addObjectRealTime(data) {
     
-
         if (data.type==='group') {
             fabric.util.enlivenObjects(data.objects, function(objects) {
-                console.log(data);
-                console.log(objects);
                 var group = new fabric.Group(objects, {
                     left: data.left,
                     top: data.top,
@@ -897,7 +921,7 @@ const Sketch = (function () {
     return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
         addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor, 
         addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateTextRealTime,
-        createShareSketch};
+        createShareSketch };
 })();
 
 window.Sketch = Sketch;

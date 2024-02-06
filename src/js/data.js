@@ -49,7 +49,7 @@ const Data = (function () {
 
     function saveToFirestore(collectionPath, docId, data) {
         return db.collection(collectionPath).doc(docId).set(data)
-            .then(() => console.log(`${docId} saved`))
+            .then(() => console.debug(`${collectionPath}/${docId} saved`))
             .catch((error) => console.error(error));
     }
 
@@ -57,7 +57,7 @@ const Data = (function () {
         const prefix = type === 'dashboards' ? 'd' : 'c';
         return `${prefix}${id}`;
     }
-
+    
     function processQueue() {
         lastRequestTime = Date.now();
 
@@ -101,6 +101,9 @@ const Data = (function () {
     }
 
     function saveCanvas(id, canvasData) {
+        if (!userId) {
+           return null;
+        }
         addToQueue('canvas', id, canvasData);
     }
 
@@ -132,111 +135,80 @@ const Data = (function () {
     }
 
     async function getCanvas(id, sharedId) {
+
         if (!userId) {
+            if (sharedId!='') { 
+                Notifications.showAppNotification('You need to log in to access a shared dashboard', 'regular');
+            }
             return null;
         }
 
-
         if (sharedId!='') {
-
+            console.debug ('fetch shared document');
             sharedCanvasId = sharedId;
+            let result = await fetchFirestoreDocument(`shared`, `${sharedId}`);
 
-            const docId = `${sharedId}`;
-            const collectionPath = `shared`;
-
-            let result = await fetchFirestoreDocument(collectionPath, docId);
-
-            if (result !=null && result.sharedCanvasId) {
-    
-                if (sharedId != result.sharedCanvasId && sharedId != '') {
-    
-                    stopListeningToRealtimeDatabase(`s_${sharedId}`);
-                }
-    
-                console.log('dashboard compartido!!! Listen!!' + result.sharedCanvasId)
-                sharedId = result.sharedCanvasId;
-    
-                let path = `s_${sharedId}`;
-                
-                listenToRealtimeDatabase(path, (data) => {
-                    if (data.uid != externalId) {
-                        switch (data.a) {
-                            case 'om': // Object moving
-                                Sketch.updatePositionRealTime (data);
-                                break;
-                            case 'cm': // Column moving
-                                let colData = JSON.parse(data.d);
-                                colData.forEach((canvasObj) => {
-                                    Sketch.updatePositionRealTime ({id: 'sep'+canvasObj.i, l: (+canvasObj.l) + (+canvasObj.w)});
-                                    Sketch.updatePositionRealTime ({id: 'col'+canvasObj.i, l: canvasObj.l, w: canvasObj.w});
-                                });
-                                break;
-                            case 'oa': // Object added
-                                Sketch.addObjectRealTime ( JSON.parse(data.d) );
-                                break;
-                            case 'do': // Delete object
-                                Sketch.removeObjectRealTime ( data.d );
-                                break;
-                            case 'tu': // Text Update
-                                Sketch.updateTextRealTime ( data.id, data.d );
-                                break;
-                        }
-                    }
-                });
+            if (result != null && result.sharedCanvasId) {
+                await listenSharedCanvas (result, sharedId, externalId);
             }
-
             return result;
-
-
         } else {
-
-            const docId = `c${id}`;
-            const collectionPath = `users/${userId}/canvas`;
-    
-            let result = await fetchFirestoreDocument(collectionPath, docId);
+            console.debug ('fetch private document');
+            let result = await fetchFirestoreDocument(`users/${userId}/canvas`, `c${id}`);
             
-            if (result !=null && result.sharedCanvasId) {
-    
-                if (sharedId != result.sharedCanvasId && sharedId != '') {
-    
-                    stopListeningToRealtimeDatabase(`s_${sharedId}`);
-                }
-    
-                console.log('dashboard compartido!!! Listen!!' + result.sharedCanvasId)
-                sharedId = result.sharedCanvasId;
-                sharedCanvasId = sharedId;
-                let path = `s_${sharedId}`;
+            if (result != null && result.sharedCanvasId) {
+                sharedCanvasId = result.sharedCanvasId;
                 
-                listenToRealtimeDatabase(path, (data) => {
-                    if (data.uid != externalId) {
-                        switch (data.a) {
-                            case 'om': // Object moving
-                                Sketch.updatePositionRealTime (data);
-                                break;
-                            case 'cm': // Column moving
-                                let colData = JSON.parse(data.d);
-                                colData.forEach((canvasObj) => {
-                                    Sketch.updatePositionRealTime ({id: 'sep'+canvasObj.i, l: (+canvasObj.l) + (+canvasObj.w)});
-                                    Sketch.updatePositionRealTime ({id: 'col'+canvasObj.i, l: canvasObj.l, w: canvasObj.w});
-                                });
-                                break;
-                            case 'oa': // Object added
-                                Sketch.addObjectRealTime ( JSON.parse(data.d) );
-                                break;
-                            case 'do': // Delete object
-                                Sketch.removeObjectRealTime ( data.d );
-                                break;
-                            case 'tu': // Text Update
-                                Sketch.updateTextRealTime ( data.id, data.d );
-                                break;
-                        }
-                    }
-                });
+                console.debug ('fetch shared document');
+                result = await fetchFirestoreDocument(`shared`, `${sharedCanvasId}`);
+
+                await listenSharedCanvas (result, sharedId, externalId);
             }
+
             return result;
         }
+    }
+
+    async function listenSharedCanvas(result, sharedId, externalId) {
+       
+        if (sharedId != result.sharedCanvasId && sharedId != '') {
+            console.debug(`stop listening ${sharedId}`);
+            stopListeningToRealtimeDatabase(`s_${sharedId}`);
+        }
+
+        sharedId = result.sharedCanvasId;
+        let path = `s_${sharedId}`;
         
-        
+        console.debug(`listen ${path}`);
+
+        listenToRealtimeDatabase(path, (data) => {
+            if (data.uid != externalId) {
+
+                console.debug(data);
+
+                switch (data.a) {
+                    case 'om': // Object moving
+                        Sketch.updatePositionRealTime(data);
+                        break;
+                    case 'cm': // Column moving
+                        let colData = JSON.parse(data.d);
+                        colData.forEach((canvasObj) => {
+                            Sketch.updatePositionRealTime({id: 'sep'+canvasObj.i, l: (+canvasObj.l) + (+canvasObj.w)});
+                            Sketch.updatePositionRealTime({id: 'col'+canvasObj.i, l: canvasObj.l, w: canvasObj.w});
+                        });
+                        break;
+                    case 'oa': // Object added
+                        Sketch.addObjectRealTime(JSON.parse(data.d));
+                        break;
+                    case 'do': // Delete object
+                        Sketch.removeObjectRealTime(data.d);
+                        break;
+                    case 'tu': // Text Update
+                        Sketch.updateTextRealTime(data.id, data.d);
+                        break;
+                }
+            }
+        });
     }
 
     function genId() {
@@ -267,12 +239,17 @@ const Data = (function () {
         }
     }
     
+    function isLogged () {
+        return userId != null;
+    }
+
     return {
         getDashboard: getDashboard,
         getCanvas: getCanvas,
         saveCanvas: saveCanvas,
         setUserId: setUserId,
-        sendCanvasObject: sendCanvasObject
+        sendCanvasObject: sendCanvasObject,
+        isLogged: isLogged
     };
 })();
 
