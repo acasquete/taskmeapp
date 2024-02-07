@@ -1,9 +1,8 @@
 MVP
-BUG. Doble nota al cambiar dashboard??
-BUG. SHARE - Al borrar nota por arriba sincronizar
 BUG. Estilo modal.
 Eliminar jQuery
-
+BUG. Doble nota al cambiar dashboard??
+BUG. SHARE - Al borrar nota por arriba sincronizar
 Touch doubletap
 Undo
 Drag and Drop Dots / Normalize dots

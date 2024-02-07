@@ -109,13 +109,11 @@ export class CanvasController {
             
             this.isEditKanbanMode = false;
 
-            console.debug('up:');
             if (this.targetElement) {
                 this.targetElement.selectable = false;
                 const pointer = this.canvas.getPointer(options.e);
                 const deltaX = pointer.x - this.originalPosition.x;
 
-                console.debug('up:' + deltaX);
                 this.moveRelatedElements(this.targetElement.id, deltaX); 
                 this.targetElement = null;
 
