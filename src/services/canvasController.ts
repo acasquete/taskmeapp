@@ -91,8 +91,10 @@ export class CanvasController {
 
         this.canvas.on('mouse:move', (options: fabric.IEvent) => {
 
+            let pointer = this.canvas.getPointer(options.e);
+
             if (this.isEditKanbanMode && this.targetElement) {
-                let pointer = this.canvas.getPointer(options.e);
+               
                 this.targetElement.set({
                     left: pointer.x
                 });
@@ -100,16 +102,20 @@ export class CanvasController {
                 this.moveRelatedElements (this.targetElement.id, deltaX);
                 this.canvas.requestRenderAll();
             }
+
         });
 
         this.canvas.on('mouse:up', (options: fabric.IEvent) => {
             
             this.isEditKanbanMode = false;
 
+            console.debug('up:');
             if (this.targetElement) {
                 this.targetElement.selectable = false;
                 const pointer = this.canvas.getPointer(options.e);
                 const deltaX = pointer.x - this.originalPosition.x;
+
+                console.debug('up:' + deltaX);
                 this.moveRelatedElements(this.targetElement.id, deltaX); 
                 this.targetElement = null;
 
@@ -118,6 +124,8 @@ export class CanvasController {
                 this.canvas.relativePan(new fabric.Point(-1, 0));
                 this.saveCanvas();
             }
+
+            
         });
 
         this.canvas.on('mouse:wheel', (opt: fabric.IEvent) => {
@@ -171,33 +179,38 @@ export class CanvasController {
         });
 
         this.canvas.on('touch:drag', (e: fabric.IEvent) => {
-            if (!this.isEditKanbanMode && !this.canvas.selection && !this.canvas.isDrawingMode && !this.pausePanning && e.e.layerX !== undefined && e.e.layerY !== undefined) {
+            if (this.isEditKanbanMode || this.canvas.selection || this.canvas.isDrawingMode || this.pausePanning || e.e.layerX === undefined || e.e.layerY === undefined) {
                 
-                const target = this.canvas.findTarget(e.e, true);
-                
-                if (target && target.cl && (['n', 'd', 't'].includes(target.cl) || target.type === 'path')) { 
-                    this.pausePanning = true;
-                    return;
+                if (e.e.layerX === undefined && e.e.layerY === undefined) {
+                    this.lastX = 0;
+                    this.lastY = 0;
+                    this.pausePanning = false;
                 }
-
-                this.currentX = e.e.layerX;
-                this.currentY = e.e.layerY;
-                this.xChange = this.currentX - this.lastX; 
-                this.yChange = this.currentY - this.lastY;
-
-                if (Math.abs(this.xChange) <= 50 && Math.abs(this.yChange) <= 50) {
-                    const currentViewPort = this.canvas.viewportTransform || [0, 0, 0, 0, 0, 0];
-                    const newX = currentViewPort[4] + this.xChange;
-                    const newY = currentViewPort[5] + this.yChange;
-
-                    const delta = new fabric.Point(newX - currentViewPort[4], newY - currentViewPort[5]);
-                    this.canvas.relativePan(delta);
-                    this.saveViewPortConfiguration();
-                }
-
-                this.lastX = this.currentX;
-                this.lastY = this.currentY;
+                return;
             }
+            
+            const target = this.canvas.findTarget(e.e, true);
+            if (target && ((target.cl && ['n', 'd', 't'].includes(target.cl)) || target.type === 'path')) {
+                this.pausePanning = true;
+                return;
+            }
+        
+            const updateCoordinates = (axis: 'X' | 'Y') => {
+                const current = e.e[`layer${axis}`];
+                const last = this[`last${axis}`] || current; 
+                this[`current${axis}`] = current;
+                return current - last;
+            };
+        
+            this.xChange = updateCoordinates('X');
+            this.yChange = updateCoordinates('Y');
+        
+            const panTo = new fabric.Point(this.xChange, this.yChange);
+            this.canvas.relativePan(panTo);
+            this.saveViewPortConfiguration();
+        
+            this.lastX = this.currentX;
+            this.lastY = this.currentY;
         });
 
         
@@ -591,9 +604,5 @@ export class CanvasController {
         this.sharedCanvasId = sharedId;
 
         this.saveCanvas();
-    }
-
-    public getLastKnownPos () {
-        return { x: this.lastKnownPosX, y: this.lastKnownPosY }; 
     }
 }

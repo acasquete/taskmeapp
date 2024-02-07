@@ -1,24 +1,27 @@
 MVP
-SHARE - Al borrar nota por arriba sincronizar
-SHARE - Dejar de compartir
-SHARE - Solo enviar si hay alguien conectado
-Touch doubletap.
-BUG. Al hacer click en tablero se desplaza revisar Drag.
+BUG. Doble nota al cambiar dashboard??
+BUG. SHARE - Al borrar nota por arriba sincronizar
+BUG. Estilo modal.
+Eliminar jQuery
+
+Touch doubletap
 Undo
-Eraser mode with cursor
 Drag and Drop Dots / Normalize dots
-Add angle when creating note
+Eraser mode with cursor
 AI Suggestions (key in localstorage)
-Refactor to Typescript
+Add column
+Edit column name
 Responsive menu
 Add date to dashbord for conflict resolution
+SHARE - Solo enviar si hay alguien conectado
+SHARE - Dejar de compartir
 
 NICE TO HAVE
+Add angle when creating note
+Refactor to Typescript
 Use compression to store data
 When doubleclicking on a note move it to the right column if there is
 Avoid rotating, scaling on selection ()
-Add column
-Edit column name
 Help window
 Limit length
 Avoid double shading when editing
