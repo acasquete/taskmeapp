@@ -1,4 +1,8 @@
-﻿:root {
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
     --accent-color:#00a651;
     --accent-light-color:#80ff80;
 }
@@ -99,7 +103,6 @@ body {
     text-align: left;
     height: 30em;
     max-height: 30em;
-    
 }
 
 .note-help a {
@@ -170,9 +173,6 @@ body {
     z-index: 0;
 }
 
-
-
-
 #dashboard-notification {
     display: none; 
     position: fixed;
@@ -200,24 +200,6 @@ body {
 #dashboard-notification.small   {
     font-size: 1rem; 
 }
-
-#dashboard-number {
-    display: none; 
-    position: fixed;
-    text-align: center;
-    width: 1.2em;
-    height: 1.2em;
-    bottom: 5%; 
-    left: 50%; 
-    transform: translate(-50%, -50%); 
-    font-size: 5em; 
-    background-color: rgba(0, 0, 0, 0.4);
-    color: #fff; 
-    padding: 0.35em; 
-    border-radius: 20px; 
-    z-index: 1000;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
 
 #statusbar {
     font-size: 1.125rem;

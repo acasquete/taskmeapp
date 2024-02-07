@@ -29,6 +29,10 @@ export class CanvasController {
         this.canvas = canvas;
     }
 
+    public reset () {
+        this.canvas.clear();
+    }
+
     isSeparatorElement(object: fabric.Object) : boolean {
         return object.cl === 'k' && object.id.startsWith('sep');
     }

@@ -85,15 +85,13 @@ const Sketch = (function () {
         }
     }
        
-    function adjustCanvasZoom() {
+    function adjustCanvasZoom(forceReset) {
         var currentOrientation = CanvasUtilities.getUserOrientation(); 
         var savedConfiguration = retrieveConfiguration(currentOrientation);
 
-        if (savedConfiguration) {
-            // If there's a saved configuration for the current orientation, apply it
+        if (!forceReset && savedConfiguration) {
             canvas.setViewportTransform(savedConfiguration.vpt);
             canvas.setZoom(savedConfiguration.zoom);
-
         } else {
             defaultZoom();
         }
@@ -635,29 +633,33 @@ const Sketch = (function () {
 
     function clearAllCanvas() {
 
+        const modal = document.querySelector('#modal-clearall');
+        const close = document.querySelector('#modal-clearall #close');
+        const confirm = document.querySelector('#modal-clearall #confirm');
 
-        $( "#dialog-confirm" ).dialog({
-            resizable: false,
-            height: "auto",
-            width: 400,
-            modal: true,
-            buttons: {
-              "Reset Board": function() {
+        modal.classList.remove('hidden');
 
-                canvas.clear();
-                initKanbanBoard();
-                if (isEraserMode) {
-                    toggleEraserMode(); 
-                }
-                canvasController.saveCanvas();
+        function handleClose() {
+            modal.classList.add('hidden');
+            close.removeEventListener('click', handleClose);
+            confirm.removeEventListener('click', handleConfirm);
+        }
 
-                $( this ).dialog( "close" );
-              },
-              Cancel: function() {
-                $( this ).dialog( "close" );
-              }
-            }
-          });
+        function handleConfirm() {
+            modal.classList.add('hidden');
+
+            canvasController.reset();
+            initKanbanBoard();
+            adjustCanvasZoom(true);
+
+            canvasController.saveCanvas();
+
+            close.removeEventListener('click', handleClose);
+            confirm.removeEventListener('click', handleConfirm);
+        }
+
+        close.addEventListener('click', handleClose);
+        confirm.addEventListener('click', handleConfirm);
        
     };
 
@@ -759,7 +761,6 @@ const Sketch = (function () {
     }
    
     async function loadCanvas(sharedId) {
-
         const font1 = new FontFace('Kalam', `url(${kalamFontURL})`);
         const font2 = new FontFace('PermanentMarker', `url(${permanentMarkerFontURL})`);
 

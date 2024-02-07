@@ -112,68 +112,43 @@ const MenuController = (function () {
             let sharedId = Sketch.createShareSketch();
             showModal(sharedId);
         });
-    
-        document.getElementById('copyButton').addEventListener('click', function() {
-            copyURL();
-        });
-
-        // Modal Share
-        document.getElementById('closeButton').addEventListener('click', function() {
-            document.getElementById('modalBackdrop').style.display = 'none';
-        });
-
-        document.getElementById('modalBackdrop').addEventListener('click', function(event) {
-            if (event.target === this) {
-                this.style.display = 'none';
-            }
-        });
-        const modal = document.querySelector('.modal'); 
-
-        modal.addEventListener('mousedown', onMouseDown);
     }
 
-    function onMouseDown(e) {
-        const modal = document.querySelector('.modal'); 
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-            return;
-        }
-        isDragging = true;
-
-        dragOffsetX = e.clientX - modal.getBoundingClientRect().left;
-        dragOffsetY = e.clientY - modal.getBoundingClientRect().top;
-
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-    }
-
-    function onMouseMove(e) {
-        if (isDragging) {
-            const modal = document.querySelector('.modal'); 
-            modal.style.left = (e.clientX - dragOffsetX) + 'px';
-            modal.style.top = (e.clientY - dragOffsetY) + 'px';
-        }
-    }
-
-    function onMouseUp() {
-        isDragging = false;
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-    }
-
-    function copyURL() {
-        const urlInput = document.getElementById('urlInput');
-        urlInput.select();
-        document.execCommand('copy');
-    
-        document.getElementById('copyButton').innerHTML = '<i class="fas fa-check" style="color: green;"></i>';
-    }
     
     function showModal(sharedId) {
 
         const currentDomain = window.location.origin; 
         const fullURL = `${currentDomain}?sid=${sharedId}`;
-        document.getElementById('modalBackdrop').style.display = 'flex';
-        document.getElementById('urlInput').value = fullURL;
+
+        const modal = document.querySelector('#modal-liveshare');
+        const input = document.querySelector('#modal-liveshare #shareURL');
+        const copy = document.querySelector('#modal-liveshare #shareURL');
+        const close = document.querySelector('#modal-liveshare #close');
+
+        input.value = fullURL;
+
+        copy.addEventListener('click', handleCopy);
+        close.addEventListener('click', handleClose);
+
+        modal.classList.remove('hidden');
+
+        function handleCopy() {
+            input.select();
+            input.select();
+            input.setSelectionRange(0, 99999); /* For mobile devices */
+            navigator.clipboard.writeText(input.value).then(function() {
+                console.debug('Copying to clipboard was successful!');
+                copy.innerHTML = '<i class="fas fa-check" style="color: green;"></i>';
+            }, function(err) {
+                console.debug('Could not copy text: ', err);
+            });
+        }
+
+        function handleClose() {
+            modal.classList.add('hidden');
+            close.removeEventListener('click', handleClose);
+            copy.removeEventListener('click', handleCopy);
+        }
     }   
     
     class GridItem {

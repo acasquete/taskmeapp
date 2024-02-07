@@ -90,8 +90,8 @@
     
         <div id="dashboard-notification"></div>
         
-        <div id="dashboard-number"></div>
-
+        <div id="dashboard-number" class="hidden bg-black opacity-35 rounded-lg shadow-xl fixed text-center w-40 p-6 bottom-[10%] left-1/2 -translate-x-1/2 text-8xl text-white z-[1000] align-middle font-sans"></div>
+        
         <div id="statusbar">
             <i id="localmode" class="fas fa-hard-drive"></i>
             <a href="/privacy.html" target="_blank"><i class="fa-regular fa-circle-question"></i></a>
@@ -126,21 +126,55 @@
                 </div> 
             </div>
         </div>
-        
-        <div id="dialog-confirm" title="Just Checking!">
-            <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Heads up! Everything on this board will be gone for good. You sure you want to do this?</p>
-        </div>
        
+        <!-- Modal Clear All -->
+        <div id="modal-clearall" class="hidden fixed z-50 inset-0 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg sm:w-full p-6">
+                <div class="text-center">
+                    <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                    </svg>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Heads up!</h3>
+                    <div class="mt-2">
+                    <p class="text-sm text-gray-500">Everything on this board will be gone for good.</br>You sure you want to do this?</p>
+                    </div>
+                </div>
+                <div class="mt-5 sm:mt-6 text-center">
+                    <button id="confirm" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">
+                        Yes, I'm sure
+                    </button>
+                    <button id="close" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancel</button>
+                </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Clear All -->
+        <div id="modal-liveshare" class="hidden fixed z-50 inset-0 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg sm:w-full p-6">
+                <div class="text-center">
+                    <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></circle>
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Share Live Board</h3>
+                    <div class="mt-2">
+                    <p class="text-sm text-gray-500">Invite others to collaborate in real time on your Kanban board by sharing this URL.</p>
+                    </div>
+                </div>
+                <div class="mt-2 flex flex-row">
+                    <input type="text" id="shareURL" value="https://your.url.here" class="text-center w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-gray-100" readonly>
+                    <button id="copy" class="mt-2 text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Copy URL</button>
+                </div>
 
-        <div class="modal-backdrop" id="modalBackdrop">
-            <div class="modal">
-                <span class="close-button" id="closeButton">&times;</span>
-                <h2>Share Live Board</h2>
-                <p>Invite others to collaborate in real time on your Kanban board by sharing this URL.</p>
-                <p>This URL provides direct access to your board for real-time collaboration.</p>
-                <div class="input-group">
-                    <input type="text" id="urlInput" value="Generated URL will appear here" readonly>
-                    <button id="copyButton" alt="Copy URL"><i class="fas fa-copy"></i></button>
+                <div class="mt-5 sm:mt-6 text-center">
+                    <button id="close" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Close</button>
+                </div>
+
                 </div>
             </div>
         </div>
