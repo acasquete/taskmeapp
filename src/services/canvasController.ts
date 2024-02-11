@@ -38,7 +38,7 @@ export class CanvasController {
     }
 
     isSeparatorElement(object: fabric.Object) : boolean {
-        return object.cl === 'k' && object.id.startsWith('sep');
+        return object.cl === 'k' && object.id?.startsWith('sep');
     }
 
     saveState(): void {
@@ -406,8 +406,6 @@ export class CanvasController {
     private shouldAddNewStage(boundingRect: fabric.IRect, zoom: number, left: number): boolean {
         let lastSep = this.getObjectById('sep' + this.stagesConfiguration?.length);
 
-        console.log(lastSep?.left + ' ' + boundingRect.left);
-
         return (
             boundingRect.width / zoom <= 40 &&
             boundingRect.height / zoom >= 250 &&
@@ -418,8 +416,9 @@ export class CanvasController {
     private createNewStage(): ColumnConfiguration {
         const newNumber = this.stagesConfiguration?.length + 1 || 1;
         const newTitle = 'Stage ' + newNumber;
+        
         return {
-            id: "col" + newNumber,
+            id: newNumber,
             title: newTitle,
             count: 0,
             proportion: 0.3
@@ -427,7 +426,7 @@ export class CanvasController {
     }
     
     private addStageToCanvas(newStage: ColumnConfiguration, positionLeft: number): void {
-        let lastSep = this.getObjectById('sep' + (newStage.id.slice(3) - 1));
+        let lastSep = this.getObjectById('sep' + (newStage.id - 1));
         this.stagesConfiguration?.push(newStage);
         this.addStage(newStage, lastSep?.left, positionLeft-lastSep?.left);
     }
@@ -455,7 +454,7 @@ export class CanvasController {
                 fontFamily: 'PermanentMarker',
                 width: width,
                 textAlign: 'center',
-                id: column.id,
+                id: 'col' + column.id,
                 selectable: true,
                 lockMovementX: true,
                 lockMovementY: true,
@@ -476,7 +475,7 @@ export class CanvasController {
                 selectable: false,
                 strokeWidth: 6,
                 cl: 'k',
-                id: column.id.replace('col','sep')
+                id: 'sep' + column.id
             });
 
             this.canvas.add(separator);
@@ -672,11 +671,14 @@ export class CanvasController {
     }
 
     private updateNoteCounters(): void {
+        console.log(this.stagesConfiguration);
 
         if (!this.stagesConfiguration) return;
 
         const separators: fabric.Object[] = this.canvas.getObjects().filter(obj => (obj as any).id && (obj as any).id.startsWith('sep'));
         
+        console.log(separators);
+
         this.stagesConfiguration.forEach(stage => { stage.count = 0; });
 
         this.canvas.getObjects().forEach(obj => {
@@ -690,7 +692,7 @@ export class CanvasController {
         
         this.stagesConfiguration.forEach(column => {
             this.updateColumnTitle(column.id, column.count);
-            let titleColumn = this.canvas.getObjects().find(obj => obj.id === column.id) as fabric.Text;
+            let titleColumn = this.canvas.getObjects().find(obj => obj.id === 'col' + column.id) as fabric.Text;
             
             if (titleColumn.text?.toLowerCase().includes('in progress') && column.count > 3) {
                 this.setColorForColumn(column.id, '#ef3340');
@@ -700,8 +702,8 @@ export class CanvasController {
         });
     }
 
-    public setColorForColumn(columnId: string, color: string): void {
-        const columnTitle = this.canvas.getObjects().find(obj => obj.id === columnId) as fabric.Text;
+    public setColorForColumn(columnId: number, color: string): void {
+        const columnTitle = this.canvas.getObjects().find(obj => obj.id === 'col' + columnId) as fabric.Text;
 
         if (columnTitle) {
             columnTitle.set('fill', color === 'default' ? 'black' : color); 
@@ -709,8 +711,10 @@ export class CanvasController {
         }
     }
 
-    public updateColumnTitle(columnId: string, counter: number): void {
-        const column = this.canvas.getObjects().find(obj => obj.id === columnId) as fabric.Text;
+    public updateColumnTitle(columnId: number, counter: number): void {
+        console.log('ccc' + columnId);
+        const column = this.canvas.getObjects().find(obj => obj.id === 'col' + columnId) as fabric.Text;
+        
         if (column) {
             const baseText = column.text?.split(' - ')[0];
             column.text = counter > 0 ? `${baseText} - ${counter}` : baseText;
@@ -718,12 +722,16 @@ export class CanvasController {
         }
     }
 
-    public getColumnConfiguration(): ColumnConfiguration[] {
+    public getDefaultColumnConfiguration(): ColumnConfiguration[] {
         return [
-            { id: 'col1', title: 'Todo', count: 0, proportion: 0.35 },
-            { id: 'col2', title: 'In Progress', count: 0, proportion: 0.35 },
-            { id: 'col3', title: 'Done', count: 0, proportion: 0.3 }
+            { id: 1, title: 'Todo', count: 0, proportion: 0.35 },
+            { id: 2, title: 'In Progress', count: 0, proportion: 0.35 },
+            { id: 3, title: 'Done', count: 0, proportion: 0.3 }
         ];
+    }
+
+    public getColumnConfiguration(): ColumnConfiguration[] {
+        return this.stagesConfiguration ?? this.getDefaultColumnConfiguration();
     }
 
     public normalizeZIndex(): void {

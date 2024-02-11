@@ -356,7 +356,6 @@ const Sketch = (function () {
     }
 
     function  assignConfigToObject (obj) {
-
         if (obj.type === 'group') {
             obj.set({
                 originX: 'center',
@@ -410,8 +409,6 @@ const Sketch = (function () {
             });
         } 
     }
-
-
 
     function onNewDot () {
         showNotes();
@@ -748,11 +745,12 @@ const Sketch = (function () {
         }
         
         let separatorYPosition = 4000;
-        let columnConfigurations = canvasController.getColumnConfiguration();
+        let columnConfigurations = canvasController.getDefaultColumnConfiguration();
     
         let currentLeft = 0;
     
         columnConfigurations.forEach((column, index) => {
+
             let columnWidth = CANVAS_WIDTH * column.proportion;
             let text = new fabric.Textbox(column.title, {
                 originX: 'left',
@@ -774,7 +772,7 @@ const Sketch = (function () {
                 hasBorders: true,
                 width: columnWidth,
                 textAlign: 'center',
-                id: column.id,
+                id: 'col' + column.id,
                 editable: true,
                 cl: 'k'
             });
@@ -786,8 +784,9 @@ const Sketch = (function () {
                 selectable: false,
                 strokeWidth: 6,
                 cl: 'k',
-                id: 'sep' + (index+1)
+                id: 'sep' + column.id
             });
+            
             canvas.add(separator);
     
             currentLeft += columnWidth;
@@ -863,7 +862,10 @@ const Sketch = (function () {
 
     function download (format) {
 
-        let sepLeft = canvas.getObjects().find(obj => obj.id === 'sep3');
+        let stages = canvasController.getColumnConfiguration();
+        let lastId = stages[stages.length-1].id;
+
+        let sepLeft = canvas.getObjects().find(obj => obj.id === 'sep' + lastId);
 
         let cvpt = canvas.viewportTransform;
         let czoom = canvas.getZoom();
@@ -940,7 +942,6 @@ const Sketch = (function () {
                 color: gradientColor,
                 dots: dots
             };
-
         });
 
         columns.push({

@@ -1,5 +1,5 @@
 interface ColumnConfiguration {
-    id: string;
+    id: number;
     title: string;
     count: number;
     proportion: number;

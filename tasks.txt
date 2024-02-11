@@ -1,5 +1,5 @@
-Guardar PNG
-Eliminar column
+Dot Azul
+Dot Verde
 Generar configuracion columnas
 Undo
 BUG. Doble nota al cambiar dashboard??
@@ -17,9 +17,8 @@ SHARE - Test dots
 SHARE - Undo
 AI - MOdal para introducir OpenAI API Key
 Establecer cursores (edit, selection, drawing, drag, text)
-Dot Azul
-Dot Verde
 Eraser mode with cursor
+Eliminar column
 Responsive menu
 Add date to dashbord for conflict resolution
 
