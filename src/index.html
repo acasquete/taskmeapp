@@ -135,7 +135,7 @@
         </div>
        
         <!-- Modal Clear All -->
-        <div id="modal-clearall" class="hidden fixed z-50 inset-0 overflow-y-auto">
+        <div id="modal-clearall" class="hidden backdrop-blur-sm fixed z-50 inset-0 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen">
                 <div class="bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg sm:w-full p-6">
                 <div class="text-center">
@@ -158,9 +158,9 @@
         </div>
         
         <!-- Modal Clear All -->
-        <div id="modal-liveshare" class="hidden fixed z-50 inset-0 overflow-y-auto">
+        <div id="modal-liveshare" class="hidden backdrop-blur-sm fixed z-50 inset-0 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen">
-                <div class="bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg sm:w-full p-6">
+                <div class="bg-white rounded-lg shadow-xl transform transition-all w-6/12 p-6">
                 <div class="text-center">
                     <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -173,9 +173,9 @@
                     <p class="text-sm text-gray-500">Invite others to collaborate in real time on your Kanban board by sharing this URL.</p>
                     </div>
                 </div>
-                <div class="mt-2 flex flex-row">
+                <div class="mt-2 flex flex-row gap-4">
                     <input type="text" id="shareURL" value="https://your.url.here" class="text-center w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-gray-100" readonly>
-                    <button id="copy" class="mt-2 text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Copy URL</button>
+                    <button id="copy" class="text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center whitespace-nowrap">Copy URL</button>
                 </div>
 
                 <div class="mt-5 sm:mt-6 text-center">

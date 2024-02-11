@@ -35,6 +35,7 @@ export class CanvasController {
 
     public reset () {
         this.canvas.clear();
+        this.stagesConfiguration = [];
     }
 
     isSeparatorElement(object: fabric.Object) : boolean {
@@ -51,7 +52,7 @@ export class CanvasController {
 
     public switchDashboard(id: number, initial: boolean) {
         this.currentCanvasId = id;
-        this.stagesConfiguration = this.getDynamicConfiguration();
+        this.loadDynamicConfiguration();
     }
 
     public assignCanvasEventListeners(): void {
@@ -423,7 +424,7 @@ export class CanvasController {
     private addStageToCanvas(newStage: ColumnConfiguration, positionLeft: number): void {
         let lastSep = this.getObjectById('sep' + (newStage.id - 1));
         this.stagesConfiguration?.push(newStage);
-        this.addStage(newStage, lastSep?.left, positionLeft-lastSep?.left);
+        this.addStage(newStage, lastSep?.left, Math.max(400, positionLeft-lastSep?.left));
        
     }
     
@@ -725,7 +726,7 @@ export class CanvasController {
         return this.stagesConfiguration.length == 0 ? this.getDynamicConfiguration() : this.stagesConfiguration;
     }
 
-    private getDynamicConfiguration (): ColumnConfiguration[] {
+    public loadDynamicConfiguration (): void {
         const colsObj = this.canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));
         let columns: ColumnConfiguration[] = [];
 
@@ -742,7 +743,8 @@ export class CanvasController {
 
             columns.push(col);
         }
-        return columns;
+
+        this.stagesConfiguration = columns;
     }
 
     public normalizeZIndex(): void {

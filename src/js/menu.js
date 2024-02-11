@@ -147,8 +147,11 @@ const MenuController = (function () {
         const fullURL = `${currentDomain}?sid=${sharedId}`;
 
         const input = document.querySelector('#modal-liveshare #shareURL');
+        const copy = document.querySelector('#modal-liveshare #copy');
 
         input.value = fullURL;
+
+        copy.innerHTML = 'Copy URL';
         document.querySelector('#modal-liveshare').classList.remove('hidden');
         
     }   
@@ -185,6 +188,7 @@ const MenuController = (function () {
 
         navigator.clipboard.writeText(input.value).then(function() {
             console.debug('Copying to clipboard was successful!');
+            const copy = document.querySelector('#modal-liveshare #copy');
             copy.innerHTML = '<i class="fas fa-check" style="color: white;"></i>';
         }, function(err) {
             console.debug('Could not copy text: ', err);

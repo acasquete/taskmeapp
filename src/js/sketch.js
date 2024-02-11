@@ -671,11 +671,8 @@ const Sketch = (function () {
     };
 
     function clearAllCanvas() {
-
         const modal = document.querySelector('#modal-clearall');
         modal.classList.remove('hidden');
-       
-       
     };
 
     function handleClearClose() {
@@ -690,7 +687,7 @@ const Sketch = (function () {
         canvasController.reset();
         initKanbanBoard();
         adjustCanvasZoom(true);
-
+        canvasController.loadDynamicConfiguration();
         canvasController.saveCanvas();
     }
 

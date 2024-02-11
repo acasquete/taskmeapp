@@ -1,5 +1,3 @@
-BUG. Text modal compartir es muy alto
-BUG. Boton modal copiar portapaples una linea
 Undo
 BUG. Touch doubletap
 BUG. Arrastrar un punto de una nota a otra no funciona
