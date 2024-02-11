@@ -419,10 +419,23 @@ const Sketch = (function () {
             red: {
                 primary: '#ff0000',
                 secondary: CanvasUtilities.darkenColor('#ff0000', 20)
+            },
+            blue: {
+                primary: '#34afd8',
+                secondary: CanvasUtilities.darkenColor('#34afd8', 20)
+            },
+            green: {
+                primary: '#bdda1e',
+                secondary: CanvasUtilities.darkenColor('#bdda1e', 20)
             }
         };
         
-        let color = 'red';
+        let str = $(this).attr("class");
+        let regex = /new-(\w+)\s+(\w+)/;
+        
+        let matches = str.match(regex);
+        
+        let color = matches[2];
 
         var gradient = new fabric.Gradient({
             type: 'radial',
@@ -786,7 +799,7 @@ const Sketch = (function () {
                 cl: 'k',
                 id: 'sep' + column.id
             });
-            
+
             canvas.add(separator);
     
             currentLeft += columnWidth;

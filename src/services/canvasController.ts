@@ -106,8 +106,6 @@ export class CanvasController {
                     if (pointer.x >= objLeft - (obj.width/2) && pointer.x <= objLeft + (objWidth/2) &&
                         pointer.y >= objTop - (obj.height/2)  && pointer.y <= objTop + (objHeight/2)) {
 
-                        console.debug('dentro');
-
                         target.lockMovementX =  true;
                         target.lockMovementY = true;
 
@@ -671,14 +669,10 @@ export class CanvasController {
     }
 
     private updateNoteCounters(): void {
-        console.log(this.stagesConfiguration);
-
         if (!this.stagesConfiguration) return;
 
         const separators: fabric.Object[] = this.canvas.getObjects().filter(obj => (obj as any).id && (obj as any).id.startsWith('sep'));
         
-        console.log(separators);
-
         this.stagesConfiguration.forEach(stage => { stage.count = 0; });
 
         this.canvas.getObjects().forEach(obj => {
@@ -712,7 +706,6 @@ export class CanvasController {
     }
 
     public updateColumnTitle(columnId: number, counter: number): void {
-        console.log('ccc' + columnId);
         const column = this.canvas.getObjects().find(obj => obj.id === 'col' + columnId) as fabric.Text;
         
         if (column) {
