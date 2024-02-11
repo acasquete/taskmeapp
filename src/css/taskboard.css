@@ -155,7 +155,9 @@ body {
 .violet { background-color: #cf7aef; color: #fff; }
 .green { background-color: #bdda1e; color: #000; }
 .orange { background-color: #ffca20; color: #000; }
-.red { background-color: red; }
+.new-dot.red { background-color: #e93323; }
+.new-dot.green { background-color: #01ab6f; }
+.new-dot.blue { background-color: #1e4bda; }
 
 /* pastel */
 .pyellow { background-color: #fcdd00; color: #00c; }

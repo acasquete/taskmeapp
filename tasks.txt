@@ -1,14 +1,12 @@
+BUG. Text modal compartir es muy alto
+BUG. Boton modal copiar portapaples una linea
 Undo
-BUG. Doble nota al cambiar dashboard??
 BUG. Touch doubletap
 BUG. Arrastrar un punto de una nota a otra no funciona
 BUG. Al seleccionar un punto de una nota se poner por debajo
-BUG. Text modal compartir es muy alto
-BUG. Boton modal copiar portapaples una linea
 BUG. SHARE - Al borrar nota por arriba sincronizar
 BUG. SHARE - Al borrar todo el canvas.
 SHARE - Solo enviar si hay alguien conectado
-SHARE - Add/Delete Column
 SHARE - Test dots
 SHARE - Undo
 AI - Modal para introducir OpenAI API Key
@@ -17,6 +15,7 @@ Eraser mode with cursor
 Eliminar column
 Responsive menu
 Add date to dashbord for conflict resolution
+SHARE - Add/Delete Column
 
 NICE TO HAVE
 Eliminar jQuery

@@ -24,12 +24,13 @@ document.addEventListener('DOMContentLoaded', function() {
     Notifications.init();
     MenuController.init();
     Pomodoro.init(); 
+    Sketch.init(sharedId);
 
     const googleToken = localStorage.getItem('googleToken');
     if (googleToken && !isTokenExpired(googleToken)) {
         signInWithFirebase(googleToken);
     } else {
-        Sketch.init(sharedId);
+        Sketch.loadCurrentDashboard(sharedId);
         localStorage.removeItem('googleToken');
     }
     
@@ -62,9 +63,8 @@ function signInWithFirebase(googleToken) {
     firebase.auth().signInWithCredential(credential)
         .then((result) => {
             const user = result.user;
-            Sketch.init(sharedId);
+            Sketch.loadCurrentDashboard(sharedId);
             Data.setUserId(user.uid);
-            //Sketch.loadCurrentDashboard(sharedId);
             isSigned = true;
             hideStatusBarIcon();
         }).catch((error) => {

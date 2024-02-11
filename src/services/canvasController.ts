@@ -51,9 +51,7 @@ export class CanvasController {
 
     public switchDashboard(id: number, initial: boolean) {
         this.currentCanvasId = id;
-
-        this.stagesConfiguration = this.getColumnConfiguration();
-        //console.log('cols' + this.stagesConfiguration);
+        this.stagesConfiguration = this.getDynamicConfiguration();
     }
 
     public assignCanvasEventListeners(): void {
@@ -400,9 +398,12 @@ export class CanvasController {
     private shouldAddNewStage(boundingRect: fabric.IRect, zoom: number, left: number): boolean {
         let lastSep = this.getObjectById('sep' + this.stagesConfiguration?.length);
 
+        let prop = (boundingRect.width / zoom) / (boundingRect.height / zoom);
+
+        console.debug('hand stage, p:' +  (boundingRect.width / zoom) / (boundingRect.height / zoom) + ' w:' + boundingRect.width / zoom + ' h:' + boundingRect.height / zoom + ' l:' + lastSep?.left);
+
         return (
-            boundingRect.width / zoom <= 40 &&
-            boundingRect.height / zoom >= 250 &&
+            prop < 20 &&
             left > lastSep?.left
         );
     }
@@ -721,19 +722,11 @@ export class CanvasController {
     }
 
     public getColumnConfiguration(): ColumnConfiguration[] {
-        console.log("getCols");
-        console.log(this.stagesConfiguration);
-
         return this.stagesConfiguration.length == 0 ? this.getDynamicConfiguration() : this.stagesConfiguration;
     }
 
     private getDynamicConfiguration (): ColumnConfiguration[] {
-
-        console.log("dynamic");
-
         const colsObj = this.canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));
-        console.log(this.canvas.getObjects());
-        console.log(colsObj);
         let columns: ColumnConfiguration[] = [];
 
         for (let i = 0; i < colsObj.length; i++) {
@@ -749,8 +742,6 @@ export class CanvasController {
 
             columns.push(col);
         }
-        console.log('aa');
-        console.log(columns);
         return columns;
     }
 

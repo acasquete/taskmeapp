@@ -18,7 +18,6 @@ const Sketch = (function () {
     let kanbanAdvisor;
 
     async function init(sharedId) {
-
         initCanvas();
         assignDOMEventListeners();
 
@@ -26,8 +25,6 @@ const Sketch = (function () {
         canvasController.assignCanvasEventListeners();
 
         initKanbanAdvisor();
-       
-        loadCurrentDashboard(sharedId);
     }
 
     function initKanbanAdvisor() {
@@ -417,16 +414,16 @@ const Sketch = (function () {
 
         const colors = {
             red: {
-                primary: '#ff0000',
-                secondary: CanvasUtilities.darkenColor('#ff0000', 20)
+                primary: '#e93323',
+                secondary: CanvasUtilities.darkenColor('#e93323', 20)
             },
             blue: {
-                primary: '#34afd8',
-                secondary: CanvasUtilities.darkenColor('#34afd8', 20)
+                primary: '#1e4bda',
+                secondary: CanvasUtilities.darkenColor('#1e4bda', 20)
             },
             green: {
-                primary: '#bdda1e',
-                secondary: CanvasUtilities.darkenColor('#bdda1e', 20)
+                primary: '#01ab6f',
+                secondary: CanvasUtilities.darkenColor('#01ab6f', 20)
             }
         };
         
@@ -852,11 +849,10 @@ const Sketch = (function () {
             initKanbanBoard();
         }
 
-        console.log('canvas loaded');
+        console.debug('canvas loaded');
 
         canvasController.switchDashboard(currentCanvasId, sharedCanvasId, initial);
         Config.saveActiveDashboard(currentCanvasId);
-
         notifyAllObservers();
 
         canvasController.isLoading = false;
