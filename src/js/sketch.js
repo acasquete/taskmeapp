@@ -611,12 +611,9 @@ const Sketch = (function () {
         currentCanvasId = id;
         sharedCanvasId = sharedId
 
-        await loadCanvas(sharedCanvasId);
+        await loadCanvas(sharedCanvasId, initial);
 
-        canvasController.switchDashboard(currentCanvasId, sharedCanvasId, initial);
-        Config.saveActiveDashboard(currentCanvasId,);
 
-        notifyAllObservers();
     }
 
     function addObserver (observer) {
@@ -810,7 +807,7 @@ const Sketch = (function () {
         canvasController.isLoading = false;
     }
    
-    async function loadCanvas(sharedId) {
+    async function loadCanvas(sharedId, initial) {
         const font1 = new FontFace('Kalam', `url(${kalamFontURL})`);
         const font2 = new FontFace('PermanentMarker', `url(${permanentMarkerFontURL})`);
 
@@ -822,13 +819,13 @@ const Sketch = (function () {
         Promise.all(promesasDeCarga).then((fuentesCargadas) => {
             fuentesCargadas.forEach((fuente) => document.fonts.add(fuente));
     
-            loadCanvasAsync(sharedId);
+            loadCanvasAsync(sharedId, initial);
         }).catch((error) => {
             console.error("Error al cargar las fuentes", error);
         });
     }
             
-    async function loadCanvasAsync(sharedId) {
+    async function loadCanvasAsync(sharedId, initial) {
 
         canvasController.isLoading = true;
 
@@ -854,6 +851,13 @@ const Sketch = (function () {
 
             initKanbanBoard();
         }
+
+        console.log('canvas loaded');
+
+        canvasController.switchDashboard(currentCanvasId, sharedCanvasId, initial);
+        Config.saveActiveDashboard(currentCanvasId);
+
+        notifyAllObservers();
 
         canvasController.isLoading = false;
     }

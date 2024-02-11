@@ -1,4 +1,3 @@
-Generar configuracion columnas
 Undo
 BUG. Doble nota al cambiar dashboard??
 BUG. Touch doubletap
@@ -9,18 +8,15 @@ BUG. Boton modal copiar portapaples una linea
 BUG. SHARE - Al borrar nota por arriba sincronizar
 BUG. SHARE - Al borrar todo el canvas.
 SHARE - Solo enviar si hay alguien conectado
-SHARE - Dejar de compartir
 SHARE - Add/Delete Column
 SHARE - Test dots
 SHARE - Undo
-AI - MOdal para introducir OpenAI API Key
+AI - Modal para introducir OpenAI API Key
 Establecer cursores (edit, selection, drawing, drag, text)
 Eraser mode with cursor
 Eliminar column
 Responsive menu
 Add date to dashbord for conflict resolution
-
-
 
 NICE TO HAVE
 Eliminar jQuery
@@ -40,3 +36,4 @@ Adjust column notes to new position
 Dark mode
 Load SVG as drawn line
 Guardar SVG
+SHARE - Dejar de compartir

@@ -27,7 +27,7 @@ export class CanvasController {
     private shouldCancelMouseDown = false;
     private circleToDrag: fabric.Object | null = null;
     private isDraggingDot: boolean = false;
-    private stagesConfiguration : ColumnConfiguration[] | null = null;
+    private stagesConfiguration : ColumnConfiguration[] = [];
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -53,6 +53,7 @@ export class CanvasController {
         this.currentCanvasId = id;
 
         this.stagesConfiguration = this.getColumnConfiguration();
+        //console.log('cols' + this.stagesConfiguration);
     }
 
     public assignCanvasEventListeners(): void {
@@ -392,6 +393,7 @@ export class CanvasController {
             const newStage = this.createNewStage();
             this.addStageToCanvas(newStage, addedObject?.left);
             this.canvas.remove(addedObject);
+            this.saveCanvas();
         }
     }
     
@@ -421,6 +423,7 @@ export class CanvasController {
         let lastSep = this.getObjectById('sep' + (newStage.id - 1));
         this.stagesConfiguration?.push(newStage);
         this.addStage(newStage, lastSep?.left, positionLeft-lastSep?.left);
+       
     }
     
     private assignUniqueIdToAddedObject(addedObject: fabric.Object): void {
@@ -718,7 +721,37 @@ export class CanvasController {
     }
 
     public getColumnConfiguration(): ColumnConfiguration[] {
-        return this.stagesConfiguration ?? this.getDefaultColumnConfiguration();
+        console.log("getCols");
+        console.log(this.stagesConfiguration);
+
+        return this.stagesConfiguration.length == 0 ? this.getDynamicConfiguration() : this.stagesConfiguration;
+    }
+
+    private getDynamicConfiguration (): ColumnConfiguration[] {
+
+        console.log("dynamic");
+
+        const colsObj = this.canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));
+        console.log(this.canvas.getObjects());
+        console.log(colsObj);
+        let columns: ColumnConfiguration[] = [];
+
+        for (let i = 0; i < colsObj.length; i++) {
+        
+            let colObj = this.getObjectById('col' + (i+1));
+
+            let col = {
+                    id: i+1, 
+                    title: colObj?.text,
+                    count: 0,
+                    proportion: 0.35
+            }
+
+            columns.push(col);
+        }
+        console.log('aa');
+        console.log(columns);
+        return columns;
     }
 
     public normalizeZIndex(): void {
