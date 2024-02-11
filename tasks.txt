@@ -1,5 +1,3 @@
-Dot Azul
-Dot Verde
 Generar configuracion columnas
 Undo
 BUG. Doble nota al cambiar dashboard??

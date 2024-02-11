@@ -324,8 +324,6 @@ export class CanvasController {
             this.saveState();
 
             const movedObject = event.target;
-
-            console.debug('moved');
         
             // Drag and drop for "Dots"
             if (movedObject && movedObject.cl === 'd') {
@@ -337,8 +335,6 @@ export class CanvasController {
                     }
                 });
             }
-
-            console.debug('modified');
 
             const activeObject = event.target;
             if (activeObject && activeObject.type === 'group') {
@@ -381,8 +377,6 @@ export class CanvasController {
                 obj1BoundingRect.top + obj1BoundingRect.height > obj2BoundingRect.top
             );
         }
-        
-
     }
 
     private handleNewStage(addedObject: fabric.Object): void {
