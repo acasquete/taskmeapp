@@ -27,6 +27,7 @@ export class CanvasController {
     private shouldCancelMouseDown = false;
     private circleToDrag: fabric.Object | null = null;
     private isDraggingDot: boolean = false;
+    private stagesConfiguration : ColumnConfiguration[] | null = null;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -50,9 +51,9 @@ export class CanvasController {
 
     public switchDashboard(id: number, initial: boolean) {
         this.currentCanvasId = id;
+
+        this.stagesConfiguration = this.getColumnConfiguration();
     }
-
-
 
     public assignCanvasEventListeners(): void {
         
@@ -114,7 +115,6 @@ export class CanvasController {
 
                         obj.clone( (cloned)=> {
 
-                            console.log('coned');
                             cloned.set({
                                 left: pointer.x,
                                 top: pointer.y,
@@ -148,6 +148,7 @@ export class CanvasController {
             if (this.isTextMode && target == undefined) {
                 this.addTextObject(options);
             } else if (target && this.isSeparatorElement(target)) {
+                
                 this.isEditKanbanMode = true;
                 this.canvas.selection = false;
                 this.targetElement = target;
@@ -306,22 +307,17 @@ export class CanvasController {
         this.canvas.on('object:scaling', this.onUpdatingObject.bind(this));
         this.canvas.on('object:moving', this.onUpdatingObject.bind(this));
         this.canvas.on('object:rotating', this.onUpdatingObject.bind(this));
+        
 
         this.canvas.on('object:added', (event: fabric.IEvent) => {
-            
             if (this.isLoading) return;
 
-            const uniqueId = this.genId();
-            const obj = event.target; 
+            const addedObject = event.target;
+            if (!addedObject) return;
 
-            if (obj.virtual) return;
-
-            obj.set({ id: uniqueId }); 
-
-            const objData = obj.toJSON(['id','virtual','left','top']); 
-
-            Data.sendCanvasObject({ a: 'oa', d: JSON.stringify(objData) } );
-
+            this.handleNewStage(addedObject);
+            this.assignUniqueIdToAddedObject(addedObject);
+            this.sendObjectData(addedObject);
             this.saveState();
         });
         
@@ -391,27 +387,99 @@ export class CanvasController {
 
     }
 
-    private moveObjectToRandomPositionAroundGroup(object: fabric.Object, group: fabric.Group) {
-        // Calcular un rango aleatorio alrededor del grupo
-        const padding = 50; // Espacio alrededor del grupo
-        const minX = group.left - padding;
-        const maxX = group.left + group.width + padding;
-        const minY = group.top - padding;
-        const maxY = group.top + group.height + padding;
+    private handleNewStage(addedObject: fabric.Object): void {
+        const path = addedObject.path;
+
+        if (!path) return;
     
-        // Generar posiciones aleatorias dentro del rango
-        const newX = Math.random() * (maxX - minX) + minX;
-        const newY = Math.random() * (maxY - minY) + minY;
+        const zoom = this.canvas.getZoom();
+        const boundingRect = addedObject.getBoundingRect();
+        
+        if (this.shouldAddNewStage(boundingRect, zoom, addedObject?.left)) {
+            console.debug('new stage added');
+            const newStage = this.createNewStage();
+            this.addStageToCanvas(newStage, addedObject?.left);
+            this.canvas.remove(addedObject);
+        }
+    }
     
-        // Mover el objeto a la nueva posición
-        object.set({
-            left: newX,
-            top: newY
-        });
+    private shouldAddNewStage(boundingRect: fabric.IRect, zoom: number, left: number): boolean {
+        let lastSep = this.getObjectById('sep' + this.stagesConfiguration?.length);
+
+        console.log(lastSep?.left + ' ' + boundingRect.left);
+
+        return (
+            boundingRect.width / zoom <= 40 &&
+            boundingRect.height / zoom >= 250 &&
+            left > lastSep?.left
+        );
+    }
     
-        // Asegurarse de que el objeto se vuelve a agregar al canvas y se renderiza
-        this.canvas.add(object);
-        this.canvas.renderAll();
+    private createNewStage(): ColumnConfiguration {
+        const newNumber = this.stagesConfiguration?.length + 1 || 1;
+        const newTitle = 'Stage ' + newNumber;
+        return {
+            id: "col" + newNumber,
+            title: newTitle,
+            count: 0,
+            proportion: 0.3
+        };
+    }
+    
+    private addStageToCanvas(newStage: ColumnConfiguration, positionLeft: number): void {
+        let lastSep = this.getObjectById('sep' + (newStage.id.slice(3) - 1));
+        this.stagesConfiguration?.push(newStage);
+        this.addStage(newStage, lastSep?.left, positionLeft-lastSep?.left);
+    }
+    
+    private assignUniqueIdToAddedObject(addedObject: fabric.Object): void {
+        if (addedObject.virtual) return;
+        const uniqueId = this.genId();
+        if (!addedObject.id) addedObject.set({ id: uniqueId });
+    }
+    
+    private sendObjectData(addedObject: fabric.Object): void {
+        const objData = addedObject.toJSON(['id', 'virtual', 'left', 'top']);
+        Data.sendCanvasObject({ a: 'oa', d: JSON.stringify(objData) });
+    }
+
+    private addStage (column: ColumnConfiguration, left: number, width: number) {
+        let separatorYPosition = 4000;
+    
+        let text = new fabric.Textbox(column.title, {
+                originX: 'left',
+                left: left,
+                top: 10,
+                fontSize: 30,
+                fontWeight: 'bold',
+                fontFamily: 'PermanentMarker',
+                width: width,
+                textAlign: 'center',
+                id: column.id,
+                selectable: true,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockRotation: true,
+                lockScalingFlip: true,
+                lockSkewingX: true,
+                lockScalingY: true,
+                lockSkewingY: true,
+                hasControls: false,
+                hasBorders: true,
+                cl: 'k'
+            });
+    
+            this.canvas.add(text);
+    
+            let separator = new fabric.Line([left + width, 0, left + width, separatorYPosition], {
+                stroke: 'gray',
+                selectable: false,
+                strokeWidth: 6,
+                cl: 'k',
+                id: column.id.replace('col','sep')
+            });
+
+            this.canvas.add(separator);
     }
 
     genId() : string {
@@ -604,22 +672,27 @@ export class CanvasController {
     }
 
     private updateNoteCounters(): void {
-        const columnConfigurations: ColumnConfiguration[] = this.getColumnConfiguration();
+
+        if (!this.stagesConfiguration) return;
 
         const separators: fabric.Object[] = this.canvas.getObjects().filter(obj => (obj as any).id && (obj as any).id.startsWith('sep'));
         
+        this.stagesConfiguration.forEach(stage => { stage.count = 0; });
+
         this.canvas.getObjects().forEach(obj => {
             if ((obj as any).cl === 'n') {
                 const columnIndex: number = separators.findIndex(sep => sep && (obj.left || 0) < (sep.left || 0));
                 if (columnIndex > -1) {
-                    columnConfigurations[columnIndex].count++;
+                    this.stagesConfiguration[columnIndex].count++;
                 }
             }
         });
         
-        columnConfigurations.forEach(column => {
+        this.stagesConfiguration.forEach(column => {
             this.updateColumnTitle(column.id, column.count);
-            if (column.colorThreshold && column.count > column.colorThreshold) {
+            let titleColumn = this.canvas.getObjects().find(obj => obj.id === column.id) as fabric.Text;
+            
+            if (titleColumn.text?.toLowerCase().includes('in progress') && column.count > 3) {
                 this.setColorForColumn(column.id, '#ef3340');
             } else {
                 this.setColorForColumn(column.id, 'default');
@@ -629,6 +702,7 @@ export class CanvasController {
 
     public setColorForColumn(columnId: string, color: string): void {
         const columnTitle = this.canvas.getObjects().find(obj => obj.id === columnId) as fabric.Text;
+
         if (columnTitle) {
             columnTitle.set('fill', color === 'default' ? 'black' : color); 
             this.canvas.requestRenderAll();
@@ -647,7 +721,7 @@ export class CanvasController {
     public getColumnConfiguration(): ColumnConfiguration[] {
         return [
             { id: 'col1', title: 'Todo', count: 0, proportion: 0.35 },
-            { id: 'col2', title: 'In Progress', count: 0, colorThreshold: 3, proportion: 0.35 },
+            { id: 'col2', title: 'In Progress', count: 0, proportion: 0.35 },
             { id: 'col3', title: 'Done', count: 0, proportion: 0.3 }
         ];
     }

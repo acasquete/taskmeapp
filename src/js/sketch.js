@@ -379,13 +379,28 @@ const Sketch = (function () {
             });
 
             obj.on('mousedblclick', removeDot);
-        } else if (obj.cl==='k') {
+        } else if (obj.cl==='k' && obj.id.includes('sep')) {
             obj.set({
                 hasControls: false,
                 hasBorders: false,
                 lockRotation: true,
                 selectable: false
             });
+        } else if (obj.cl==='k' && obj.id.includes('col')) {
+            obj.set({
+                selectable: true,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockRotation: true,
+                lockScalingFlip: true,
+                lockSkewingX: true,
+                lockScalingY: true,
+                lockSkewingY: true,
+                lockSkewingX: true,
+                hasControls: false,
+                hasBorders: true,
+            });
+            
         } else if (obj.cl==='t') {
             obj.set({
                 hasControls: true,
@@ -733,7 +748,7 @@ const Sketch = (function () {
         }
         
         let separatorYPosition = 4000;
-        let columnConfigurations =canvasController.getColumnConfiguration();
+        let columnConfigurations = canvasController.getColumnConfiguration();
     
         let currentLeft = 0;
     
@@ -746,10 +761,21 @@ const Sketch = (function () {
                 fontSize: 30,
                 fontWeight: 'bold',
                 fontFamily: 'PermanentMarker',
-                selectable: false,
+                selectable: true,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockRotation: true,
+                lockScalingFlip: true,
+                lockSkewingX: true,
+                lockScalingY: true,
+                lockSkewingY: true,
+                lockSkewingX: true,
+                hasControls: false,
+                hasBorders: true,
                 width: columnWidth,
                 textAlign: 'center',
                 id: column.id,
+                editable: true,
                 cl: 'k'
             });
     
@@ -834,6 +860,37 @@ const Sketch = (function () {
         }
         return null; 
     }
+
+    function download (format) {
+
+        let sepLeft = canvas.getObjects().find(obj => obj.id === 'sep3');
+
+        let cvpt = canvas.viewportTransform;
+        let czoom = canvas.getZoom();
+
+        canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+        canvas.setZoom(1);
+
+        var imageDataURL = canvas.toDataURL({
+            format: 'png',
+            quality: 1,
+            width: sepLeft.left,
+            height: 2000,
+            left: 0,
+            top: 0
+        });
+
+        var link = document.createElement('a');
+        link.href = imageDataURL;
+        link.download = 'canvas-image.png'; 
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        canvas.setZoom(czoom);
+        canvas.setViewportTransform(cvpt);
+    }
+
     /* TODO: Refactor AI methods */
     function nextAdvice () {
         
@@ -1002,7 +1059,7 @@ const Sketch = (function () {
     return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
         addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor, 
         addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateTextRealTime,
-        createShareSketch, handleClearClose, nextAdvice };
+        createShareSketch, handleClearClose, nextAdvice, download };
 })();
 
 window.Sketch = Sketch;

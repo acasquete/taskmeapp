@@ -107,6 +107,23 @@ const MenuController = (function () {
             
         });
 
+        $('.menuitem').on('click touchend', function(e) {
+            e.stopPropagation();
+            
+            var toolFunction = $(this).data('action');
+            
+            switch (toolFunction) {
+                case 'downloadPNG':
+                    Sketch.download('png');
+                    break;
+                case 'downloadSVG':
+                    Sketch.download('svg');
+                    break;
+
+            }
+
+        });
+
         document.getElementById('shareBoardButton').addEventListener('click', function() {
             if (!Data.isLogged()) {
                 Notifications.showAppNotification ('You need to log in to share a dashboard', 'regular', 8000)

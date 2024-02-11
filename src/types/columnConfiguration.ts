@@ -3,5 +3,4 @@ interface ColumnConfiguration {
     title: string;
     count: number;
     proportion: number;
-    colorThreshold?: number;
 }
