@@ -6,26 +6,16 @@ export class Config {
     constructor() {
     }
 
+    getLocalOpenAIAPIKey(): string | null {
+        return localStorage.getItem("openAIAPIKey");
+    }
+
     getActiveDashboard(): string | number {
         return localStorage.getItem("ad") ?? 1;
     }
 
     saveActiveDashboard(id: string): void {
         localStorage.setItem("ad", id);
-    }
-
-    saveDashboard(id: string, dashboard: Dashboard): void {
-        localStorage.setItem("d" + id, JSON.stringify(dashboard));
-    }
-
-    async getDashboard(id: string): Promise<Dashboard> {
-        const dashboardRemote: Dashboard | null = await Data.getDashboard(id);
-        if (dashboardRemote != null) {
-            return dashboardRemote;
-        }
-    
-        const dashboardString = localStorage.getItem("d" + id);
-        return dashboardString ? JSON.parse(dashboardString) : { notes: [], dots: [], screenWidth: null };
     }
 
     public static saveCanvas(id: number, canvas: Canvas): void {

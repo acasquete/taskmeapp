@@ -1,21 +1,39 @@
-MVP
-BUG. Estilo modal.
-Eliminar jQuery
-BUG. Doble nota al cambiar dashboard??
-BUG. SHARE - Al borrar nota por arriba sincronizar
-Touch doubletap
-Undo
-Drag and Drop Dots / Normalize dots
-Eraser mode with cursor
-AI Suggestions (key in localstorage)
-Add column
+MUST (MVP)
+OK AI- Obtener solo el titulo
+OK AI- Obtener el color y numero dots
+OK AI- Prompt mejorar prompt para considerar el color y el numero de dots.
+Add hand column 
 Edit column name
+Guardar PNG
+Guardar SVG
+BUG. Doble nota al cambiar dashboard??
+BUG. Arrastrar un punto de una nota a otra no funciona
+BUG. Al seleccionar un punto de una nota se poner por debajo
+BUG. Text modal compartir es muy alto
+BUG. Boton modal copiar portapaples una linea
+BUG. SHARE - Al borrar nota por arriba sincronizar
+BUG. SHARE - Al borrar todo el canvas.
+AI - MOdal para introducir OpenAI API Key
+Establecer cursores (edit, selection, drawing, drag, text)
+Dot Azul
+SHARE - Test dots
+BUG. Touch doubletap
+Undo
+SHARE - Undo
+Eraser mode with cursor
 Responsive menu
 Add date to dashbord for conflict resolution
 SHARE - Solo enviar si hay alguien conectado
 SHARE - Dejar de compartir
 
+
+
+
+
+
+
 NICE TO HAVE
+Eliminar jQuery
 Add angle when creating note
 Refactor to Typescript
 Use compression to store data

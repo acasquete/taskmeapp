@@ -1,5 +1,6 @@
 import { CanvasUtilities } from './canvasUtilities';
 import { Config } from './configService';
+import { KanbanAdvisor } from './kanbanAdvisor';
 
 export class CanvasController {
     
@@ -24,6 +25,8 @@ export class CanvasController {
     private sharedCanvasId: string = '';
     private isTextMode = false;
     private shouldCancelMouseDown = false;
+    private circleToDrag: fabric.Object | null = null;
+    private isDraggingDot: boolean = false;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -49,6 +52,8 @@ export class CanvasController {
         this.currentCanvasId = id;
     }
 
+
+
     public assignCanvasEventListeners(): void {
         
         this.canvas.on('mouse:over', (e: fabric.IEvent) => {
@@ -67,19 +72,78 @@ export class CanvasController {
             }
         });
 
-        
-
         this.canvas.on('mouse:down:before', (options: fabric.IEvent) => {
             this.shouldCancelMouseDown = this.isEditingMode();
         });
 
         this.canvas.on('mouse:down', (options: fabric.IEvent) => {
-            let target = this.canvas.findTarget(options.e, true);
+            let target = this.canvas.findTarget(options.e);
+
+            this.canvas.setCursor('grabbing');
 
             if (this.shouldCancelMouseDown) {
                 this.shouldCancelMouseDown = false;
                 return;
             }
+
+            const pointer = this.canvas.getPointer(options.e);
+
+            if (target && target.type==='group') {
+           
+                
+                const group = options.target;
+                
+                target.forEachObject((obj) => {
+
+                    if (obj.cl === 'd') {
+
+                    const objLeft =  target.left + obj.left;
+                    const objTop =target.top + obj.top + (target.height/2);
+                    const objWidth = obj.width;
+                    const objHeight = obj.height;
+                    
+                    if (pointer.x >= objLeft - (obj.width/2) && pointer.x <= objLeft + (objWidth/2) &&
+                        pointer.y >= objTop - (obj.height/2)  && pointer.y <= objTop + (objHeight/2)) {
+
+                        console.debug('dentro');
+
+                        target.lockMovementX =  true;
+                        target.lockMovementY = true;
+
+                        this.canvas.requestRenderAll();
+
+                        obj.clone( (cloned)=> {
+
+                            console.log('coned');
+                            cloned.set({
+                                left: pointer.x,
+                                top: pointer.y,
+                                hasControls: false,
+                                hasBorders: false,
+                                cl: 'd',
+                                visible: true,
+                                parent: target.id,
+                                originX: 'center',
+                                originY: 'center',
+                            });
+                            
+                            group.removeWithUpdate(obj);
+                            this.circleToDrag = cloned;
+
+                            this.canvas.add(cloned);
+                            this.canvas.bringToFront(cloned);
+                            this.canvas.renderAll();
+                            
+                            options.e.stopPropagation();
+
+                            this.isDraggingDot = true;
+                        });
+
+                        }
+                }
+                });
+
+            }   
             
             if (this.isTextMode && target == undefined) {
                 this.addTextObject(options);
@@ -94,24 +158,43 @@ export class CanvasController {
         });
 
         this.canvas.on('mouse:move', (options: fabric.IEvent) => {
+            
+            let pointer = this.canvas.getPointer(options.e, false);
 
-            let pointer = this.canvas.getPointer(options.e);
-
-            if (this.isEditKanbanMode && this.targetElement) {
+            if (this.isDraggingDot && this.circleToDrag) {
+                this.circleToDrag.set({
+                    left: pointer.x,
+                    top: pointer.y,
+                });
+            } else if (this.isEditKanbanMode && this.targetElement) {
                
                 this.targetElement.set({
                     left: pointer.x
                 });
                 let deltaX = pointer.x - this.originalPosition.x;
                 this.moveRelatedElements (this.targetElement.id, deltaX);
-                this.canvas.requestRenderAll();
-            }
+               
+            } 
 
+            this.canvas.requestRenderAll();
         });
 
         this.canvas.on('mouse:up', (options: fabric.IEvent) => {
             
             this.isEditKanbanMode = false;
+            
+            if (this.isDraggingDot) {
+                let parentNoteId = this.circleToDrag.parent;
+                let noteObj = this.getObjectById (parentNoteId);
+
+                noteObj.set({
+                    lockMovementX: false,
+                    lockMovementY: false
+                });
+
+                this.canvas.requestRenderAll()
+                this.isDraggingDot = false;
+            }
 
             if (this.targetElement) {
                 this.targetElement.selectable = false;
@@ -128,16 +211,18 @@ export class CanvasController {
             }
 
             
+
+            
         });
 
         this.canvas.on('mouse:wheel', (opt: fabric.IEvent) => {
             let zoom = this.canvas.getZoom();
-            const evt = opt.e as WheelEvent; // Casting necesario para acceder a propiedades específicas de WheelEvent
+            const evt = opt.e as WheelEvent; 
 
             if (evt.ctrlKey) {
                 const deltaY = evt.deltaY;
                 zoom -= deltaY / 400;
-                zoom = Math.max(0.2, Math.min(3, zoom)); // Asegurar que el zoom esté entre 0.2 y 3
+                zoom = Math.max(0.2, Math.min(3, zoom)); 
                 this.canvas.zoomToPoint(new fabric.Point(evt.offsetX, evt.offsetY), zoom);
             } else {
                 const deltaX = -evt.deltaX;
@@ -213,6 +298,8 @@ export class CanvasController {
         
             this.lastX = this.currentX;
             this.lastY = this.currentY;
+            this.canvas.setCursor('grabbing');
+
         });
 
         
@@ -237,20 +324,39 @@ export class CanvasController {
 
             this.saveState();
         });
-
+        
         this.canvas.on('object:modified', (event: fabric.IEvent) => {
+            
             this.saveState();
+
+            const movedObject = event.target;
+
+            console.debug('moved');
+        
+            // Drag and drop for "Dots"
+            if (movedObject && movedObject.cl === 'd') {
+                this.canvas.forEachObject((obj) => {
+                    if (obj.cl === 'n' && obj.type === 'group' && checkIntersection(movedObject, obj)) {
+                        this.canvas.remove(movedObject);
+                        (obj as fabric.Group).addWithUpdate(movedObject);
+                        this.canvas.renderAll();
+                    }
+                });
+            }
+
+            console.debug('modified');
 
             const activeObject = event.target;
             if (activeObject && activeObject.type === 'group') {
                 this.canvas.bringToFront(activeObject);
 
+                // Delete notes 
                 if (activeObject.top && activeObject.top < 10) {
                     activeObject.evented = false;
                     activeObject.animate({
                         top: activeObject.top - 250,
                         opacity: 0
-                    }, {
+                    }, { 
                         duration: 500,
                         easing: fabric.util.ease.easeOutExpo,
                         onChange: () => this.canvas.renderAll(),
@@ -263,9 +369,49 @@ export class CanvasController {
                     return;
                 }
             }
+
             this.normalizeZIndex();
             this.saveCanvas();
         });
+
+        function checkIntersection(obj1: fabric.Object, obj2: fabric.Object): boolean {
+            // Obtener bounding rects para comparar
+            const obj1BoundingRect = obj1.getBoundingRect();
+            const obj2BoundingRect = obj2.getBoundingRect();
+        
+            // Comprobar si hay intersección
+            return (
+                obj1BoundingRect.left < obj2BoundingRect.left + obj2BoundingRect.width &&
+                obj1BoundingRect.left + obj1BoundingRect.width > obj2BoundingRect.left &&
+                obj1BoundingRect.top < obj2BoundingRect.top + obj2BoundingRect.height &&
+                obj1BoundingRect.top + obj1BoundingRect.height > obj2BoundingRect.top
+            );
+        }
+        
+
+    }
+
+    private moveObjectToRandomPositionAroundGroup(object: fabric.Object, group: fabric.Group) {
+        // Calcular un rango aleatorio alrededor del grupo
+        const padding = 50; // Espacio alrededor del grupo
+        const minX = group.left - padding;
+        const maxX = group.left + group.width + padding;
+        const minY = group.top - padding;
+        const maxY = group.top + group.height + padding;
+    
+        // Generar posiciones aleatorias dentro del rango
+        const newX = Math.random() * (maxX - minX) + minX;
+        const newY = Math.random() * (maxY - minY) + minY;
+    
+        // Mover el objeto a la nueva posición
+        object.set({
+            left: newX,
+            top: newY
+        });
+    
+        // Asegurarse de que el objeto se vuelve a agregar al canvas y se renderiza
+        this.canvas.add(object);
+        this.canvas.renderAll();
     }
 
     genId() : string {
@@ -316,7 +462,6 @@ export class CanvasController {
 
     private onUpdatingObject (e: fabric.IEvent) {
 
-
         const obj = e.target as fabric.Object & { cl?: string };
         
         let objectData = { 
@@ -334,6 +479,9 @@ export class CanvasController {
         if (obj && obj.cl === 'n') {
             this.updateNoteCounters();
         }
+
+       
+       
     }
 
     public saveViewPortConfiguration(): void {
@@ -505,6 +653,7 @@ export class CanvasController {
     }
 
     public normalizeZIndex(): void {
+        
         let maxPathIndex = -1;
         const objects = this.canvas.getObjects();
     
@@ -553,7 +702,7 @@ export class CanvasController {
         this.canvas.isDrawingMode = false;
         this.canvas.selection = false;
         this.isTextMode = false;
-        this.canvas.defaultCursor = 'pointerpp';
+        this.canvas.defaultCursor = 'pointer';
     }
 
     private setSelectionMode(): void {

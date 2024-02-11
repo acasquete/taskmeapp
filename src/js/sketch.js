@@ -2,6 +2,7 @@
 import permanentMarkerFontURL from '../assets/fonts/PermanentMarker-Regular.ttf';
 import { CanvasUtilities } from '../services/canvasUtilities.ts';
 import { CanvasController } from '../services/canvasController';
+import { KanbanAdvisor } from '../services/kanbanAdvisor';
 
 const Sketch = (function () {
     "use strict";
@@ -14,6 +15,7 @@ const Sketch = (function () {
     let observers = []; 
     let canvasController;
     let sharedCanvasId = '';
+    let kanbanAdvisor;
 
     async function init(sharedId) {
 
@@ -23,7 +25,20 @@ const Sketch = (function () {
         canvasController = new CanvasController(canvas);
         canvasController.assignCanvasEventListeners();
 
+        initKanbanAdvisor();
+       
         loadCurrentDashboard(sharedId);
+    }
+
+    function initKanbanAdvisor() {
+        let openAiToken = Config.getLocalOpenAIAPIKey();
+
+        if (openAiToken) {
+            kanbanAdvisor = new KanbanAdvisor(openAiToken);
+            console.debug('AI enabled');
+        } else {
+            console.debug('AI disabled');
+        }
     }
 
     async function loadCurrentDashboard(sharedId) {
@@ -52,6 +67,8 @@ const Sketch = (function () {
         resizeCanvas();
 
         $(window).on('resize orientationchange', resizeCanvas);
+        document.querySelector('#modal-clearall #close').addEventListener('click', handleClearClose);
+        document.querySelector('#modal-clearall #confirm').addEventListener('click', handleClearConfirm);
     }
     
     function resizeCanvas() {
@@ -275,6 +292,7 @@ const Sketch = (function () {
             hasBorders: false,
             opacity: 0,
             cl: 'n',
+            subTargetCheck: true,
             id: genId()
         });
 
@@ -337,7 +355,7 @@ const Sketch = (function () {
         canvasController.saveCanvas();
     }
 
-    function assignConfigToObject (obj) {
+    function  assignConfigToObject (obj) {
 
         if (obj.type === 'group') {
             obj.set({
@@ -353,6 +371,8 @@ const Sketch = (function () {
            
         } else if (obj.cl === 'd') {
             obj.set({
+                originX: 'center',
+                originY: 'center',
                 hasControls: false,
                 hasBorders: false,
                 visible: true,
@@ -634,34 +654,26 @@ const Sketch = (function () {
     function clearAllCanvas() {
 
         const modal = document.querySelector('#modal-clearall');
-        const close = document.querySelector('#modal-clearall #close');
-        const confirm = document.querySelector('#modal-clearall #confirm');
-
         modal.classList.remove('hidden');
-
-        function handleClose() {
-            modal.classList.add('hidden');
-            close.removeEventListener('click', handleClose);
-            confirm.removeEventListener('click', handleConfirm);
-        }
-
-        function handleConfirm() {
-            modal.classList.add('hidden');
-
-            canvasController.reset();
-            initKanbanBoard();
-            adjustCanvasZoom(true);
-
-            canvasController.saveCanvas();
-
-            close.removeEventListener('click', handleClose);
-            confirm.removeEventListener('click', handleConfirm);
-        }
-
-        close.addEventListener('click', handleClose);
-        confirm.addEventListener('click', handleConfirm);
+       
        
     };
+
+    function handleClearClose() {
+        const modal = document.querySelector('#modal-clearall');
+        modal.classList.add('hidden');
+    }
+
+    function handleClearConfirm() {
+        const modal = document.querySelector('#modal-clearall');
+        modal.classList.add('hidden');
+
+        canvasController.reset();
+        initKanbanBoard();
+        adjustCanvasZoom(true);
+
+        canvasController.saveCanvas();
+    }
 
     function toggleNotesVisibility() {
         canvas.getObjects().forEach(function(obj) {
@@ -822,6 +834,68 @@ const Sketch = (function () {
         }
         return null; 
     }
+    /* TODO: Refactor AI methods */
+    function nextAdvice () {
+        
+        const kanbanContent = getKanbanContent();
+         
+        kanbanAdvisor.getProductivityRecommendations(kanbanContent)
+        .then(recommendations => {
+            console.debug(recommendations);
+
+            let jsonRecommendation = JSON.parse(recommendations);
+
+            if (jsonRecommendation.response) {
+                Notifications.showAppNotification(jsonRecommendation.response, 'small', 30000);
+            }
+
+        })
+        .catch(error => console.error(error));
+    }
+
+    function getKanbanContent () {
+        let separators = [];
+        let columns = [];
+        let notas = canvas.getObjects().filter(obj => {
+            if (obj.id && obj.id.includes('sep')) {
+                separators.push(obj);
+            }
+            return obj.cl === 'n';
+        });
+
+        for (let i = 0; i < separators.length; i++) {
+        let inicioSep = i === 0 ? 0 : separators[i-1].left;
+        let finSep = separators[i].left;
+        let colTitle = canvas.getObjects().find(obj => obj.id === `col${i+1}`)?.text || `Stage ${i+1}`;
+        let colTitleCleaned = colTitle.includes(" - ") ? colTitle.split(" - ")[0] : colTitle;
+
+        let items = notas.filter(nota => {
+            let posNota = nota.left + nota.width / 2; 
+            return posNota > inicioSep && posNota < finSep;
+        }).map(nota => {
+            let noteText = nota._objects.find(obj => obj.type === 'textbox')?.text;
+            let rectWithGradient = nota._objects.find(obj => obj.type === 'rect' && obj.fill instanceof fabric.Gradient);
+            let gradientColor = rectWithGradient ? rectWithGradient.fill.colorStops[0].color : 'defaultColor';
+            let dots = nota._objects.filter(obj => obj.type === 'circle').length;
+
+            return {
+                text: noteText,
+                color: gradientColor,
+                dots: dots
+            };
+
+        });
+
+        columns.push({
+            name: colTitleCleaned,
+            notes: items
+        });
+        }
+
+        return columns;
+    }
+
+    /* TODO: Refactor Real-time methods */
 
     function updatePositionRealTime (data)
     {
@@ -923,14 +997,12 @@ const Sketch = (function () {
                 canvas.renderAll();
             });
         }
-
-        
     }
     
     return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
         addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor, 
         addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateTextRealTime,
-        createShareSketch };
+        createShareSketch, handleClearClose, nextAdvice };
 })();
 
 window.Sketch = Sketch;

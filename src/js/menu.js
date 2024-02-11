@@ -87,6 +87,7 @@ const MenuController = (function () {
                     Sketch.createWelcomeNote();
                     break;
                 case 'removeNotes':
+                    closeAllModals();
                     Sketch.clearAllCanvas();
                     break;
                 case 'startPomodoro':
@@ -97,6 +98,9 @@ const MenuController = (function () {
                     break;
                 case 'startBreakLong':
                     Pomodoro.startLong();
+                    break;
+                case 'aiAdvisor':
+                    Sketch.nextAdvice();
                     break;
             }
             $('#hamburgerMenu').toggleClass('active');
@@ -112,43 +116,24 @@ const MenuController = (function () {
             let sharedId = Sketch.createShareSketch();
             showModal(sharedId);
         });
-    }
 
+        document.querySelector('#modal-liveshare #copy').addEventListener('click', handleLiveShareCopy);
+        document.querySelector('#modal-liveshare #close').addEventListener('click', handleLiveShareClose);
+
+    }
     
     function showModal(sharedId) {
+
+        closeAllModals(); 
 
         const currentDomain = window.location.origin; 
         const fullURL = `${currentDomain}?sid=${sharedId}`;
 
-        const modal = document.querySelector('#modal-liveshare');
         const input = document.querySelector('#modal-liveshare #shareURL');
-        const copy = document.querySelector('#modal-liveshare #shareURL');
-        const close = document.querySelector('#modal-liveshare #close');
 
         input.value = fullURL;
-
-        copy.addEventListener('click', handleCopy);
-        close.addEventListener('click', handleClose);
-
-        modal.classList.remove('hidden');
-
-        function handleCopy() {
-            input.select();
-            input.select();
-            input.setSelectionRange(0, 99999); /* For mobile devices */
-            navigator.clipboard.writeText(input.value).then(function() {
-                console.debug('Copying to clipboard was successful!');
-                copy.innerHTML = '<i class="fas fa-check" style="color: green;"></i>';
-            }, function(err) {
-                console.debug('Could not copy text: ', err);
-            });
-        }
-
-        function handleClose() {
-            modal.classList.add('hidden');
-            close.removeEventListener('click', handleClose);
-            copy.removeEventListener('click', handleCopy);
-        }
+        document.querySelector('#modal-liveshare').classList.remove('hidden');
+        
     }   
     
     class GridItem {
@@ -158,6 +143,8 @@ const MenuController = (function () {
             this.update = function (dashboardNumber) {
                 var elementNumber = this.element.text();
 
+                closeAllModals();
+
                 if (elementNumber === dashboardNumber.toString()) {
                     this.element.addClass('active');
                 } else {
@@ -165,6 +152,30 @@ const MenuController = (function () {
                 }
             };
         }
+    }
+
+    function closeAllModals() {
+        handleLiveShareClose();
+        Sketch.handleClearClose();
+    }
+
+
+    function handleLiveShareCopy() {
+
+        const input = document.querySelector('#modal-liveshare #shareURL')
+        input.select();
+        input.setSelectionRange(0, 99999); /* For mobile devices */
+
+        navigator.clipboard.writeText(input.value).then(function() {
+            console.debug('Copying to clipboard was successful!');
+            copy.innerHTML = '<i class="fas fa-check" style="color: white;"></i>';
+        }, function(err) {
+            console.debug('Could not copy text: ', err);
+        });
+    }
+
+    function handleLiveShareClose() {
+        document.querySelector('#modal-liveshare').classList.add('hidden');
     }
 
     return { init };
