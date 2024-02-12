@@ -1,4 +1,13 @@
 BUG. Touch doubletap
+AI - Modal para introducir OpenAI API Key
+Establecer cursores (edit, selection, drawing, drag, text)
+Eraser mode with cursor
+Eliminar columna
+Responsive menu
+SHARE - Add/Delete Column
+
+NICE TO HAVE
+Add date to dashbord for conflict resolution
 BUG. Arrastrar un punto de una nota a otra no funciona
 BUG. Al seleccionar un punto de una nota se poner por debajo
 BUG. SHARE - Al borrar nota por arriba sincronizar
@@ -6,15 +15,6 @@ BUG. SHARE - Al borrar todo el canvas.
 SHARE - Solo enviar si hay alguien conectado
 SHARE - Test dots
 SHARE - Undo
-AI - Modal para introducir OpenAI API Key
-Establecer cursores (edit, selection, drawing, drag, text)
-Eraser mode with cursor
-Eliminar columna
-Responsive menu
-Add date to dashbord for conflict resolution
-SHARE - Add/Delete Column
-
-NICE TO HAVE
 Bugs Undo
 Eliminar jQuery
 Add angle when creating note
