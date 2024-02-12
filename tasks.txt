@@ -1,4 +1,3 @@
-BUG. Touch doubletap
 AI - Modal para introducir OpenAI API Key
 Establecer cursores (edit, selection, drawing, drag, text)
 Eraser mode with cursor

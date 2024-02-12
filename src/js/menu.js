@@ -116,6 +116,9 @@ const MenuController = (function () {
                 case 'downloadPNG':
                     Sketch.download('png');
                     break;
+                case 'openGitHub':
+                    window.open('https://github.com/acasquete/taskmeapp', '_blank');
+                    break;
                 case 'downloadSVG':
                     Sketch.download('svg');
                     break;

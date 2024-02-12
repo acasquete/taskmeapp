@@ -164,7 +164,7 @@
 
 .menuitemlist button {
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     height: 2rem;
     font-size: 0.8rem;
     border-radius: 0.5rem;
@@ -174,8 +174,9 @@
 }
 
 .menuitemlist button i {
-    font-size: 0.8rem;
+    font-size: 1rem;
     vertical-align: middle;
+    padding-bottom: 0.2rem;
 }
 
 /* Modal */
