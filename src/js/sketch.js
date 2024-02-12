@@ -10,8 +10,6 @@ const Sketch = (function () {
     let isEraserMode = false;
     let currentCanvasId;
     const CANVAS_WIDTH = 2000;
-    var state = [];
-    var mods = 0;
     let observers = []; 
     let canvasController;
     let sharedCanvasId = '';
@@ -287,7 +285,7 @@ const Sketch = (function () {
             top: 170,
             hasControls: false, 
             hasBorders: false,
-            opacity: 0,
+            opacity: 1,
             cl: 'n',
             subTargetCheck: true,
             id: genId()
@@ -331,19 +329,6 @@ const Sketch = (function () {
         }
 
         group.set({ left: newLeft, top: newTop });
-
-        let randomAngle = 0;
-
-        group.animate('opacity', 1, {
-            duration: 300, 
-            onChange: canvas.renderAll.bind(canvas),
-            onComplete: function () {  group.set('opacity', 1);  canvasController.saveCanvas() }
-        });
-
-        group.animate('angle', randomAngle, {
-            duration: 200, 
-            onChange: canvas.renderAll.bind(canvas)
-        });
 
         assignConfigToObject (group);
 
@@ -452,10 +437,9 @@ const Sketch = (function () {
 
         let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
         let firstColWidth = separator1 ? separator1.left : canvas.width / 3; 
-        let firstColHeight = separator1 ? separator1.height / 3 : canvas.height / 4;
 
-        let randomLeft = Math.random() * (firstColWidth - 150) + 150; 
-        let randomTop = Math.random() * (firstColHeight - 28) + 100; 
+        let randomLeft = Math.random() * (firstColWidth - 200) + 150; 
+        let randomTop = Math.random() * 300 + 100; 
 
         var circle = new fabric.Circle({
             left: randomLeft, 
@@ -681,6 +665,8 @@ const Sketch = (function () {
     }
 
     function handleClearConfirm() {
+
+        canvasController.isLoading = true;
         const modal = document.querySelector('#modal-clearall');
         modal.classList.add('hidden');
 
@@ -689,6 +675,8 @@ const Sketch = (function () {
         adjustCanvasZoom(true);
         canvasController.loadDynamicConfiguration();
         canvasController.saveCanvas();
+
+        canvasController.isLoading = false;
     }
 
     function toggleNotesVisibility() {
@@ -712,6 +700,8 @@ const Sketch = (function () {
     }
 
     function clearCanvas() {
+        canvasController.isLoading = true;
+        
         for (let i = canvas.getObjects().length - 1; i >= 0; i--) {
             let obj = canvas.item(i);
             if (obj.type === 'path' || obj.cl === 'd') {
@@ -719,24 +709,21 @@ const Sketch = (function () {
             }
         }
         canvasController.saveCanvas();
+        canvasController.isLoading = false;
     }
       
     function Undo() {
-        if (mods > 0) {
-            canvas.loadFromJSON(state[mods - 1], function () {
-                canvas.renderAll();
-                mods--;
-            });
-        }
+        canvasController.undo();
+        canvas.forEachObject(function(obj) {
+            assignConfigToObject (obj);
+        });
     }
     
     function Redo() {
-        if (mods < state.length - 1) {
-            canvas.loadFromJSON(state[mods + 1], function () {
-                canvas.renderAll();
-                mods++;
-            });
-        }
+        canvasController.redo();
+        canvas.forEachObject(function(obj) {
+            assignConfigToObject (obj);
+        });
     }
    
     function initKanbanBoard() {

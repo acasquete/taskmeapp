@@ -1,4 +1,3 @@
-Undo
 BUG. Touch doubletap
 BUG. Arrastrar un punto de una nota a otra no funciona
 BUG. Al seleccionar un punto de una nota se poner por debajo
@@ -10,12 +9,13 @@ SHARE - Undo
 AI - Modal para introducir OpenAI API Key
 Establecer cursores (edit, selection, drawing, drag, text)
 Eraser mode with cursor
-Eliminar column
+Eliminar columna
 Responsive menu
 Add date to dashbord for conflict resolution
 SHARE - Add/Delete Column
 
 NICE TO HAVE
+Bugs Undo
 Eliminar jQuery
 Add angle when creating note
 Refactor to Typescript

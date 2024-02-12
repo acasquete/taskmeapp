@@ -1,6 +1,6 @@
 import { CanvasUtilities } from './canvasUtilities';
 import { Config } from './configService';
-import { KanbanAdvisor } from './kanbanAdvisor';
+import { CanvasHistory } from './canvasHistory';
 
 export class CanvasController {
     
@@ -19,8 +19,6 @@ export class CanvasController {
     private yChange: number = 0;
     private zoomStartScale: number = 0;
     private currentColorIndex: number = 0;
-    private state: any = [];
-    private mods = 0;
     private currentCanvasId: number = 0;
     private sharedCanvasId: string = '';
     private isTextMode = false;
@@ -28,9 +26,12 @@ export class CanvasController {
     private circleToDrag: fabric.Object | null = null;
     private isDraggingDot: boolean = false;
     private stagesConfiguration : ColumnConfiguration[] = [];
+    private canvasHistory : CanvasHistory;
+
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
+        this.canvasHistory = new CanvasHistory(canvas);
     }
 
     public reset () {
@@ -40,14 +41,6 @@ export class CanvasController {
 
     isSeparatorElement(object: fabric.Object) : boolean {
         return object.cl === 'k' && object.id?.startsWith('sep');
-    }
-
-    saveState(): void {
-        if (this.mods < this.state.length) {
-            this.state = this.state.slice(0, this.mods + 1);
-        }
-        this.state.push(this.canvas.toJSON());
-        this.mods++;
     }
 
     public switchDashboard(id: number, initial: boolean) {
@@ -306,6 +299,10 @@ export class CanvasController {
         this.canvas.on('object:moving', this.onUpdatingObject.bind(this));
         this.canvas.on('object:rotating', this.onUpdatingObject.bind(this));
         
+        this.canvas.on('object:removed', () => {
+            if (this.isLoading) return;
+            this.canvasHistory.saveHistory()
+        } );
 
         this.canvas.on('object:added', (event: fabric.IEvent) => {
             if (this.isLoading) return;
@@ -316,12 +313,12 @@ export class CanvasController {
             this.handleNewStage(addedObject);
             this.assignUniqueIdToAddedObject(addedObject);
             this.sendObjectData(addedObject);
-            this.saveState();
+
+            this.canvasHistory.saveHistory();
         });
         
         this.canvas.on('object:modified', (event: fabric.IEvent) => {
-            
-            this.saveState();
+            if (this.isLoading) return;
 
             const movedObject = event.target;
         
@@ -362,6 +359,8 @@ export class CanvasController {
 
             this.normalizeZIndex();
             this.saveCanvas();
+
+            this.canvasHistory.saveHistory();
         });
 
         function checkIntersection(obj1: fabric.Object, obj2: fabric.Object): boolean {
@@ -848,7 +847,19 @@ export class CanvasController {
 
     public setSharedId (sharedId: string) : void {
         this.sharedCanvasId = sharedId;
-
         this.saveCanvas();
+    }
+
+    public undo ():void {
+        this.isLoading = true;
+        this.canvasHistory.undo();
+        this.isLoading = false;
+    }
+
+    public redo ():void{
+        this.isLoading = true;
+        this.canvasHistory.redo();
+        this.isLoading = false;
+
     }
 }
