@@ -457,6 +457,8 @@ const Sketch = (function () {
         canvasController.saveCanvas();
     }
 
+
+
     function isOverlapping(note, space, width, height) {
         return note.left < space.left + width && 
                note.left + note.width > space.left &&

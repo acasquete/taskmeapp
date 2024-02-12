@@ -27,7 +27,7 @@ export class CanvasController {
     private isDraggingDot: boolean = false;
     private stagesConfiguration : ColumnConfiguration[] = [];
     private canvasHistory : CanvasHistory;
-
+    private lastTap = 0;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -46,6 +46,24 @@ export class CanvasController {
     public switchDashboard(id: number, initial: boolean) {
         this.currentCanvasId = id;
         this.loadDynamicConfiguration();
+    }
+
+    private triggerDblClick(event: MouseEvent | TouchEvent) {
+        const dblClickEvent = new MouseEvent('dblclick', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          detail: 2
+        });
+      
+        if (event.target) {
+          (event.target as HTMLElement).dispatchEvent(dblClickEvent);
+          event.stopPropagation();
+        }
+    }
+
+    private isTouchDevice(): boolean {
+        return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
     }
 
     public assignCanvasEventListeners(): void {
@@ -71,9 +89,18 @@ export class CanvasController {
         });
 
         this.canvas.on('mouse:down', (options: fabric.IEvent) => {
+            const DOUBLE_TAP_DELAY = 300;
+
             let target = this.canvas.findTarget(options.e);
 
-            this.canvas.setCursor('grabbing');
+            if (this.isTouchDevice() && target && target.type === 'group' && target.cl === 'n') {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - this.lastTap;
+                if (tapLength < DOUBLE_TAP_DELAY && tapLength > 0) {
+                    this.triggerDblClick(options.e);
+                }
+                this.lastTap = currentTime;
+            }
 
             if (this.shouldCancelMouseDown) {
                 this.shouldCancelMouseDown = false;
@@ -290,7 +317,6 @@ export class CanvasController {
         
             this.lastX = this.currentX;
             this.lastY = this.currentY;
-            this.canvas.setCursor('grabbing');
 
         });
 
