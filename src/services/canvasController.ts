@@ -173,6 +173,8 @@ export class CanvasController {
                 this.targetElement.selectable = false;
                 this.originalPosition = { x: target.left || 0 };
                 this.sepInitPositions = this.getSeparatorsPositionsArray(); 
+
+                
             }
         });
 
@@ -187,12 +189,16 @@ export class CanvasController {
                 });
             } else if (this.isEditKanbanMode && this.targetElement) {
                
-                this.targetElement.set({
-                    left: pointer.x
-                });
+                let currentIdTarget = parseInt( this.targetElement.id.replace(/[^\d]/g, ''), 10);
+                let prevIdTarget = currentIdTarget == 1 ? '' : 'sep' + (currentIdTarget - 1);
+                let prevTargetLeft = prevIdTarget =='' ? 0 : this.getObjectById(prevIdTarget)?.left;
+
                 let deltaX = pointer.x - this.originalPosition.x;
-                this.moveRelatedElements (this.targetElement.id, deltaX);
-               
+
+                if (this.targetElement.left-prevTargetLeft+deltaX > 400 ) {
+                    this.targetElement.set({left: pointer.x });
+                    this.moveRelatedElements (pointer.x, this.targetElement.id, deltaX);
+                }
             } 
 
             this.canvas.requestRenderAll();
@@ -214,24 +220,6 @@ export class CanvasController {
                 this.canvas.requestRenderAll()
                 this.isDraggingDot = false;
             }
-
-            if (this.targetElement) {
-                this.targetElement.selectable = false;
-                const pointer = this.canvas.getPointer(options.e);
-                const deltaX = pointer.x - this.originalPosition.x;
-
-                this.moveRelatedElements(this.targetElement.id, deltaX); 
-                this.targetElement = null;
-
-                // Kludge to force refresh
-                this.canvas.relativePan(new fabric.Point(1, 0));
-                this.canvas.relativePan(new fabric.Point(-1, 0));
-                this.saveCanvas();
-            }
-
-            
-
-            
         });
 
         this.canvas.on('mouse:wheel', (opt: fabric.IEvent) => {
@@ -586,9 +574,8 @@ export class CanvasController {
         localStorage.setItem(key, JSON.stringify(configuration));
     }
 
-    public moveRelatedElements(id: string, deltaX: number): void {
+    public moveRelatedElements(leftPosition: number, id: string, deltaX: number): void {
         const movedIndex: number = parseInt(id.replace(/[^\d]/g, ''), 10);
-
         this.canvas.forEachObject((obj: fabric.Object) => {
             const objId = obj.id;
             if (objId && objId.startsWith('sep')) {
@@ -598,7 +585,12 @@ export class CanvasController {
                     obj.set({
                         left: this.sepInitPositions[objIndex - 1] + deltaX,
                     });
-                    
+                }
+            } else if ( obj.cl == 'n') {
+                if (obj.left > leftPosition) {
+                    obj.set({
+                        left: obj.initleft + deltaX, 
+                    });
                 }
             }
         });
@@ -674,6 +666,8 @@ export class CanvasController {
             const object = objects[i];
             if (this.isSeparatorElement(object)) {
                 separatorsPositions.push(object.left || 0);
+            } else if (object.cl == 'n') {
+                object.set('initleft', object.left);
             }
         }
 
