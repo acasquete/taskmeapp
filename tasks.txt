@@ -1,9 +1,10 @@
+Responsive menu
 AI - Modal para introducir OpenAI API Key
 Establecer cursores (edit, selection, drawing, drag, text)
 Eraser mode with cursor
 Eliminar columna
-Responsive menu
 SHARE - Add/Delete Column
+BUG - Evitar que se elimine un elemento columna.
 
 NICE TO HAVE
 Add date to dashbord for conflict resolution
@@ -28,7 +29,6 @@ Thumbnail Dashboard
 Padding in the note
 Swimlines
 When deleting the whole dashboard keep kanban elements
-Adjust column notes to new position
 Dark mode
 Load SVG as drawn line
 Guardar SVG
