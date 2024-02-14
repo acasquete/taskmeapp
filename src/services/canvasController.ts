@@ -222,13 +222,6 @@ export class CanvasController {
             }
 
             if (this.targetElement) {
-                //this.targetElement.selectable = false;
-                //const pointer = this.canvas.getPointer(options.e);
-                //const deltaX = pointer.x - this.originalPosition.x;
-
-                //this.moveRelatedElements(pointer.x, this.targetElement.id, deltaX); 
-                //this.targetElement = null;
-
                 //Kludge to force refresh
                 this.canvas.relativePan(new fabric.Point(1, 0));
                 this.canvas.relativePan(new fabric.Point(-1, 0));

@@ -6,6 +6,54 @@ const MenuController = (function () {
 
     function init () {
 
+        const toolbar = document.getElementById('toolbar');
+
+        toolbar.addEventListener('click', (event) => {
+          const actionElement = event.target.closest('[data-action]');
+          
+          if (!actionElement) return;
+          
+          const action = actionElement.getAttribute('data-action');
+          
+          switch (action) {
+            case 'hamburguer-picker':
+                const hamMenu = document.querySelector('#hamburger-menu');
+                hamMenu.classList.toggle('hidden');
+                break;
+            case 'pen-picker':
+                const penMenu = document.querySelector('#pen-menu');
+                penMenu.classList.toggle('hidden');
+                break;
+            case 'text-picker':
+                Sketch.changeColor('text');
+                break;
+            case 'pointer-picker':
+                Sketch.changeColor('pointer');
+                break;
+            case 'selection-picker':
+                Sketch.changeColor('selection');
+                break;
+            case 'aiadvisor-picker':
+                Sketch.nextAdvice();
+                break;
+            case 'black-picker':
+                Sketch.changeColor('black');
+                break;
+            case 'green-picker':
+                Sketch.changeColor('green');
+                break;
+            case 'red-picker':
+                Sketch.changeColor('red');
+                break;
+            case 'blue-picker':
+                Sketch.changeColor('blue');
+                break;
+            default:
+              console.log('Acción no reconocida:', action);
+          }
+        });
+
+
         
         $('.hamburger-button').click(function() {
             $('#hamburgerMenu').toggleClass('active');
@@ -71,7 +119,7 @@ const MenuController = (function () {
                 };
     
                 var selection = selectionMap[toolFunction];
-                Sketch.changeColor(selection, );
+                Sketch.changeColor(selection);
                 break;
     
                 case 'toggleFullScreen':

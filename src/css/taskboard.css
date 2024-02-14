@@ -179,11 +179,11 @@ body {
     display: none; 
     position: fixed;
     text-align: center;
-    max-width: 90%;
-    bottom: 5%; 
+    max-width: 95%;
+    bottom: 4.5rem; 
     left: 50%; 
     transform: translate(-50%, -50%); 
-    font-size: 2rem; 
+    font-size: 1.5rem; 
     
     font-family: "Poppins", sans-serif;
     background: #fff;
