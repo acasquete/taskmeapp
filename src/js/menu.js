@@ -20,7 +20,6 @@ const MenuController = (function () {
                 switch (action) {
                     case 'hamburguer-picker':
                         toggleHamMenu();
-                        return;
                         break;
                     case 'pen-picker':
                         const penMenu = document.querySelector('#pen-menu');
@@ -94,7 +93,10 @@ const MenuController = (function () {
                         showModal(sharedId);
                         break;
                 }
-                document.querySelector('#hamburger-menu').classList.add('hidden');
+                
+                if (action!='hamburguer-picker') document.querySelector('#hamburger-menu').classList.add('hidden');
+                if (action!=='pen-picker') document.querySelector('#pen-menu').classList.add('hidden');
+                
             });
         });
     
@@ -104,10 +106,10 @@ const MenuController = (function () {
         });
         
         $(document).on("click touchend", function(event) {
-            if ($('#hamburger-menu').hasClass('hidden') && !$(event.target).is(".hamburger-icon *")) {
+            //if ($('#hamburger-menu').hasClass('hidden') && !$(event.target).is(".hamburger-icon *")) {
                 document.querySelector('#hamburger-menu').classList.add('hidden');
-            }
-            event.stopPropagation();
+            //}
+            //event.stopPropagation();
         });
     
         var toolboxGrid = $('.switch-dashboard');
