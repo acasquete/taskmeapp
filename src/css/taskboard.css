@@ -219,9 +219,6 @@ body {
     color: var(--accent-color);
 }
 
-#dialog-confirm {
-    display: none;
-}
 
 @media screen and (max-width: 600px) {
     #statusbar {

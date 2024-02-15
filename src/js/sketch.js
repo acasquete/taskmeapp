@@ -629,7 +629,7 @@ const Sketch = (function () {
             setEraserMode();
         } else if (e.key === 's') {
             canvasController.changeColor('selection');
-        } else if (e.key === 'p') {
+        } else if (e.key === 'h') {
             canvasController.changeColor('pointer');
         } else if (e.key === 'k') {
             clearCanvas(); 

@@ -46,32 +46,32 @@
           
               
 
-            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pointer-picker">
+            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pointer-picker" title="Hand (Panning Tool) - H">
                 <i class="fa-regular fa-hand"></i>
             </button>
-            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="selection-picker">
+            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="selection-picker" title="Selection - S">
                 <i class="fa fa-mouse-pointer"></i>
             </button>
 
               <div class="relative">
-                <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pen-picker">
+                <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pen-picker" title="Pen Color - C">
                   <i class="fa fa-paint-brush"></i>
                 </button>
                 <div class="absolute hidden bg-white shadow-md bottom-full mb-2" id="pen-menu">
-                  <a href="#" class="block px-4 py-2 text-green-600 hover:bg-gray-200" data-action="green-picker"><i class="fas fa-circle"></i></a>
-                  <a href="#" class="block px-4 py-2 text-red-600 hover:bg-gray-200" data-action="red-picker"><i class="fas fa-circle"></i></a>
-                  <a href="#" class="block px-4 py-2 text-blue-600 hover:bg-gray-200" data-action="blue-picker"><i class="fas fa-circle"></i></a>
-                  <a href="#" class="block px-4 py-2 text-black hover:bg-gray-200" data-action="black-picker"><i class="fas fa-circle"></i></a>
+                  <a href="#" class="block px-4 py-2 text-green-600 hover:bg-gray-200" data-action="green-picker" title="Green Color"><i class="fas fa-circle"></i></a>
+                  <a href="#" class="block px-4 py-2 text-red-600 hover:bg-gray-200" data-action="red-picker" title="Red Color"><i class="fas fa-circle"></i></a>
+                  <a href="#" class="block px-4 py-2 text-blue-600 hover:bg-gray-200" data-action="blue-picker" title="Blue Color"><i class="fas fa-circle"></i></a>
+                  <a href="#" class="block px-4 py-2 text-black hover:bg-gray-200" data-action="black-picker" title="Black Color"><i class="fas fa-circle"></i></a>
                 </div>
               </div>
-              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="text-picker">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="text-picker" title="Text - T">
                 <i class="fa fa-font"></i>
               </button>
           
-              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="eraser-picker">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="eraser-picker" title="Eraser - E">
                 <i class="fa fa-eraser"></i>
               </button>
-              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500"  data-action="aiadvisor-picker">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500"  data-action="aiadvisor-picker" title="AI Advisor">
                 <i class="fa fa-hat-wizard"></i>
               </button>
             </div>
@@ -79,8 +79,8 @@
 
           <div id="hamburger-menu" class="menu drop-shadow-md hidden w-96 opacity-100 hover:opacity-100 m-auto fixed w-96 inset-x-0 bottom-[4.5rem] md:bottom-24 z-[2000]">
             <div class="rounded-lg border w-72 bg-white p-2 py-1 border-gray z-[2000]">
-                <div class="w-full text-center mb-2">
-                    <span>Task<span class="text-green-600">Me</span><span> The Natural Kanban Way</span>
+                <div class="w-full text-center mb-2 mt-2">
+                    <span>Task<span class="text-green-600">Me</span><span>, the natural Kanban way</span>
                 </div>
                 
                     <div class="toolbox-grid">
@@ -100,7 +100,7 @@
                     <button data-action="shareBoardButton"><i class="fa-solid fa-users"></i> Live Board</button>
                      </div>
 
-                    <div class="w-full text-center mb-2">
+                    <div class="w-full text-center mb-2 ml-4">
                         <div class="g_id_signin"
                                 data-type="standard"
                                 data-shape="pill"
@@ -118,12 +118,13 @@
                             data-auto_select="true"
                             data-itp_support="true" style="position: absolute; bottom: 100px; height: 0; width: 0; ">
                         </div>
+                    </div>
+                    
+                    <div class="text-xs text-gray-400">Boards</div>
+                    <div class="dashboard-grid switch-dashboard">
 
-
-                    <div class="dashboard-grid switch-dashboard"></div>
+                    </div>
     
-                    
-                    
                 </div>
                 
             </div>
