@@ -124,30 +124,6 @@ const Sketch = (function () {
         $('.new-dot').on('mousedown', onNewDot);
     }
 
-    function addTextObject () {
-
-        var cursorPosition = canvasController.getLastKnownPos ();
-
-        var text = new fabric.IText('Start typing...', {
-            originX: 'center',
-            originY: 'top',
-            fontSize: 36,
-           
-            fontFamily: 'Kalam',
-            splitByGrapheme: false,
-            textAlign: 'center',
-            fill: 'black',
-            left: cursorPosition.x,
-            top: cursorPosition.y,
-            cl: 't',
-            id: genId()
-          });
-
-        canvas.add(text);
-        
-        canvasController.saveCanvas();
-    }
-
     function createWelcomeNote () {
         let colors = CanvasUtilities.getColors();
         
@@ -222,7 +198,7 @@ const Sketch = (function () {
         return Math.random().toString(36).substr(2, 9);
     }
 
-    function onNew () {
+    function onNew (event) {
         showNotes();
 
         canvasController.normalizeZIndex ();
@@ -305,7 +281,9 @@ const Sketch = (function () {
         let newTop = 150;
         let placed = false;
 
-        for (let top = 80; top < separator1.height - noteHeight; top += margin) {
+        let initY = Math.max(canvasController.getLastPositionY() - 80, 80);
+
+        for (let top = initY; ; top += margin) {
             for (let left = 150; left < separatorLeft - (noteWidth * 0.5); left += margin) {
                 let potentialSpace = { left: left, top: top };
                 let isSpaceOccupied = notesInFirstCol.some(note => {
@@ -438,8 +416,8 @@ const Sketch = (function () {
         let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
         let firstColWidth = separator1 ? separator1.left : canvas.width / 3; 
 
-        let randomLeft = Math.random() * (firstColWidth - 200) + 150; 
-        let randomTop = Math.random() * 300 + 100; 
+        let randomLeft = Math.random() * 150 + 150; 
+        let randomTop = Math.max(canvasController.getLastPositionY() - 20, 80) + (Math.random() * 80);
 
         var circle = new fabric.Circle({
             left: randomLeft, 

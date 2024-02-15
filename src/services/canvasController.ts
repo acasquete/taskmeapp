@@ -27,6 +27,7 @@ export class CanvasController {
     private isDraggingDot: boolean = false;
     private canvasHistory : CanvasHistory;
     private lastTap = 0;
+    private lastPY = 0;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -178,6 +179,8 @@ export class CanvasController {
         this.canvas.on('mouse:move', (options: fabric.IEvent) => {
             
             let pointer = this.canvas.getPointer(options.e, false);
+
+            this.lastPY=pointer.y;
 
             if (this.isDraggingDot && this.circleToDrag) {
                 this.circleToDrag.set({
@@ -886,5 +889,9 @@ export class CanvasController {
         this.canvasHistory.redo();
         this.isLoading = false;
 
+    }
+
+    public getLastPositionY () : number {
+        return this.lastPY;
     }
 }
