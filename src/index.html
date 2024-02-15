@@ -39,7 +39,7 @@
             <div class="flex justify-center items-center space-x-1" >
               <!-- Menú Hamburguesa -->
               <div class="relative">
-                <button class="text-blue mr-6 w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="hamburguer-picker">
+                <button class="text-blue mr-10 w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="hamburguer-picker">
                     <i class="fa fa-bars"></i>
                 </button>
               </div>
@@ -47,7 +47,7 @@
               
 
             <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pointer-picker">
-                <i class="fa fa-hand-pointer"></i>
+                <i class="fa-regular fa-hand"></i>
             </button>
             <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="selection-picker">
                 <i class="fa fa-mouse-pointer"></i>
@@ -79,27 +79,10 @@
 
           <div id="hamburger-menu" class="menu drop-shadow-md hidden w-96 opacity-100 hover:opacity-100 m-auto fixed w-96 inset-x-0 bottom-[4.5rem] md:bottom-24 z-[2000]">
             <div class="rounded-lg border w-72 bg-white p-2 py-1 border-gray z-[2000]">
-                <span class="text-center">Task<span class="text-blue">Me</span><span> The Natural Kanban Way</span>
-               
-                <div>
-                    <div class="g_id_signin"
-                            data-type="standard"
-                            data-shape="pill"
-                            data-theme="outline"
-                            data-text="signin_with"
-                            data-size="large"
-                            data-logo_alignment="center" style="padding-bottom: 1em; ">
-                    </div>
+                <div class="w-full text-center mb-2">
+                    <span>Task<span class="text-green-600">Me</span><span> The Natural Kanban Way</span>
+                </div>
                 
-                    <div id="g_id_onload"
-                        data-client_id="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com"
-                        data-context="signin"
-                        data-ux_mode="popup"
-                        data-callback="onSignIn"
-                        data-auto_select="true"
-                        data-itp_support="true" style="position: absolute; bottom: 100px; height: 0; width: 0; ">
-                    </div>
-    
                     <div class="toolbox-grid">
                         <div class="tool" data-action="startPomodoro" title="Start Pomodoro"><i class="fas fa-clock"></i><span></span></div>
                         <div class="tool" data-action="startBreakShort" title="Short Break"><i class="fas fa-coffee"></i><span></span></div>
@@ -107,6 +90,7 @@
                         <div class="tool" data-action="welcome" title="Help Note"><i class="fa-solid fa-question"></i></i><span></span></div>
                     </div>
     
+                    <div class="mb-2">
                     <button data-action="toggleNotes"><i class="fa-solid fa-eye"></i> Toggle Notes</button>
                     <button data-action="eraseDashboard"><i class="fa-solid fa-broom"></i> Clear Board</button>
                     <button data-action="removeNotes"><i class="fa-solid fa-trash-alt"></i> Reset Board</button>
@@ -114,6 +98,26 @@
                     <button data-action="downloadPNG"><i class="fa-solid fa-download"></i> Export Board as PNG</button>
                     <button data-action="toggleFullScreen"><i class="fa-solid fa-expand"></i> Fullscreen</button>
                     <button data-action="shareBoardButton"><i class="fa-solid fa-users"></i> Live Board</button>
+                     </div>
+
+                    <div class="w-full text-center mb-2">
+                        <div class="g_id_signin"
+                                data-type="standard"
+                                data-shape="pill"
+                                data-theme="outline"
+                                data-text="signin_with"
+                                data-size="large"
+                                data-logo_alignment="center" style="padding-bottom: 1em; ">
+                        </div>
+                    
+                        <div id="g_id_onload"
+                            data-client_id="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com"
+                            data-context="signin"
+                            data-ux_mode="popup"
+                            data-callback="onSignIn"
+                            data-auto_select="true"
+                            data-itp_support="true" style="position: absolute; bottom: 100px; height: 0; width: 0; ">
+                        </div>
 
 
                     <div class="dashboard-grid switch-dashboard"></div>
