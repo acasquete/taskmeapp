@@ -1,72 +1,111 @@
 const MenuController = (function () {
 
-    let isDragging = false;
-    let dragOffsetX = 0;
-    let dragOffsetY = 0;
-
     function init () {
 
-        const toolbar = document.getElementById('toolbar');
+        var menus = document.querySelectorAll('.menu');
 
-        toolbar.addEventListener('click', (event) => {
-          const actionElement = event.target.closest('[data-action]');
-          
-          if (!actionElement) return;
-          
-          const action = actionElement.getAttribute('data-action');
-          
-          switch (action) {
-            case 'hamburguer-picker':
-                const hamMenu = document.querySelector('#hamburger-menu');
-                hamMenu.classList.toggle('hidden');
-                break;
-            case 'pen-picker':
-                const penMenu = document.querySelector('#pen-menu');
-                penMenu.classList.toggle('hidden');
-                break;
-            case 'text-picker':
-                Sketch.changeColor('text');
-                break;
-            case 'pointer-picker':
-                Sketch.changeColor('pointer');
-                break;
-            case 'selection-picker':
-                Sketch.changeColor('selection');
-                break;
-            case 'aiadvisor-picker':
-                Sketch.nextAdvice();
-                break;
-            case 'black-picker':
-                Sketch.changeColor('black');
-                break;
-            case 'green-picker':
-                Sketch.changeColor('green');
-                break;
-            case 'red-picker':
-                Sketch.changeColor('red');
-                break;
-            case 'blue-picker':
-                Sketch.changeColor('blue');
-                break;
-            default:
-              console.log('Acción no reconocida:', action);
-          }
-        });
+        menus.forEach(function(menu) {
+            menu.addEventListener('click', function(event) {
 
+                event.stopPropagation();
 
-        
-        $('.hamburger-button').click(function() {
-            $('#hamburgerMenu').toggleClass('active');
+                const actionElement = event.target.closest('[data-action]');
+                
+                if (!actionElement) return;
+                
+                const action = actionElement.getAttribute('data-action');
+                
+                console.debug(action);
+
+                switch (action) {
+                    case 'hamburguer-picker':
+                        toggleHamMenu();
+                        return;
+                        break;
+                    case 'pen-picker':
+                        const penMenu = document.querySelector('#pen-menu');
+                        penMenu.classList.toggle('hidden');
+                        break;
+                    case 'text-picker':
+                        Sketch.changeColor('text');
+                        break;
+                    case 'pointer-picker':
+                        Sketch.changeColor('pointer');
+                        break;
+                    case 'selection-picker':
+                        Sketch.changeColor('selection');
+                        break;
+                    case 'aiadvisor-picker':
+                        Sketch.nextAdvice();
+                        break;
+                    case 'black-picker':
+                        Sketch.changeColor(0);
+                        break;
+                    case 'green-picker':
+                        Sketch.changeColor(3);
+                        break;
+                    case 'red-picker':
+                        Sketch.changeColor(2);
+                        break;
+                    case 'blue-picker':
+                        Sketch.changeColor(1);
+                        break;
+                    case 'toggleFullScreen':
+                        Sketch.toggleFullscreen();
+                        break;
+                    case 'toggleNotes':
+                        Sketch.toggleNotesVisibility();
+                        break;
+                    case 'eraseDashboard':
+                        Sketch.clearCanvas();
+                        break;
+                    case 'welcome':
+                        Sketch.createWelcomeNote();
+                        break;
+                    case 'removeNotes':
+                        closeAllModals();
+                        Sketch.clearAllCanvas();
+                        break;
+                    case 'startPomodoro':
+                        Pomodoro.startPomodoro();
+                        break;
+                    case 'startBreakShort':
+                        Pomodoro.startShort();
+                        break;
+                    case 'startBreakLong':
+                        Pomodoro.startLong();
+                        break;
+                    case 'downloadPNG':
+                        Sketch.download('png');
+                        break;
+                    case 'openGitHub':
+                        window.open('https://github.com/acasquete/taskmeapp', '_blank');
+                        break;
+                    case 'downloadSVG':
+                        Sketch.download('svg');
+                            break;
+                    case 'shareBoardButton':
+                        if (!Data.isLogged()) {
+                            Notifications.showAppNotification ('You need to log in to share a dashboard', 'regular', 8000)
+                            return;
+                        }
+            
+                        let sharedId = Sketch.createShareSketch();
+                        showModal(sharedId);
+                        break;
+                }
+                document.querySelector('#hamburger-menu').classList.add('hidden');
+            });
         });
     
         $(document).on('contextmenu', function(e) {
             e.preventDefault();
-            $('#hamburgerMenu').toggleClass('active');
+            toggleHamMenu();
         });
         
         $(document).on("click touchend", function(event) {
-            if ($('#hamburgerMenu').hasClass('active') && !$(event.target).is(".hamburger-icon *")) {
-                $('#hamburgerMenu').toggleClass('active');
+            if ($('#hamburger-menu').hasClass('hidden') && !$(event.target).is(".hamburger-icon *")) {
+                document.querySelector('#hamburger-menu').classList.add('hidden');
             }
             event.stopPropagation();
         });
@@ -91,107 +130,18 @@ const MenuController = (function () {
             
             toolboxGrid.append(toolDiv);
         }
-    
-        $('.tool').on('click touchend', function(e) {
-            e.stopPropagation();
-            
-            var toolFunction = $(this).data('action');
-    
-            switch (toolFunction) {
-                case 'black':
-                case 'blue':
-                case 'red': 
-                case 'green':
-                case 'eraser': 
-                case 'pointer':
-                case 'selection':
-                case 'text':
-    
-                var selectionMap = {
-                    'black': 0,
-                    'blue': 1,
-                    'red': 2,
-                    'green': 3,
-                    'eraser': 'eraser',
-                    'pointer': 'pointer',
-                    'selection': 'selection',
-                    'text': 'text'
-                };
-    
-                var selection = selectionMap[toolFunction];
-                Sketch.changeColor(selection);
-                break;
-    
-                case 'toggleFullScreen':
-                    Sketch.toggleFullscreen();
-                    break;
-                case 'eraseDashboard':
-                    Sketch.clearCanvas();
-                    break;
-                case 'toggleNotes':
-                    Sketch.toggleNotesVisibility();
-                    break;
-                case 'welcome':
-                    Sketch.createWelcomeNote();
-                    break;
-                case 'removeNotes':
-                    closeAllModals();
-                    Sketch.clearAllCanvas();
-                    break;
-                case 'startPomodoro':
-                    Pomodoro.startPomodoro();
-                    break;
-                case 'startBreakShort':
-                    Pomodoro.startShort();
-                    break;
-                case 'startBreakLong':
-                    Pomodoro.startLong();
-                    break;
-                case 'aiAdvisor':
-                    Sketch.nextAdvice();
-                    break;
-            }
-            $('#hamburgerMenu').toggleClass('active');
-            
-        });
-
-        $('.menuitem').on('click touchend', function(e) {
-            e.stopPropagation();
-            
-            var toolFunction = $(this).data('action');
-            
-            switch (toolFunction) {
-                case 'downloadPNG':
-                    Sketch.download('png');
-                    break;
-                case 'openGitHub':
-                    window.open('https://github.com/acasquete/taskmeapp', '_blank');
-                    break;
-                case 'downloadSVG':
-                    Sketch.download('svg');
-                    break;
-
-            }
-
-        });
-
-        document.getElementById('shareBoardButton').addEventListener('click', function() {
-            if (!Data.isLogged()) {
-                Notifications.showAppNotification ('You need to log in to share a dashboard', 'regular', 8000)
-                return;
-            }
-
-            let sharedId = Sketch.createShareSketch();
-            showModal(sharedId);
-        });
 
         document.querySelector('#modal-liveshare #copy').addEventListener('click', handleLiveShareCopy);
         document.querySelector('#modal-liveshare #close').addEventListener('click', handleLiveShareClose);
 
     }
     
-    function showModal(sharedId) {
+    function toggleHamMenu() {
+        const hamMenu = document.querySelector('#hamburger-menu');
+        hamMenu.classList.toggle('hidden');
+    }
 
+    function showModal(sharedId) {
         closeAllModals(); 
 
         const currentDomain = window.location.origin; 
@@ -229,7 +179,6 @@ const MenuController = (function () {
         handleLiveShareClose();
         Sketch.handleClearClose();
     }
-
 
     function handleLiveShareCopy() {
 

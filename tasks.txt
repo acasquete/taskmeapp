@@ -1,10 +1,12 @@
 Responsive menu
+tooltip debajo del menu
+Crear nota a la altura del raton
 AI - Modal para introducir OpenAI API Key
-Establecer cursores (edit, selection, drawing, drag, text)
 Eraser mode with cursor
 Eliminar columna
-SHARE - Add/Delete Column
 BUG - Evitar que se elimine un elemento columna.
+Establecer cursores (edit, selection, drawing, drag, text)
+SHARE - Add/Delete Column
 
 NICE TO HAVE
 Add date to dashbord for conflict resolution

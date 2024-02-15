@@ -183,7 +183,7 @@ body {
     bottom: 4.5rem; 
     left: 50%; 
     transform: translate(-50%, -50%); 
-    font-size: 1.5rem; 
+    font-size: 2rem; 
     
     font-family: "Poppins", sans-serif;
     background: #fff;
@@ -197,10 +197,6 @@ body {
     -webkit-user-select: none;
     -moz-user-select: none;
     cursor: pointer;
-}
-
-#dashboard-notification.small   {
-    font-size: 1rem; 
 }
 
 #statusbar {

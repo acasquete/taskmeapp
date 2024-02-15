@@ -35,76 +35,26 @@
     </head>
     <body style="display: none;">
 
-        <div class="opacity-25 hover:opacity-100 drop-shadow-lg m-auto fixed w-96 inset-x-0 bottom-12 bg-white py-2 rounded-lg border border-gray z-[2000]" id="toolbar">
-            <div class="flex justify-center items-center space-x-2" >
+        <div class="transition-opacity duration-500 opacity-100 hover:opacity-100 drop-shadow-lg m-auto fixed w-96 inset-x-0 bottom-12 bg-white py-1 rounded-lg border border-gray z-[2000] menu">
+            <div class="flex justify-center items-center space-x-1" >
               <!-- Menú Hamburguesa -->
               <div class="relative">
-                <button class="text-blue mr-6" data-action="hamburguer-picker">
+                <button class="text-blue mr-6 w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="hamburguer-picker">
                     <i class="fa fa-bars"></i>
                 </button>
-                <div id="hamburger-menu" class="w-96 absolute hidden bg-white shadow-md bottom-full mb-2">
-                    <h1>Task<span class="accent1">Me</span></h1>
-                    <h2>The Natural Kanban Way</h2>
-                    <div class="menu-content">
-                        
-                        <div class="toolbox-grid">
-                            <div class="tool" data-action="toggleNotes" title="Toggle Notes (H)"><i class="fas fa-eye"></i><span></span></div>
-                            <div class="tool" data-action="toggleFullScreen" title="Fullscreen (F)"><i class="fas fa-expand"></i><span></span></div>
-                            <div class="tool" data-action="eraseDashboard" title="Clear Board (K)"><i class="far fa-broom"></i><span></span></div>
-                            <div class="tool" data-action="removeNotes" title="Reset Board"><i class="fas fa-trash-alt"></i><span></span></div>
-                            <div class="tool" data-action="startPomodoro" title="Start Pomodoro"><i class="fas fa-clock"></i><span></span></div>
-                            <div class="tool" data-action="startBreakShort" title="Short Break"><i class="fas fa-coffee"></i><span></span></div>
-                            <div class="tool" data-action="startBreakLong" title="Long Break"><i class="fas fa-utensils"></i><span></span></div>
-                            <div class="tool" data-action="welcome" title="Help Note"><i class="fa-solid fa-question"></i></i><span></span></div>
-                        </div>
-        
-                        <div class="dashboard-grid switch-dashboard"></div>
-        
-                        <div class="sharing-dashboard">
-                            <button id="shareBoardButton"><i class="fa-solid fa-users"></i> Live Board</button>
-                        </div>
-        
-                        <div class="menuitemlist">
-                            <button class="menuitem" data-action="openGitHub"><i class="fa-brands fa-github"></i> GitHub Repository</button>
-                            <button class="menuitem" data-action="downloadPNG"><i class="fa-solid fa-download"></i> Download PNG</button>
-                        </div>
-                        
-                        <div class="g_id_signin"
-                                data-type="standard"
-                                data-shape="pill"
-                                data-theme="outline"
-                                data-text="signin_with"
-                                data-size="large"
-                                data-logo_alignment="center" style="padding-bottom: 1em; ">
-                        </div>
-                    
-                        <div id="g_id_onload"
-                            data-client_id="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com"
-                            data-context="signin"
-                            data-ux_mode="popup"
-                            data-callback="onSignIn"
-                            data-auto_select="true"
-                            data-itp_support="true" style="position: absolute; bottom: 100px; height: 0; width: 0; ">
-                        </div>
-                    </div>
-                    
-                </div>
               </div>
           
-            <!-- Puntero -->
-            <button class="text-blue w-8 h-8 rounded-lg hover:bg-violet-600 active:bg-violet-700" data-action="pointer-picker">
+              
+
+            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pointer-picker">
                 <i class="fa fa-hand-pointer"></i>
             </button>
-
-            <!-- Herramienta de Selección -->
-            <button class="text-blue w-8 h-8 rounded-lg hover:bg-violet-600 active:bg-violet-700" data-action="selection-picker">
+            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="selection-picker">
                 <i class="fa fa-mouse-pointer"></i>
             </button>
-          
 
-              <!-- Selector de Color -->
               <div class="relative">
-                <button class="text-blue w-8 h-8 rounded-lg hover:bg-violet-600 active:bg-violet-700" data-action="pen-picker">
+                <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pen-picker">
                   <i class="fa fa-paint-brush"></i>
                 </button>
                 <div class="absolute hidden bg-white shadow-md bottom-full mb-2" id="pen-menu">
@@ -114,23 +64,68 @@
                   <a href="#" class="block px-4 py-2 text-black hover:bg-gray-200" data-action="black-picker"><i class="fas fa-circle"></i></a>
                 </div>
               </div>
-          
-              <!-- Herramienta Texto -->
-              <button class="text-blue w-8 h-8 rounded-lg hover:bg-violet-600 active:bg-violet-700" data-action="text-picker">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="text-picker">
                 <i class="fa fa-font"></i>
               </button>
           
-              <!-- Herramienta de Borrado -->
-              <button class="text-blue w-8 h-8 rounded-lg hover:bg-violet-600 active:bg-violet-700" data-action="eraser-picker">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="eraser-picker">
                 <i class="fa fa-eraser"></i>
               </button>
-          
-              <!-- AI Assistant -->
-              <button class="text-blue w-8 h-8 rounded-lg hover:bg-violet-600 active:bg-violet-700"  data-action="aiadvisor-picker">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500"  data-action="aiadvisor-picker">
                 <i class="fa fa-hat-wizard"></i>
               </button>
             </div>
           </div>
+
+          <div id="hamburger-menu" class="menu drop-shadow-md hidden w-96 duration-500 opacity-100 hover:opacity-100 m-auto fixed w-96 inset-x-0 bottom-24 z-[2000]">
+            <div class="rounded-lg border w-72 bg-white p-2 py-1  border-gray z-[2000]">
+                <span class="text-center">Task<span class="text-blue">Me</span><span> The Natural Kanban Way</span>
+               
+                <div>
+                    <div class="g_id_signin"
+                            data-type="standard"
+                            data-shape="pill"
+                            data-theme="outline"
+                            data-text="signin_with"
+                            data-size="large"
+                            data-logo_alignment="center" style="padding-bottom: 1em; ">
+                    </div>
+                
+                    <div id="g_id_onload"
+                        data-client_id="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com"
+                        data-context="signin"
+                        data-ux_mode="popup"
+                        data-callback="onSignIn"
+                        data-auto_select="true"
+                        data-itp_support="true" style="position: absolute; bottom: 100px; height: 0; width: 0; ">
+                    </div>
+    
+                    <div class="toolbox-grid">
+                        <div class="tool" data-action="startPomodoro" title="Start Pomodoro"><i class="fas fa-clock"></i><span></span></div>
+                        <div class="tool" data-action="startBreakShort" title="Short Break"><i class="fas fa-coffee"></i><span></span></div>
+                        <div class="tool" data-action="startBreakLong" title="Long Break"><i class="fas fa-utensils"></i><span></span></div>
+                        <div class="tool" data-action="welcome" title="Help Note"><i class="fa-solid fa-question"></i></i><span></span></div>
+                    </div>
+    
+                    <button data-action="toggleNotes"><i class="fa-solid fa-eye"></i> Toggle Notes</button>
+                    <button data-action="eraseDashboard"><i class="fa-solid fa-broom"></i> Clear Board</button>
+                    <button data-action="removeNotes"><i class="fa-solid fa-trash-alt"></i> Reset Board</button>
+                    <button data-action="openGitHub"><i class="fa-brands fa-github"></i> GitHub Repository</button>
+                    <button data-action="downloadPNG"><i class="fa-solid fa-download"></i> Export Board as PNG</button>
+                    <button data-action="toggleFullScreen"><i class="fa-solid fa-expand"></i> Fullscreen</button>
+                    <button data-action="shareBoardButton"><i class="fa-solid fa-users"></i> Live Board</button>
+
+
+                    <div class="dashboard-grid switch-dashboard"></div>
+    
+                    
+                    
+                </div>
+                
+            </div>
+
+          </div>
+          
 
 
         <div id="dashboard-notification"></div>
