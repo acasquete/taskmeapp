@@ -595,8 +595,6 @@ const Sketch = (function () {
         sharedCanvasId = sharedId
 
         await loadCanvas(sharedCanvasId, initial);
-
-
     }
 
     function addObserver (observer) {
@@ -787,6 +785,7 @@ const Sketch = (function () {
 
         if (currentCanvasId==1) createWelcomeNote();
 
+        canvasController.loadDynamicConfiguration();
         canvasController.isLoading = false;
     }
    

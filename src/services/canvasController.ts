@@ -36,7 +36,6 @@ export class CanvasController {
 
     public reset () {
         this.canvas.clear();
-        this.stagesConfiguration = [];
     }
 
     isSeparatorElement(object: fabric.Object) : boolean {
@@ -704,6 +703,7 @@ export class CanvasController {
         this.canvas.getObjects().forEach(obj => {
             if ((obj as any).cl === 'n') {
                 const columnIndex: number = separators.findIndex(sep => sep && (obj.left || 0) < (sep.left || 0));
+                
                 if (columnIndex > -1) {
                     this.stagesConfiguration[columnIndex].count++;
                 }
