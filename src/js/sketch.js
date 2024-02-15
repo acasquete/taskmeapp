@@ -673,7 +673,6 @@ const Sketch = (function () {
         canvasController.reset();
         initKanbanBoard();
         adjustCanvasZoom(true);
-        canvasController.loadDynamicConfiguration();
         canvasController.saveCanvas();
 
         canvasController.isLoading = false;
@@ -730,11 +729,15 @@ const Sketch = (function () {
 
         canvasController.isLoading = true;
 
+
         let kanbanElements = canvas.getObjects().filter(obj => obj.cl === 'k');
         if (kanbanElements.length > 0) {
+            console.debug('init existing kanban board');
             return;
         }
         
+        console.debug('init new kanban board');
+
         let separatorYPosition = 4000;
         let columnConfigurations = canvasController.getDefaultColumnConfiguration();
     
@@ -785,7 +788,6 @@ const Sketch = (function () {
 
         if (currentCanvasId==1) createWelcomeNote();
 
-        canvasController.loadDynamicConfiguration();
         canvasController.isLoading = false;
     }
    
@@ -800,7 +802,6 @@ const Sketch = (function () {
     
         Promise.all(promesasDeCarga).then((fuentesCargadas) => {
             fuentesCargadas.forEach((fuente) => document.fonts.add(fuente));
-    
             loadCanvasAsync(sharedId, initial);
         }).catch((error) => {
             console.error("Error al cargar las fuentes", error);
@@ -826,7 +827,7 @@ const Sketch = (function () {
             var jsonString = storeCanvas.content;
             canvas.loadFromJSON(JSON.parse(jsonString), function() {
                 canvas.forEachObject(function(obj) {
-                    assignConfigToObject (obj);
+                    assignConfigToObject (obj); 
                 });
                 canvas.requestRenderAll();
             });
@@ -860,7 +861,7 @@ const Sketch = (function () {
 
     function download (format) {
 
-        let stages = canvasController.getColumnConfiguration();
+        let stages = canvasController.getStagesColumnsConfiguration();
         let lastId = stages[stages.length-1].id;
 
         let sepLeft = canvas.getObjects().find(obj => obj.id === 'sep' + lastId);

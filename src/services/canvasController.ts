@@ -25,7 +25,6 @@ export class CanvasController {
     private shouldCancelMouseDown = false;
     private circleToDrag: fabric.Object | null = null;
     private isDraggingDot: boolean = false;
-    private stagesConfiguration : ColumnConfiguration[] = [];
     private canvasHistory : CanvasHistory;
     private lastTap = 0;
 
@@ -44,7 +43,6 @@ export class CanvasController {
 
     public switchDashboard(id: number, initial: boolean) {
         this.currentCanvasId = id;
-        this.loadDynamicConfiguration();
     }
 
     private triggerDblClick(event: MouseEvent | TouchEvent) {
@@ -417,7 +415,10 @@ export class CanvasController {
     }
     
     private shouldAddNewStage(boundingRect: fabric.IRect, zoom: number, left: number): boolean {
-        let lastSep = this.getObjectById('sep' + this.stagesConfiguration?.length);
+        
+        let stagesConfig = this.getStagesColumnsConfiguration();
+
+        let lastSep = this.getObjectById('sep' + stagesConfig.length);
 
         let prop = (boundingRect.width / zoom) / (boundingRect.height / zoom);
 
@@ -430,7 +431,8 @@ export class CanvasController {
     }
     
     private createNewStage(): ColumnConfiguration {
-        const newNumber = this.stagesConfiguration?.length + 1 || 1;
+        const stagesConf = this.getStagesColumnsConfiguration();
+        const newNumber = stagesConf.length + 1 || 1;
         const newTitle = 'Stage ' + newNumber;
         
         return {
@@ -443,9 +445,7 @@ export class CanvasController {
     
     private addStageToCanvas(newStage: ColumnConfiguration, positionLeft: number): void {
         let lastSep = this.getObjectById('sep' + (newStage.id - 1));
-        this.stagesConfiguration?.push(newStage);
         this.addStage(newStage, lastSep?.left, Math.max(400, positionLeft-lastSep?.left));
-       
     }
     
     private assignUniqueIdToAddedObject(addedObject: fabric.Object): void {
@@ -563,9 +563,6 @@ export class CanvasController {
         if (obj && obj.cl === 'n') {
             this.updateNoteCounters();
         }
-
-       
-       
     }
 
     public saveViewPortConfiguration(): void {
@@ -694,23 +691,25 @@ export class CanvasController {
     }
 
     private updateNoteCounters(): void {
-        if (!this.stagesConfiguration) return;
+        const stageConf = this.getStagesColumnsConfiguration();
+
+        if (stageConf.length==0) return;
 
         const separators: fabric.Object[] = this.canvas.getObjects().filter(obj => (obj as any).id && (obj as any).id.startsWith('sep'));
         
-        this.stagesConfiguration.forEach(stage => { stage.count = 0; });
+        stageConf.forEach(stage => { stage.count = 0; });
 
         this.canvas.getObjects().forEach(obj => {
             if ((obj as any).cl === 'n') {
                 const columnIndex: number = separators.findIndex(sep => sep && (obj.left || 0) < (sep.left || 0));
                 
                 if (columnIndex > -1) {
-                    this.stagesConfiguration[columnIndex].count++;
+                    stageConf[columnIndex].count++;
                 }
             }
         });
         
-        this.stagesConfiguration.forEach(column => {
+        stageConf.forEach(column => {
             this.updateColumnTitle(column.id, column.count);
             let titleColumn = this.canvas.getObjects().find(obj => obj.id === 'col' + column.id) as fabric.Text;
             
@@ -749,11 +748,10 @@ export class CanvasController {
         ];
     }
 
-    public getColumnConfiguration(): ColumnConfiguration[] {
-        return this.stagesConfiguration.length == 0 ? this.getDynamicConfiguration() : this.stagesConfiguration;
-    }
+    public getStagesColumnsConfiguration (): ColumnConfiguration[] {
 
-    public loadDynamicConfiguration (): void {
+        console.debug('calc columns dynamic configuration');
+
         const colsObj = this.canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));
         let columns: ColumnConfiguration[] = [];
 
@@ -767,11 +765,10 @@ export class CanvasController {
                     count: 0,
                     proportion: 0.35
             }
-
             columns.push(col);
         }
 
-        this.stagesConfiguration = columns;
+        return columns;
     }
 
     public normalizeZIndex(): void {
