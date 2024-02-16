@@ -1,6 +1,7 @@
 import { CanvasUtilities } from './canvasUtilities';
 import { Config } from './configService';
 import { CanvasHistory } from './canvasHistory';
+import { Object } from 'fabric/fabric-impl';
 
 export class CanvasController {
     
@@ -164,9 +165,7 @@ export class CanvasController {
             if (this.isTextMode && target == undefined) {
                 this.addTextObject(options);
             } if (this.isEraserMode) {
-                if (target.cl!=='k') {
-                    this.deleteSelectedObjects();
-                }
+                this.deleteSelectedObjects();
             } else if (target && this.isSeparatorElement(target)) {
                 
                 this.isEditKanbanMode = true;
@@ -619,18 +618,23 @@ export class CanvasController {
       
         if (activeObject.type === 'activeSelection') {
           activeObject.forEachObject((object: fabric.Object) => {
-            Data.sendCanvasObject({a:'do', d: object.id });
-            this.canvas.remove(object);
+            this.DeleteObject(object);
           });
         } else {
-            Data.sendCanvasObject({a:'do', d: activeObject.id })
-            this.canvas.remove(activeObject);
+           this.DeleteObject(activeObject);
         }
       
         this.saveCanvas();
         this.canvas.discardActiveObject();
         this.canvas.requestRenderAll();
       }
+
+    private DeleteObject (object: fabric.Object) {
+        if (object.cl==='k' && object.id.includes('col')) return;
+        
+        Data.sendCanvasObject({a:'do', d: object.id })
+        this.canvas.remove(object);
+    }
 
     public adjustColumns(): void {
         const cols = this.canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));

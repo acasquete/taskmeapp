@@ -1,9 +1,9 @@
+BUG - Evitar que se elimine un elemento columna.
 tooltip debajo del menu
 AI - Modal para introducir OpenAI API Key
-Eraser mode with cursor
 Eliminar columna
-BUG - Evitar que se elimine un elemento columna.
-Establecer cursores (edit, selection, drawing, drag, text)
+
+Establecer cursores (edit, selection, delete, drawing, drag, text)
 SHARE - Add/Delete Column
 
 NICE TO HAVE
