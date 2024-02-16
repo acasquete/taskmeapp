@@ -1,13 +1,11 @@
-BUG - Evitar que se elimine un elemento columna.
-tooltip debajo del menu
+Tooltip debajo del menu
 AI - Modal para introducir OpenAI API Key
 Eliminar columna
-
 Establecer cursores (edit, selection, delete, drawing, drag, text)
 SHARE - Add/Delete Column
+Add date to dashbord for conflict resolution
 
 NICE TO HAVE
-Add date to dashbord for conflict resolution
 BUG. Arrastrar un punto de una nota a otra no funciona
 BUG. Al seleccionar un punto de una nota se poner por debajo
 BUG. SHARE - Al borrar nota por arriba sincronizar

@@ -5,7 +5,7 @@ const MenuController = (function () {
         var menus = document.querySelectorAll('.menu');
 
         menus.forEach(function(menu) {
-            menu.addEventListener('click', function(event) {
+            menu.addEventListener('mouseup', function(event) {
 
                 event.stopPropagation();
 
@@ -99,7 +99,6 @@ const MenuController = (function () {
                 
                 if (action!='hamburguer-picker') document.querySelector('#hamburger-menu').classList.add('hidden');
                 if (action!=='pen-picker') document.querySelector('#pen-menu').classList.add('hidden');
-                
             });
         });
     
@@ -109,10 +108,17 @@ const MenuController = (function () {
         });
         
         $(document).on("click touchend", function(event) {
-            //if ($('#hamburger-menu').hasClass('hidden') && !$(event.target).is(".hamburger-icon *")) {
-                document.querySelector('#hamburger-menu').classList.add('hidden');
-            //}
-            //event.stopPropagation();
+            if (!(event.target.matches(".hamburger-icon") || event.target.closest(".hamburger-icon"))) {
+                setTimeout( function () {
+                    document.querySelector('#hamburger-menu').classList.add('hidden');
+                }, 100);
+            }
+
+            if (!(event.target.matches(".pen-icon") || event.target.closest(".pen-icon"))) {
+                setTimeout( function () {
+                    document.querySelector('#pen-menu').classList.add('hidden');
+                }, 100);
+            }
         });
     
         var toolboxGrid = $('.switch-dashboard');
