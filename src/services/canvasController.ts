@@ -7,6 +7,7 @@ export class CanvasController {
     private canvas: fabric.Canvas;
     public isLoading: boolean = true;
     private isEditKanbanMode: boolean = false;
+    private isEraserMode: boolean = false;
     private targetElement!: fabric.Object | null;
     private originalPosition: { x: number } = { x: 0 };
     private sepInitPositions: number[] = [];
@@ -158,11 +159,14 @@ export class CanvasController {
                         }
                 }
                 });
-
             }   
             
             if (this.isTextMode && target == undefined) {
                 this.addTextObject(options);
+            } if (this.isEraserMode) {
+                if (target.cl!=='k') {
+                    this.deleteSelectedObjects();
+                }
             } else if (target && this.isSeparatorElement(target)) {
                 
                 this.isEditKanbanMode = true;
@@ -833,6 +837,7 @@ export class CanvasController {
         this.canvas.isDrawingMode = false;
         this.canvas.selection = true;
         this.isTextMode = false;
+        this.isEraserMode = false;
         this.canvas.defaultCursor = 'default';
     }
 
@@ -842,7 +847,7 @@ export class CanvasController {
         this.canvas.isDrawingMode = false;
         this.canvas.selection = false;
         this.isTextMode = true;
-
+        this.isEraserMode = false;
         this.canvas.defaultCursor = 'crosshair';
     }
 
@@ -850,10 +855,17 @@ export class CanvasController {
         this.canvas.freeDrawingBrush.color = CanvasUtilities.getColorByIndex(colorIndex);
         this.canvas.isDrawingMode = true;
         this.canvas.selection = false;
+        this.isEraserMode = false;
+        this.isTextMode = false;
+
     }
 
     private setEraserMode(): void {
-        // TODO: Implement
+        this.isEraserMode = true;
+        this.canvas.isDrawingMode = false;
+        this.canvas.selection = false;
+        this.isTextMode = false;
+        this.canvas.defaultCursor = 'crosshair';
     }
 
     public showWelcome(): void {

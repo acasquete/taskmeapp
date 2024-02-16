@@ -7,7 +7,6 @@ import { KanbanAdvisor } from '../services/kanbanAdvisor';
 const Sketch = (function () {
     "use strict";
     let canvas, currentColorIndex;
-    let isEraserMode = false;
     let currentCanvasId;
     const CANVAS_WIDTH = 2000;
     let observers = []; 
@@ -604,7 +603,7 @@ const Sketch = (function () {
             if (canvas.isDrawingMode) { currentColorIndex = (currentColorIndex + 1) % 4; }
             canvasController.changeColor(currentColorIndex);
         } else if (e.key === 'e') {
-            setEraserMode();
+            canvasController.changeColor('eraser');
         } else if (e.key === 's') {
             canvasController.changeColor('selection');
         } else if (e.key === 'h') {

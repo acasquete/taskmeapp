@@ -40,6 +40,9 @@ const MenuController = (function () {
                     case 'black-picker':
                         Sketch.changeColor(0);
                         break;
+                    case 'eraser-picker':
+                        Sketch.changeColor('eraser');
+                        break;
                     case 'green-picker':
                         Sketch.changeColor(3);
                         break;

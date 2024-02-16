@@ -1,5 +1,4 @@
 tooltip debajo del menu
-Crear nota a la altura del raton
 AI - Modal para introducir OpenAI API Key
 Eraser mode with cursor
 Eliminar columna
