@@ -602,11 +602,15 @@ const Sketch = (function () {
         } else if (e.key === 'c') {
             if (canvas.isDrawingMode) { currentColorIndex = (currentColorIndex + 1) % 4; }
             canvasController.changeColor(currentColorIndex);
+            MenuController.setOption('pen-picker');
         } else if (e.key === 'e') {
+            MenuController.setOption('eraser-picker');
             canvasController.changeColor('eraser');
         } else if (e.key === 's') {
+            MenuController.setOption('selection-picker');
             canvasController.changeColor('selection');
         } else if (e.key === 'h') {
+            MenuController.setOption('pointer-picker');
             canvasController.changeColor('pointer');
         } else if (e.key === 'k') {
             clearCanvas(); 
@@ -615,6 +619,7 @@ const Sketch = (function () {
          } else if (e.key === 'f') {
             toggleFullscreen(); 
         } else if (e.key === 't') { 
+            MenuController.setOption('text-picker');
             canvasController.changeColor('text');
         } else if (e.keyCode == 90 && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();

@@ -7,11 +7,7 @@ const MenuController = (function () {
 
         const tooltipContainer = document.getElementById('tooltipContainer');
 
-        const buttons = document.querySelectorAll('button');
-
-        const updateTooltip = (text) => {
-            tooltipContainer.textContent = text;
-          };
+        const buttons = document.querySelectorAll('.menu button');
 
         buttons.forEach(button => {
             button.addEventListener('mouseover', () => {
@@ -21,7 +17,11 @@ const MenuController = (function () {
         
             button.addEventListener('click', () => {
               const tooltipText = button.getAttribute('data-tooltip');
-              selectedTooltip = tooltipText;
+
+              if (tooltipText!=null) {
+                selectedTooltip = tooltipText;
+              }
+
               updateTooltip(tooltipText);
             });
           });
@@ -32,12 +32,7 @@ const MenuController = (function () {
             });
         });
 
-
-
-
-
         var menus = document.querySelectorAll('.menu');
-
 
 
 
@@ -185,6 +180,10 @@ const MenuController = (function () {
 
     }
     
+    function updateTooltip (text) {
+        tooltipContainer.textContent = text;
+    }
+
     function toggleHamMenu() {
         const hamMenu = document.querySelector('#hamburger-menu');
         hamMenu.classList.toggle('hidden');
@@ -233,7 +232,7 @@ const MenuController = (function () {
 
         const input = document.querySelector('#modal-liveshare #shareURL')
         input.select();
-        input.setSelectionRange(0, 99999); /* For mobile devices */
+        input.setSelectionRange(0, 99999); 
 
         navigator.clipboard.writeText(input.value).then(function() {
             console.debug('Copying to clipboard was successful!');
@@ -248,7 +247,18 @@ const MenuController = (function () {
         document.querySelector('#modal-liveshare').classList.add('hidden');
     }
 
-    return { init };
+    function setOption(opt) {
+        
+        const element = document.querySelector(`[data-action="${opt}"]`);
+      
+        if(element) {
+          const tooltipValue = element.getAttribute('data-tooltip');
+          selectedTooltip = tooltipValue;
+          updateTooltip(tooltipValue);
+        }
+      }
+
+    return { init, setOption };
 
 })();
 
