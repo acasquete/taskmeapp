@@ -35,27 +35,27 @@
     </head>
     <body style="display: none;">
 
-        <!-- <div class="bottom-6 md:bottom-12 absolute m-auto text-gray-400 text-sm">Remember, you can draw a straight line by holding down the Shift key while drawing</div> -->
+        <div id="tooltipContainer" class="transform -translate-x-1/2 mx-auto left-1/2 text-center bottom-20 md:bottom-28 fixed text-gray-400 text-sm w-screen z-[0]"></div>
 
-        <div class="opacity-100 hover:opacity-100 drop-shadow-lg m-auto fixed w-96 inset-x-0 bottom-6 md:bottom-12 bg-white py-1 rounded-lg border border-gray z-[2000] menu">
+        <div class="opacity-100 hover:opacity-100 drop-shadow-lg m-auto fixed w-11/12 sm:w-96 inset-x-0 bottom-6 md:bottom-12 bg-white py-1 rounded-lg border border-gray z-[2000] menu">
             <div class="flex justify-center items-center space-x-1" >
               <div class="relative">
-                <button class="hamburger-icon text-blue mr-10 w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="hamburguer-picker">
+                <button class="hamburger-icon text-blue md:mr-10 w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="hamburguer-picker">
                     <i class="fa fa-bars"></i>
                 </button>
               </div>
           
               
 
-            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pointer-picker" title="Hand (Panning Tool) - H">
+            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Grab the canvas and drag it around" data-action="pointer-picker" title="Hand (Panning Tool) - H">
                 <i class="fa-regular fa-hand"></i>
             </button>
-            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="selection-picker" title="Selection - S">
+            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Click to pick things or draw a box around them to move 'em" data-action="selection-picker" title="Selection - S">
                 <i class="fa fa-mouse-pointer"></i>
             </button>
 
               <div class="relative">
-                <button class="pen-icon text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pen-picker" title="Pen Color - C">
+                <button data-tooltip="Remember, you can draw a straight line by holding down the Shift key while drawing" class="pen-icon text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pen-picker" title="Pen Color - C">
                   <i class="fa fa-paint-brush"></i>
                 </button>
                 <div class="absolute hidden bg-white shadow-md bottom-full mb-2" id="pen-menu">
@@ -65,14 +65,14 @@
                   <a href="#" class="block px-4 py-2 text-black hover:bg-gray-200" data-action="black-picker" title="Black Color"><i class="fas fa-circle"></i></a>
                 </div>
               </div>
-              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="text-picker" title="Text - T">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Tap to start typing" data-action="text-picker" title="Text - T">
                 <i class="fa fa-font"></i>
               </button>
           
-              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="eraser-picker" title="Eraser - E">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Make mistakes disappear with a swipe of this" data-action="eraser-picker" title="Eraser - E">
                 <i class="fa fa-eraser"></i>
               </button>
-              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500"  data-action="aiadvisor-picker" title="AI Advisor">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Get smart tips for your Kanban flow" data-action="aiadvisor-picker" title="AI Advisor">
                 <i class="fa fa-hat-wizard"></i>
               </button>
             </div>

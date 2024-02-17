@@ -1,4 +1,4 @@
-Tooltip debajo del menu
+Tooltip encima del menu
 AI - Modal para introducir OpenAI API Key
 Eliminar columna
 Establecer cursores (edit, selection, delete, drawing, drag, text)

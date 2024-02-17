@@ -631,7 +631,7 @@ export class CanvasController {
 
     private DeleteObject (object: fabric.Object) {
         if (object.cl==='k' && object.id.includes('col')) return;
-        
+
         Data.sendCanvasObject({a:'do', d: object.id })
         this.canvas.remove(object);
     }
@@ -819,7 +819,6 @@ export class CanvasController {
             default:
                 this.currentColorIndex = color;
                 this.setDrawingMode(this.currentColorIndex);
-                Notifications.showAppNotification('Remember, you can draw a straight line by holding down the Shift key while drawing', 'small', 16000);
                 break;
         }
 

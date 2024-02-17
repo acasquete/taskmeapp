@@ -1,8 +1,45 @@
 const MenuController = (function () {
 
+    let selectedTooltip = '';
+
+
     function init () {
 
+        const tooltipContainer = document.getElementById('tooltipContainer');
+
+        const buttons = document.querySelectorAll('button');
+
+        const updateTooltip = (text) => {
+            tooltipContainer.textContent = text;
+          };
+
+        buttons.forEach(button => {
+            button.addEventListener('mouseover', () => {
+              const tooltipText = button.getAttribute('data-tooltip');
+              updateTooltip(tooltipText);
+            });
+        
+            button.addEventListener('click', () => {
+              const tooltipText = button.getAttribute('data-tooltip');
+              selectedTooltip = tooltipText;
+              updateTooltip(tooltipText);
+            });
+          });
+        
+        buttons.forEach(button => {
+            button.addEventListener('mouseout', () => {
+                updateTooltip(selectedTooltip);
+            });
+        });
+
+
+
+
+
         var menus = document.querySelectorAll('.menu');
+
+
+
 
         menus.forEach(function(menu) {
             menu.addEventListener('mouseup', function(event) {
@@ -39,6 +76,7 @@ const MenuController = (function () {
                         break;
                     case 'black-picker':
                         Sketch.changeColor(0);
+                        updateTooltip('AAAA');
                         break;
                     case 'eraser-picker':
                         Sketch.changeColor('eraser');
