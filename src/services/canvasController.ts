@@ -165,7 +165,7 @@ export class CanvasController {
             if (this.isTextMode && target == undefined) {
                 this.addTextObject(options);
             } if (this.isEraserMode) {
-                this.deleteSelectedObjects();
+                this.deleteSelectedObjects(target);
             } else if (target && this.isSeparatorElement(target)) {
                 
                 this.isEditKanbanMode = true;
@@ -426,13 +426,18 @@ export class CanvasController {
 
         let lastSep = this.getObjectById('sep' + stagesConfig.length);
 
+        console.log( lastSep);
+
+
         let prop = (boundingRect.width / zoom) / (boundingRect.height / zoom);
 
         console.debug('hand stage, p:' +  (boundingRect.width / zoom) / (boundingRect.height / zoom) + ' w:' + boundingRect.width / zoom + ' h:' + boundingRect.height / zoom + ' l:' + lastSep?.left);
 
+        console.debug(left > (lastSep ? lastSep?.left : 0));
+
         return (
             prop < 20 &&
-            left > lastSep?.left
+            left > (lastSep ? lastSep?.left : 0)
         );
     }
     
@@ -451,7 +456,9 @@ export class CanvasController {
     
     private addStageToCanvas(newStage: ColumnConfiguration, positionLeft: number): void {
         let lastSep = this.getObjectById('sep' + (newStage.id - 1));
-        this.addStage(newStage, lastSep?.left, Math.max(400, positionLeft-lastSep?.left));
+        let leftLastSep = lastSep ? lastSep.left : 0;
+
+        this.addStage(newStage, leftLastSep, Math.max(400, positionLeft-leftLastSep));
     }
     
     private assignUniqueIdToAddedObject(addedObject: fabric.Object): void {
@@ -609,9 +616,13 @@ export class CanvasController {
         this.canvas.renderAll();
     }
 
-    deleteSelectedObjects(): void {
+    deleteSelectedObjects(target): void {
         const activeObject = this.canvas.getActiveObject();
       
+        if (target && this.isSeparatorElement(target)) { 
+            this.DeleteObject(target);
+        }
+
         if (!activeObject) {
           return;
         }
@@ -627,14 +638,84 @@ export class CanvasController {
         this.saveCanvas();
         this.canvas.discardActiveObject();
         this.canvas.requestRenderAll();
-      }
+    }
+
+
 
     private DeleteObject (object: fabric.Object) {
         if (object.cl==='k' && object.id.includes('col')) return;
 
+        if (object.cl==='k') {
+            if (object.id.includes('sep')) {
+                this.deleteSeparator(object.id);
+                return;
+            }
+        }
+
         Data.sendCanvasObject({a:'do', d: object.id })
         this.canvas.remove(object);
     }
+
+    public deleteSeparator (sepId:string) {
+        const regex = /sep(\d+)/;
+
+        const matchId = sepId.match(regex);
+
+        if (matchId) {
+            let id = parseInt(matchId[1], 10);
+
+            let col = this.getObjectById(`col${id}`);
+            this.canvas.remove(col);
+            Data.sendCanvasObject({a:'do', d: col.id })
+
+            let sep = this.getObjectById(`sep${id}`);
+            this.canvas.remove(sep);
+            Data.sendCanvasObject({a:'do', d: sep.id })
+
+            this.organizeCanvasObjects();
+            this.canvas.renderAll();
+            this.saveCanvas();
+        }
+    }
+
+    private organizeCanvasObjects() {
+        const colObjects: Object[] = [];
+        const sepObjects: Object[] = [];
+      
+        this.canvas.getObjects().forEach((obj: Object) => {
+          if (obj.id.startsWith("col")) {
+            colObjects.push(obj);
+          } else if (obj.id.startsWith("sep")) {
+            sepObjects.push(obj);
+          }
+        });
+      
+        colObjects.sort((a, b) => parseInt(a.id.substring(3)) - parseInt(b.id.substring(3)));
+        sepObjects.sort((a, b) => parseInt(a.id.substring(3)) - parseInt(b.id.substring(3)));
+      
+        colObjects.forEach((obj, index) => {
+            obj.id = `col${index + 1}`;
+        });
+
+        sepObjects.forEach((obj, index) => {
+            obj.id = `sep${index + 1}`; 
+        });
+
+        colObjects.forEach((colObj, index) => {
+          const sepIndex = index; 
+          const sepObj = index>0 ? sepObjects[sepIndex - 1] : null;
+      
+          colObj.left = sepObj ? sepObj.left : 0;
+      
+          console.debug('ev ' + index);
+          console.debug(colObj.id);
+          console.debug(sepObj && index < sepObjects.length - 1);
+
+          const nextSepObj = sepObjects[sepIndex];
+          colObj.width = nextSepObj.left - colObj.left;
+        });
+      
+      }
 
     public adjustColumns(): void {
         const cols = this.canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));

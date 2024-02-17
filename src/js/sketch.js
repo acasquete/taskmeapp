@@ -272,7 +272,7 @@ const Sketch = (function () {
         text.set({ top: square.top + (square.height - text.getScaledHeight()) / 2});
 
         let separator1 = canvas.getObjects().find(obj => obj.id === 'sep1');
-        let separatorLeft = separator1 ? separator1.left : canvas.width / 3;
+        let separatorLeft = separator1 ? separator1.left : canvas.width;
 
         let notesInFirstCol = canvas.getObjects().filter(obj => obj.cl ==='n' && obj.left < separatorLeft);
 
@@ -813,8 +813,6 @@ const Sketch = (function () {
                 });
                 canvas.requestRenderAll();
             });
-
-            initKanbanBoard();
         }
 
         console.debug('canvas loaded');

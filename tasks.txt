@@ -1,10 +1,10 @@
-Eliminar columna
 AI - Modal para introducir OpenAI API Key
 Establecer cursores (edit, selection, delete, drawing, drag, text)
 SHARE - Add/Delete Column
 Add date to dashbord for conflict resolution
 
 NICE TO HAVE
+Add tests
 BUG. Arrastrar un punto de una nota a otra no funciona
 BUG. Al seleccionar un punto de una nota se poner por debajo
 BUG. SHARE - Al borrar nota por arriba sincronizar
@@ -12,6 +12,7 @@ BUG. SHARE - Al borrar todo el canvas.
 SHARE - Solo enviar si hay alguien conectado
 SHARE - Test dots
 SHARE - Undo
+Undo / Redo in toolbar
 Bugs Undo
 Eliminar jQuery
 Add angle when creating note
