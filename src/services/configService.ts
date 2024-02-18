@@ -28,13 +28,31 @@ export class Config {
     }
 
     async getCanvas(id: string, sharedId: string): Promise<Canvas> {
-        const canvasRemote: Canvas | null = await Data.getCanvas(id, sharedId);
-        if (canvasRemote != null) {
+        console.debug('getting canvas...');
+        
+        const canvasRemotePromise = Data.getCanvas(id, sharedId);
+        const canvasLocalString = localStorage.getItem("c" + id);
+        const canvasLocal: Canvas | null = canvasLocalString ? JSON.parse(canvasLocalString) : null;
+    
+        const canvasRemote: Canvas | null = await canvasRemotePromise;
+    
+        if (canvasRemote && canvasLocal) {
+            let remoteUp = canvasRemote.timestamp > canvasLocal.timestamp;
+            
+            if (remoteUp) console.debug('remote canvas loaded (2)');
+            else console.debug('local canvas loaded (2)');
+
+            return remoteUp ? canvasRemote : canvasLocal;
+        } else if (canvasRemote) {
+            console.debug('remote canvas loaded (1)');
             return canvasRemote;
+        } else if (canvasLocal) {
+            console.debug('local canvas loaded (1)');
+            return canvasLocal;
         }
     
-        const canvasString = localStorage.getItem("c" + id);
-        return canvasString ? JSON.parse(canvasString) : { content: '{}', colorIndex: 0, sharedCanvasId: '' };
+        console.debug('new canvas loaded (0)');
+        return { isnew: true, content: '{}', colorIndex: 0, sharedCanvasId: '', timestamp: Date.now() };
     }
 
     public getPomodoroState(): PomodoroState {

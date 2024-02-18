@@ -588,26 +588,26 @@ const Sketch = (function () {
         } else if ((e.metaKey || e.ctrlKey) && (e.keyCode== 86)) {
             Paste();
             e.preventDefault();
-        } else if (e.key === 'c') {
+        } else if (e.key.toLowerCase() === 'c') {
             if (canvas.isDrawingMode) { currentColorIndex = (currentColorIndex + 1) % 4; }
             canvasController.changeColor(currentColorIndex);
             MenuController.setOption('pen-picker');
-        } else if (e.key === 'e') {
+        } else if (e.key.toLowerCase() === 'e') {
             MenuController.setOption('eraser-picker');
             canvasController.changeColor('eraser');
-        } else if (e.key === 's') {
+        } else if (e.key.toLowerCase() === 's') {
             MenuController.setOption('selection-picker');
             canvasController.changeColor('selection');
-        } else if (e.key === 'h') {
+        } else if (e.key.toLowerCase() === 'h') {
             MenuController.setOption('pointer-picker');
             canvasController.changeColor('pointer');
-        } else if (e.key === 'k') {
+        } else if (e.key.toLowerCase() === 'k') {
             clearCanvas(); 
-        } else if (e.key === 'h') {
+        } else if (e.key.toLowerCase() === 'h') {
             toggleNotesVisibility(); 
-         } else if (e.key === 'f') {
+         } else if (e.key.toLowerCase() === 'f') {
             toggleFullscreen(); 
-        } else if (e.key === 't') { 
+        } else if (e.key.toLowerCase() === 't') { 
             MenuController.setOption('text-picker');
             canvasController.changeColor('text');
         } else if (e.keyCode == 90 && (e.metaKey || e.ctrlKey)) {
@@ -699,7 +699,6 @@ const Sketch = (function () {
     function initKanbanBoard() {
 
         canvasController.isLoading = true;
-
 
         let kanbanElements = canvas.getObjects().filter(obj => obj.cl === 'k');
         if (kanbanElements.length > 0) {
@@ -804,11 +803,15 @@ const Sketch = (function () {
             });
         }
 
-        console.debug('canvas loaded');
+        if (storeCanvas.isnew) {
+            initKanbanBoard();
+        }
 
         canvasController.switchDashboard(currentCanvasId, sharedCanvasId, initial);
         Config.saveActiveDashboard(currentCanvasId);
         notifyAllObservers();
+
+
 
         canvasController.isLoading = false;
     }

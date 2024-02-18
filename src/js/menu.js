@@ -16,8 +16,9 @@ const MenuController = (function () {
         
             button.addEventListener('click', () => {
               const tooltipText = button.getAttribute('data-tooltip');
+              const tooltipTextFixed = button.getAttribute('data-tooltip-nofixed');
 
-              if (tooltipText!=null) {
+              if (tooltipText!=null && tooltipTextFixed==null) {
                 selectedTooltip = tooltipText;
               }
 
@@ -189,7 +190,7 @@ const MenuController = (function () {
         tooltipContainer.textContent = text;
     }
 
-    function updateTooltipPen (text) {
+    function updateTooltipPen () {
         selectedTooltip = 'Hold down the Shift key while drawing to create a straight line'
         tooltipContainer.textContent = selectedTooltip;
     }
@@ -299,12 +300,17 @@ const MenuController = (function () {
 
     function setOption(opt) {
         
-        const element = document.querySelector(`[data-action="${opt}"]`);
-      
-        if(element) {
-          const tooltipValue = element.getAttribute('data-tooltip');
-          selectedTooltip = tooltipValue;
-          updateTooltip(tooltipValue);
+        if (opt==='pen-picker') {
+            updateTooltipPen();
+        } else {
+
+            const element = document.querySelector(`[data-action="${opt}"]`);
+        
+            if(element) {
+            const tooltipValue = element.getAttribute('data-tooltip');
+            selectedTooltip = tooltipValue;
+            updateTooltip(tooltipValue);
+            }
         }
       }
 

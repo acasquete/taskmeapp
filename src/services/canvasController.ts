@@ -952,10 +952,6 @@ export class CanvasController {
         this.canvas.defaultCursor = 'crosshair';
     }
 
-    public showWelcome(): void {
-        // Implementación específica para mostrar mensaje de bienvenida
-    }
-
     private saveCanvas() : void {
         const currentMode = this.canvas.isDrawingMode;
         this.canvas.isDrawingMode = false;
@@ -963,7 +959,7 @@ export class CanvasController {
         this.saveViewPortConfiguration();
 
         let jsonCanvas = this.canvas.toJSON(['cl', 'id']);
-        let storeCanvas = { sharedCanvasId: this.sharedCanvasId, colorIndex: this.currentColorIndex, content:  JSON.stringify(jsonCanvas) };     
+        let storeCanvas = { sharedCanvasId: this.sharedCanvasId, colorIndex: this.currentColorIndex, content:  JSON.stringify(jsonCanvas), timestamp: Date.now() };     
         
         Config.saveCanvas(this.currentCanvasId, storeCanvas);
         this.canvas.isDrawingMode = currentMode;

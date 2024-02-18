@@ -1,7 +1,5 @@
-Add date to dashbord for conflict resolution
-Establecer cursores (edit, selection, delete, drawing, drag, text)
-
 NICE TO HAVE
+Establecer cursores (edit, selection, delete, drawing, drag, text)
 SHARE - Add/Delete Column
 Add tests
 BUG. Arrastrar un punto de una nota a otra no funciona
