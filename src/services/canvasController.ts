@@ -34,6 +34,7 @@ export class CanvasController {
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
         this.canvasHistory = new CanvasHistory(canvas);
+        this.setSelectionMode();
     }
 
     public reset () {

@@ -307,6 +307,7 @@ const Sketch = (function () {
     }
 
     function  assignConfigToObject (obj) {
+
         if (obj.type === 'group') {
             obj.set({
                 originX: 'center',
@@ -315,7 +316,9 @@ const Sketch = (function () {
                 hasBorders: false,
                 lockRotation: true,
                 visible: true,
-                cl: 'n'
+                cl: 'n',
+                selectable: canvas.selection,
+                evented: canvas.selection
             });
             obj.on('mousedblclick', editNote);
            
@@ -326,6 +329,8 @@ const Sketch = (function () {
                 hasControls: false,
                 hasBorders: false,
                 visible: true,
+                selectable: canvas.selection,
+                evented: canvas.selection
             });
 
             obj.on('mousedblclick', removeDot);
@@ -334,11 +339,13 @@ const Sketch = (function () {
                 hasControls: false,
                 hasBorders: false,
                 lockRotation: true,
-                selectable: false
+                selectable: false,
+                evented: true
             });
         } else if (obj.cl==='k' && obj.id.includes('col')) {
             obj.set({
-                selectable: true,
+                selectable: canvas.selection,
+                evented: canvas.selection,
                 lockMovementX: true,
                 lockMovementY: true,
                 lockRotation: true,
@@ -356,7 +363,8 @@ const Sketch = (function () {
                 hasControls: true,
                 hasBorders: true,
                 lockRotation: false,
-                selectable: true
+                selectable: canvas.selection,
+                evented: canvas.selection
             });
         } 
     }
