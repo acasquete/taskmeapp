@@ -426,7 +426,9 @@ const Sketch = (function () {
             shadow: 'rgba(0,0,0,0.6) 0px 0px 3px',
             hasControls: false, 
             hasBorders: false,
-            cl: 'd'
+            cl: 'd',
+            selectable: canvas.selection,
+            evented: canvas.selection
         });
 
         circle.on('mousedblclick', removeDot);
