@@ -28,9 +28,11 @@ To get started with TaskMe, clone this repository to your local machine. Detaile
 
 We welcome contributions from the community! If you're interested in improving TaskMe or adding new features, please read our contributing guidelines. Your input helps make TaskMe better for everyone.
 
+We are currently in the process of migrating to TypeScript and the application requires significant refactoring. This presents a fantastic opportunity for contributors, especially newcomers, as there are many areas for improvement. Whether you're looking to get your feet wet in open-source contribution or you're an experienced developer interested in helping with the migration, your contributions are highly valued.
+
 ## License
 
-(Pending)
+TaskMe is open-source software licensed under the MIT license. See the LICENSE file for more details.
 
 ## Contact
 
