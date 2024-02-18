@@ -913,6 +913,29 @@ export class CanvasController {
         this.canvas.selection = false;
         this.isTextMode = false;
         this.canvas.defaultCursor = 'pointer';
+
+        this.disableSelectable();
+    }
+
+    public enableSelectable(): void {
+        this.canvas.forEachObject((obj) => {
+            if (!obj.id.startsWith('sep')) {
+                obj.selectable = true;
+                obj.evented = true;
+            }
+        });
+        this.canvas.requestRenderAll(); 
+      }
+
+    public disableSelectable(): void {
+        this.canvas.forEachObject((obj) => {
+          if (obj.selectable) {
+            obj.selectable = false;
+            obj.evented = false;
+          }
+        });
+        this.canvas.discardActiveObject();
+        this.canvas.requestRenderAll();
     }
 
     private setSelectionMode(): void {
@@ -923,6 +946,8 @@ export class CanvasController {
         this.isTextMode = false;
         this.isEraserMode = false;
         this.canvas.defaultCursor = 'default';
+
+        this.enableSelectable();
     }
 
     private setTextMode(): void {
@@ -933,6 +958,8 @@ export class CanvasController {
         this.isTextMode = true;
         this.isEraserMode = false;
         this.canvas.defaultCursor = 'crosshair';
+
+        this.disableSelectable();
     }
 
     private setDrawingMode(colorIndex: number) {
@@ -942,14 +969,17 @@ export class CanvasController {
         this.isEraserMode = false;
         this.isTextMode = false;
 
+        this.disableSelectable();
     }
 
     private setEraserMode(): void {
         this.isEraserMode = true;
         this.canvas.isDrawingMode = false;
-        this.canvas.selection = false;
+        this.canvas.selection = true;
         this.isTextMode = false;
         this.canvas.defaultCursor = 'crosshair';
+
+        this.enableSelectable();
     }
 
     private saveCanvas() : void {
