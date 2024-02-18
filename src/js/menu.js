@@ -207,7 +207,7 @@ const MenuController = (function () {
         const fullURL = `${currentDomain}?sid=${sharedId}`;
 
         const input = document.querySelector('#modal-liveshare #shareURL');
-        const copy = document.querySelector('#modal-liveshare #mliv-copy');
+        const copy = document.querySelector('#modal-liveshare #copy');
 
         input.value = fullURL;
 
