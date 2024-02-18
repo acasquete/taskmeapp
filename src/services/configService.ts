@@ -6,15 +6,19 @@ export class Config {
     constructor() {
     }
 
-    getLocalOpenAIAPIKey(): string | null {
+    public getLocalOpenAIAPIKey(): string | null {
         return localStorage.getItem("openAIAPIKey");
     }
 
-    getActiveDashboard(): string | number {
+    public saveLocalOpenAIAPIKey(apikey:string):void {
+        localStorage.setItem("openAIAPIKey", apikey);
+    }
+
+    public getActiveDashboard(): string | number {
         return localStorage.getItem("ad") ?? 1;
     }
 
-    saveActiveDashboard(id: string): void {
+    public saveActiveDashboard(id: string): void {
         localStorage.setItem("ad", id);
     }
 
@@ -33,7 +37,7 @@ export class Config {
         return canvasString ? JSON.parse(canvasString) : { content: '{}', colorIndex: 0, sharedCanvasId: '' };
     }
 
-    getPomodoroState(): PomodoroState {
+    public getPomodoroState(): PomodoroState {
         let pomodoroString = localStorage.getItem("p");
         let pomodoro: PomodoroState = {};
 
@@ -44,7 +48,7 @@ export class Config {
         return pomodoro;
     }
 
-    savePomodoroState(state: PomodoroState): void {
+    public savePomodoroState(state: PomodoroState): void {
         localStorage.setItem("p", JSON.stringify(state));
     }
 }

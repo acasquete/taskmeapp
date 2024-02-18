@@ -14,25 +14,14 @@ const Sketch = (function () {
     let sharedCanvasId = '';
     let kanbanAdvisor;
 
+
     async function init(sharedId) {
         initCanvas();
         assignDOMEventListeners();
 
         canvasController = new CanvasController(canvas);
         canvasController.assignCanvasEventListeners();
-
-        initKanbanAdvisor();
-    }
-
-    function initKanbanAdvisor() {
-        let openAiToken = Config.getLocalOpenAIAPIKey();
-
-        if (openAiToken) {
-            kanbanAdvisor = new KanbanAdvisor(openAiToken);
-            console.debug('AI enabled');
-        } else {
-            console.debug('AI disabled');
-        }
+        kanbanAdvisor = new KanbanAdvisor();
     }
 
     async function loadCurrentDashboard(sharedId) {
@@ -585,7 +574,7 @@ const Sketch = (function () {
     }
 
     function onKeyPress (e) {
-        if (canvasController.isEditingMode()) return;
+        if (canvasController.isEditingMode() || MenuController.isModalOpen()) return;
 
         if ((e.ctrlKey || e.metaKey) && !isNaN(e.key)) {
             let num = parseInt(e.key);
@@ -873,22 +862,15 @@ const Sketch = (function () {
     }
 
     /* TODO: Refactor AI methods */
-    function nextAdvice () {
-        
+    async function nextAdvice () {
         const kanbanContent = getKanbanContent();
          
-        kanbanAdvisor.getProductivityRecommendations(kanbanContent)
-        .then(recommendations => {
-            console.debug(recommendations);
+        let recommendations = await kanbanAdvisor.getProductivityRecommendations(kanbanContent)
+        let jsonRecommendation = JSON.parse(recommendations);
 
-            let jsonRecommendation = JSON.parse(recommendations);
-
-            if (jsonRecommendation.response) {
-                Notifications.showAppNotification(jsonRecommendation.response, 'small', 30000);
-            }
-
-        })
-        .catch(error => console.error(error));
+        if (jsonRecommendation.response) {
+            Notifications.showAppNotification(jsonRecommendation.response, 'small', 30000);
+        }
     }
 
     function getKanbanContent () {

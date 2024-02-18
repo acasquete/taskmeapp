@@ -2,7 +2,6 @@ const MenuController = (function () {
 
     let selectedTooltip = '';
 
-
     function init () {
 
         const tooltipContainer = document.getElementById('tooltipContainer');
@@ -67,23 +66,26 @@ const MenuController = (function () {
                         Sketch.changeColor('selection');
                         break;
                     case 'aiadvisor-picker':
-                        Sketch.nextAdvice();
+                        launchAIAdvisor();
                         break;
                     case 'black-picker':
                         Sketch.changeColor(0);
-                        updateTooltip('AAAA');
+                        updateTooltipPen();
                         break;
                     case 'eraser-picker':
                         Sketch.changeColor('eraser');
                         break;
                     case 'green-picker':
                         Sketch.changeColor(3);
+                        updateTooltipPen();
                         break;
                     case 'red-picker':
                         Sketch.changeColor(2);
+                        updateTooltipPen();
                         break;
                     case 'blue-picker':
                         Sketch.changeColor(1);
+                        updateTooltipPen();
                         break;
                     case 'toggleFullScreen':
                         Sketch.toggleFullscreen();
@@ -126,7 +128,7 @@ const MenuController = (function () {
                         }
             
                         let sharedId = Sketch.createShareSketch();
-                        showModal(sharedId);
+                        showModalShare(sharedId);
                         break;
                 }
                 
@@ -177,6 +179,9 @@ const MenuController = (function () {
 
         document.querySelector('#modal-liveshare #copy').addEventListener('click', handleLiveShareCopy);
         document.querySelector('#modal-liveshare #close').addEventListener('click', handleLiveShareClose);
+        document.querySelector('#modal-openaikey #moai-close').addEventListener('click', handleOpenAIClose);
+        document.querySelector('#modal-openaikey #moai-ok').addEventListener('click', handleOpenAISave);
+
 
     }
     
@@ -184,25 +189,50 @@ const MenuController = (function () {
         tooltipContainer.textContent = text;
     }
 
+    function updateTooltipPen (text) {
+        selectedTooltip = 'Hold down the Shift key while drawing to create a straight line'
+        tooltipContainer.textContent = selectedTooltip;
+    }
+
     function toggleHamMenu() {
         const hamMenu = document.querySelector('#hamburger-menu');
         hamMenu.classList.toggle('hidden');
     }
 
-    function showModal(sharedId) {
+    function showModalShare(sharedId) {
         closeAllModals(); 
 
         const currentDomain = window.location.origin; 
         const fullURL = `${currentDomain}?sid=${sharedId}`;
 
         const input = document.querySelector('#modal-liveshare #shareURL');
-        const copy = document.querySelector('#modal-liveshare #copy');
+        const copy = document.querySelector('#modal-liveshare #mliv-copy');
 
         input.value = fullURL;
 
         copy.innerHTML = 'Copy URL';
         document.querySelector('#modal-liveshare').classList.remove('hidden');
         
+    }   
+
+    async function launchAIAdvisor(force) {
+        const currentKey = Config.getLocalOpenAIAPIKey();
+        
+        console.log(!force);
+        
+        if (currentKey && !force) {
+            try {
+                await Sketch.nextAdvice();
+            } catch (error) {
+                console.error(error);
+                launchAIAdvisor(true);
+            }
+        } else {
+            closeAllModals(); 
+            const input = document.querySelector('#modal-openaikey #openaikey');
+            input.value = currentKey;
+            document.querySelector('#modal-openaikey').classList.remove('hidden');
+        }
     }   
     
     class GridItem {
@@ -225,6 +255,7 @@ const MenuController = (function () {
 
     function closeAllModals() {
         handleLiveShareClose();
+        handleOpenAIClose();
         Sketch.handleClearClose();
     }
 
@@ -247,6 +278,25 @@ const MenuController = (function () {
         document.querySelector('#modal-liveshare').classList.add('hidden');
     }
 
+    function handleOpenAIClose() {
+        document.querySelector('#modal-openaikey').classList.add('hidden');
+    }
+
+    function handleOpenAISave() {
+        const input = document.querySelector('#modal-openaikey #openaikey')
+        Config.saveLocalOpenAIAPIKey(input.value);
+        handleOpenAIClose();
+        launchAIAdvisor();
+    }
+
+    function isModalOpen () {
+        const elem1 = document.getElementById('modal-openaikey');
+        const elem2 = document.getElementById('modal-liveshare');
+        const elem3 = document.getElementById('modal-clearall');
+
+        return (!elem1.classList.contains('hidden') || !elem2.classList.contains('hidden') || !elem3.classList.contains('hidden')) ? true : false;
+    }
+
     function setOption(opt) {
         
         const element = document.querySelector(`[data-action="${opt}"]`);
@@ -258,7 +308,7 @@ const MenuController = (function () {
         }
       }
 
-    return { init, setOption };
+    return { init, setOption, isModalOpen };
 
 })();
 

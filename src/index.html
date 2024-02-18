@@ -35,7 +35,7 @@
     </head>
     <body style="display: none;">
 
-        <div id="tooltipContainer" class="outline-1 transform -translate-x-1/2 mx-auto left-1/2 text-center bottom-20 md:bottom-28 fixed text-gray-400 text-sm w-screen z-[0]"></div>
+        <div id="tooltipContainer" class="outline-1 transform -translate-x-1/2 mx-auto left-1/2 text-center bottom-20 md:bottom-28 fixed text-gray-400 text-sm w-screen z-[2000]"></div>
 
         <div class="opacity-100 hover:opacity-100 drop-shadow-lg m-auto fixed w-11/12 sm:w-96 inset-x-0 bottom-6 md:bottom-12 bg-white py-1 rounded-lg border border-gray z-[2000] menu">
             <div class="flex justify-center items-center space-x-1" >
@@ -47,15 +47,15 @@
           
               
 
-            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Grab the canvas and drag it around" data-action="pointer-picker" title="Hand (Panning Tool) - H">
+            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Click and hold to move the canvas around" data-action="pointer-picker" title="Hand (Panning Tool) - H">
                 <i class="fa-regular fa-hand"></i>
             </button>
-            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Click to pick things or draw a box around them to move 'em" data-action="selection-picker" title="Selection - S">
+            <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Click to select items or draw a box around them to move" data-action="selection-picker" title="Selection - S">
                 <i class="fa fa-mouse-pointer"></i>
             </button>
 
               <div class="relative">
-                <button data-tooltip="Hold down the Shift key while drawing to create a straight line" class="pen-icon text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pen-picker" title="Pen Color - C">
+                <button class="pen-icon text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-action="pen-picker" title="Pen Color - C">
                   <i class="fa fa-paint-brush"></i>
                 </button>
                 <div class="absolute hidden bg-white shadow-md bottom-full mb-2" id="pen-menu">
@@ -69,7 +69,7 @@
                 <i class="fa fa-font"></i>
               </button>
           
-              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Make mistakes disappear with a swipe of this" data-action="eraser-picker" title="Eraser - E">
+              <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Click on items to delete them, even dividers!" data-action="eraser-picker" title="Eraser - E">
                 <i class="fa fa-eraser"></i>
               </button>
               <button class="text-blue w-10 h-10 rounded-lg hover:bg-green-200 active:bg-green-500" data-tooltip="Get smart tips for your Kanban flow" data-action="aiadvisor-picker" title="AI Advisor">
@@ -198,7 +198,7 @@
             </div>
         </div>
         
-        <!-- Modal Clear All -->
+        <!-- Modal LiveShare -->
         <div id="modal-liveshare" class="hidden backdrop-blur-sm fixed z-50 inset-0 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen">
                 <div class="bg-white rounded-lg shadow-xl transform transition-all w-6/12 p-6">
@@ -221,6 +221,30 @@
 
                 <div class="mt-5 sm:mt-6 text-center">
                     <button id="close" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Close</button>
+                </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal OpenAI -->
+        <div id="modal-openaikey" class="hidden backdrop-blur-sm fixed z-50 inset-0 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen">
+                <div class="bg-white rounded-lg shadow-xl transform transition-all w-6/12 p-6">
+                <div class="text-center">
+                    <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h6a3 3 0 003-3v-1a1 1 0 112 0v1a5 5 0 01-5 5H5a5 5 0 01-5-5V7a5 5 0 015-5h6a5 5 0 015 5v1a1 1 0 11-2 0V7a3 3 0 00-3-3H5z" clip-rule="evenodd" /></svg>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">OpenAI API Key</h3>
+                    <div class="mt-2">
+                    <p class="text-sm text-gray-500">Please enter your OpenAI Key below. This key will be stored exclusively on your device and will never be sent to our servers.</p>
+                    </div>
+                </div>
+                <div class="mt-2 flex flex-row gap-4">
+                    <input type="text" id="openaikey" value="Key" class="text-center w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-gray-100">
+                </div>
+
+                <div class="mt-5 sm:mt-6 text-center">
+                    <button id="moai-ok" class="text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center whitespace-nowrap">Save on Device</button>
+                    <button id="moai-close" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Close</button>
                 </div>
 
                 </div>

@@ -1,9 +1,8 @@
-AI - Modal para introducir OpenAI API Key
-Establecer cursores (edit, selection, delete, drawing, drag, text)
-SHARE - Add/Delete Column
 Add date to dashbord for conflict resolution
+Establecer cursores (edit, selection, delete, drawing, drag, text)
 
 NICE TO HAVE
+SHARE - Add/Delete Column
 Add tests
 BUG. Arrastrar un punto de una nota a otra no funciona
 BUG. Al seleccionar un punto de una nota se poner por debajo

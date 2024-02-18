@@ -1,14 +1,18 @@
 import axios from 'axios';
+import { Config } from '../services/configService';
 import { KanbanStage } from '../types/kanbanStage';
 
 export class KanbanAdvisor {
-    private openAiApiKey: string;
-  
-    constructor(openAiApiKey: string) {
-      this.openAiApiKey = openAiApiKey;
+
+    private config;
+
+    constructor() {
+      this.config = new Config();
     }
   
     private async callOpenAiApi(prompt: string): Promise<string> {
+
+      let openAiApiKey = this.config.getLocalOpenAIAPIKey();
 
       try {
         const response = await axios.post(
@@ -29,7 +33,7 @@ export class KanbanAdvisor {
           },
           {
             headers: {
-              'Authorization': `Bearer ${this.openAiApiKey}`,
+              'Authorization': `Bearer ${openAiApiKey}`,
               'Content-Type': 'application/json',
             },
           }
@@ -43,8 +47,6 @@ export class KanbanAdvisor {
     }
   
     public async getProductivityRecommendations(kanbanStages: KanbanStage[]): Promise<string> {
-
-       console.log(kanbanStages);
       const prompt = this.generatePrompt(kanbanStages);
 
       return await this.callOpenAiApi(prompt);
@@ -53,8 +55,6 @@ export class KanbanAdvisor {
     private generatePrompt(kanbanStages: KanbanStage[]): string {
       let prompt = 'Based on the following Kanban board content, provide productivity recommendations and suggested actions:\n\n';
   
-        console.log('ddd' + kanbanStages);
-
       kanbanStages.forEach(stage => {
         prompt += `Stage "${stage.name}" contains:\n`;
         stage.notes.forEach(note => {
@@ -62,8 +62,6 @@ export class KanbanAdvisor {
         });
       });
 
-      console.log(prompt);
-  
       return prompt;
     }
   }
