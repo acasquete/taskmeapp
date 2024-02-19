@@ -351,8 +351,8 @@ export class CanvasController {
 
             const movedObject = event.target;
         
-            if (movedObject && movedObject.id.startsWith('col')) {
-                console.debug('object:modified column');
+            if (movedObject && (movedObject.cl ==='t' || movedObject.id.startsWith('col'))) {
+                console.debug('object:modified column/text');
                 Data.sendCanvasObject({a:'cu', id: movedObject.id, d: movedObject?.text });
             }
 

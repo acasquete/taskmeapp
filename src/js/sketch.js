@@ -970,7 +970,7 @@ const Sketch = (function () {
         canvas.requestRenderAll();
     }
 
-    function updateTextRealTime (id, newVal)
+    function updateNoteRealTime (id, newVal)
     {
         const target = canvas.getObjects().find(obj => obj.id === id);
         var text = target.getObjects().find(obj => obj.type === 'textbox');
@@ -984,7 +984,7 @@ const Sketch = (function () {
         canvas.requestRenderAll();
     }
 
-    function updateColumnRealTime (id, newVal)
+    function updateTextControlRealTime (id, newVal)
     {
         const target = canvas.getObjects().find(obj => obj.id === id);
 
@@ -1012,6 +1012,8 @@ const Sketch = (function () {
     }
 
     function addObjectRealTime(data) {
+
+        console.debug(data.type);
     
         if (data.type==='group') {
             fabric.util.enlivenObjects(data.objects, function(objects) {
@@ -1028,9 +1030,16 @@ const Sketch = (function () {
                 canvas.renderAll();
             });
         } else if (data.type === 'path') {
-            fabric.Path.fromObject(data, function(path) {
-                path.set({virtual: true});
-                canvas.add(path);
+            fabric.Path.fromObject(data, function(obj) {
+                obj.set({virtual: true});
+                canvas.add(obj);
+                canvas.renderAll();
+            });
+        } else if (data.type === 'i-text') {
+            console.debug('new text');
+            fabric.IText.fromObject(data, function(obj) {
+                obj.set({virtual: true});
+                canvas.add(obj);
                 canvas.renderAll();
             });
         }
@@ -1038,8 +1047,8 @@ const Sketch = (function () {
     
     return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
         addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor, 
-        addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateTextRealTime,
-        createShareSketch, handleClearClose, nextAdvice, download, updateColumnRealTime };
+        addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateNoteRealTime,
+        createShareSketch, handleClearClose, nextAdvice, download, updateTextControlRealTime };
 })();
 
 window.Sketch = Sketch;

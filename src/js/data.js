@@ -195,10 +195,10 @@ const Data = (function () {
                         Sketch.removeObjectRealTime(data.d);
                         break;
                     case 'tu': // Text Update
-                        Sketch.updateTextRealTime(data.id, data.d);
+                        Sketch.updateNoteRealTime(data.id, data.d);
                         break;
                     case 'cu': // Column Text Update
-                        Sketch.updateColumnRealTime(data.id, data.d);
+                        Sketch.updateTextControlRealTime(data.id, data.d);
                         break;
                 }
             }
@@ -218,8 +218,10 @@ const Data = (function () {
     const throttleDelay = 100; 
 
     function sendCanvasObject(data) {
-        
+
         if (sharedCanvasId=='') return;
+        
+        console.debug (data);
 
         const currentTime = Date.now();
         
