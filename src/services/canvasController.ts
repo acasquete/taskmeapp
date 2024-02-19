@@ -347,9 +347,15 @@ export class CanvasController {
         
         this.canvas.on('object:modified', (event: fabric.IEvent) => {
             if (this.isLoading) return;
+            console.debug('object:modified');
 
             const movedObject = event.target;
         
+            if (movedObject && movedObject.id.startsWith('col')) {
+                console.debug('object:modified column');
+                Data.sendCanvasObject({a:'cu', id: movedObject.id, d: movedObject?.text });
+            }
+
             // Drag and drop for "Dots"
             if (movedObject && movedObject.cl === 'd') {
                 this.canvas.forEachObject((obj) => {

@@ -20,6 +20,8 @@ TaskMe comes packed with a variety of features designed to make your task manage
 
 TaskMe was initially developed in 2012 for the Windows Store on Windows, utilizing WinJS. The primary goal was to demonstrate the ease of porting a traditional web application to a Windows Store application. The original code can be found in the `legacy-windows-store` branch for those interested in exploring the application's origins.
 
+TaskMe is a name rooted in inspiration, designed to transform task management into a journey of personal and collective growth. The term "Task" signifies our daily efforts and the opportunities they present for advancement, while "Me" emphasizes the app's personalized approach, encouraging users to take control of their tasks and projects. This blend of personal empowerment and collaborative effort invites users to see beyond the mundane, fostering a philosophy that combines productivity with a deeper sense of purpose.
+
 ## Getting Started
 
 To get started with TaskMe, clone this repository to your local machine. Detailed setup instructions and usage guidelines are available in the documentation folder.

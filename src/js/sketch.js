@@ -984,6 +984,15 @@ const Sketch = (function () {
         canvas.requestRenderAll();
     }
 
+    function updateColumnRealTime (id, newVal)
+    {
+        const target = canvas.getObjects().find(obj => obj.id === id);
+
+        target.set({text:newVal});
+
+        canvas.requestRenderAll();
+    }
+
     function createShareSketch () {
 
         if (!sharedCanvasId) {
@@ -1030,7 +1039,7 @@ const Sketch = (function () {
     return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
         addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor, 
         addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateTextRealTime,
-        createShareSketch, handleClearClose, nextAdvice, download };
+        createShareSketch, handleClearClose, nextAdvice, download, updateColumnRealTime };
 })();
 
 window.Sketch = Sketch;

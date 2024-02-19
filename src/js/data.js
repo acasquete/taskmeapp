@@ -197,6 +197,9 @@ const Data = (function () {
                     case 'tu': // Text Update
                         Sketch.updateTextRealTime(data.id, data.d);
                         break;
+                    case 'cu': // Column Text Update
+                        Sketch.updateColumnRealTime(data.id, data.d);
+                        break;
                 }
             }
         });
