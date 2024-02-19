@@ -49,8 +49,8 @@ const Data = (function () {
 
     function saveToFirestore(collectionPath, docId, data) {
         return db.collection(collectionPath).doc(docId).set(data)
-            .then(() => console.debug(`${collectionPath}/${docId} saved`))
-            .catch((error) => console.error(error));
+            .then(() => { console.debug(`${collectionPath}/${docId} saved`) })
+            .catch((error) => { console.error(error) } );
     }
 
     function getDocId(type, id) {

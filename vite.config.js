@@ -1,5 +1,8 @@
 export default {
   root: "src",
+  esbuild: {
+    drop: ['console', 'debugger'],
+  },
   build: {
     outDir: '../dist',
     emptyOutDir: true,
