@@ -71,12 +71,13 @@ const Data = (function () {
                 collectionPath = `shared`;
                 docId = data.sharedCanvasId;
                 saveToFirestore(collectionPath, docId, data);
+                data.content = '{"shared":true}';
             }
              
             collectionPath =  `users/${userId}/${type}`;
             docId = getDocId(type, id);
             saveToFirestore(collectionPath, docId, data);
-            
+
         });
 
         queue = {}; 
