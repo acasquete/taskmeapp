@@ -21,7 +21,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://accounts.google.com/gsi/client" async></script>
     <script src="/js/fabric.min.js"></script>
-    <script src="/js/modal.min.js"></script>
     <script type="module" src="js/main.js"></script>
     <meta name="google-signin-client_id" content="368293194406-207m6qm6ghsdtks363bg0ojb0h2m7tnt.apps.googleusercontent.com">
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
@@ -29,7 +28,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
     <link rel="manifest" href="/manifest.json">
-    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="shortcut icon" href="https://taskmeapp.com/assets/images/apple-touch-icon.png">
     <link rel="apple-touch-icon" href="https://taskmeapp.com/assets/images/apple-touch-icon.png">
     </head>
@@ -188,7 +186,7 @@
                     <p class="text-sm text-gray-500">Everything on this board will be gone for good.</br>You sure you want to do this?</p>
                     </div>
                 </div>
-                <div class="mt-5 sm:mt-6 text-center">
+                <div class="mt-5 text-center">
                     <button id="confirm" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center me-2">
                         Yes, I'm sure
                     </button>
@@ -201,7 +199,7 @@
         <!-- Modal LiveShare -->
         <div id="modal-liveshare" class="hidden backdrop-blur-sm fixed z-50 inset-0 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen">
-                <div class="bg-white rounded-lg shadow-xl transform transition-all w-6/12 p-6">
+                <div class="bg-white rounded-lg shadow-xl transform transition-all p-6 sm:max-w-lg sm:w-ful m-2">
                 <div class="text-center">
                     <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -230,7 +228,7 @@
         <!-- Modal OpenAI -->
         <div id="modal-openaikey" class="hidden backdrop-blur-sm fixed z-50 inset-0 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen">
-                <div class="bg-white rounded-lg shadow-xl transform transition-all w-6/12 p-6">
+                <div class="bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg sm:w-full p-6 m-2">
                 <div class="text-center">
                     <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h6a3 3 0 003-3v-1a1 1 0 112 0v1a5 5 0 01-5 5H5a5 5 0 01-5-5V7a5 5 0 015-5h6a5 5 0 015 5v1a1 1 0 11-2 0V7a3 3 0 00-3-3H5z" clip-rule="evenodd" /></svg>
                     <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">OpenAI API Key</h3>

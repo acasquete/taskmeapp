@@ -70,12 +70,13 @@ const Data = (function () {
             if (data.sharedCanvasId) {
                 collectionPath = `shared`;
                 docId = data.sharedCanvasId;
-            } else { 
-                collectionPath =  `users/${userId}/${type}`;
-                docId = getDocId(type, id);
+                saveToFirestore(collectionPath, docId, data);
             }
-
+             
+            collectionPath =  `users/${userId}/${type}`;
+            docId = getDocId(type, id);
             saveToFirestore(collectionPath, docId, data);
+            
         });
 
         queue = {}; 
@@ -124,18 +125,7 @@ const Data = (function () {
             });
     }
 
-    function getDashboard(id) {
-        if (!userId) {
-            return null;
-        }
-
-        const docId = `d${id}`;
-        const collectionPath = `users/${userId}/dashboards`;
-        return fetchFirestoreDocument(collectionPath, docId);
-    }
-
     async function getCanvas(id, sharedId) {
-
         if (!userId) {
             if (sharedId!='') { 
                 Notifications.showAppNotification('You need to log in to access a shared dashboard', 'regular');
@@ -244,7 +234,6 @@ const Data = (function () {
     }
 
     return {
-        getDashboard: getDashboard,
         getCanvas: getCanvas,
         saveCanvas: saveCanvas,
         setUserId: setUserId,
