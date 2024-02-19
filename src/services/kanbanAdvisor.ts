@@ -7,6 +7,7 @@ export class KanbanAdvisor {
     private config;
 
     constructor() {
+      console.debug('init AI advisor');
       this.config = new Config();
     }
   

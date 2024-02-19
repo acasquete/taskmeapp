@@ -182,8 +182,6 @@ const MenuController = (function () {
         document.querySelector('#modal-liveshare #close').addEventListener('click', handleLiveShareClose);
         document.querySelector('#modal-openaikey #moai-close').addEventListener('click', handleOpenAIClose);
         document.querySelector('#modal-openaikey #moai-ok').addEventListener('click', handleOpenAISave);
-
-
     }
     
     function updateTooltip (text) {

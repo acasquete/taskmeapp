@@ -43,6 +43,8 @@ const Sketch = (function () {
     }
 
     function initCanvas() { 
+        console.debug('init canvas');
+
         if (canvas) canvas.dispose();
     
         canvas = new fabric.Canvas('c', { allowTouchScrolling: true, selection: false });
@@ -105,6 +107,7 @@ const Sketch = (function () {
     }
 
     function assignDOMEventListeners() {
+        console.debug('assign DOM events');
         document.addEventListener('keydown', onKeyPress);
         
         $(".new-small").on('mousedown', onNew);
@@ -163,7 +166,7 @@ const Sketch = (function () {
             top: 170,
             hasControls: false, 
             hasBorders: false,
-            opacity: 0,
+            opacity: 1,
             cl: 'n',
             id: genId()
         });
@@ -171,18 +174,11 @@ const Sketch = (function () {
         var centeredTop = square.top + (square.height - text.getScaledHeight()) / 2;
         text.set('top', centeredTop);
 
-        group.animate('opacity', 1, {
-            duration: 300, 
-            onChange: canvas.renderAll.bind(canvas),
-            onComplete: function () {  group.set('opacity', 1); canvasController.saveCanvas() }
-        });
-
         group.on('mousedblclick', editNote);
         canvas.viewportCenterObject(group);
         canvas.add(group);
         
         canvasController.updateNoteCounters();
-        canvasController.saveCanvas();
     }
 
     function genId() {
@@ -823,9 +819,6 @@ const Sketch = (function () {
         canvasController.switchDashboard(currentCanvasId, sharedCanvasId, initial);
         Config.saveActiveDashboard(currentCanvasId);
         notifyAllObservers();
-
-
-
         canvasController.isLoading = false;
     }
 

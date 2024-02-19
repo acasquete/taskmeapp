@@ -23,7 +23,9 @@ export class Config {
     }
 
     public static saveCanvas(id: number, canvas: Canvas): void {
+        console.debug('save local canvas');
         localStorage.setItem("c" + id, JSON.stringify(canvas));
+        
         Data.saveCanvas(id, canvas);
     }
 
@@ -37,7 +39,7 @@ export class Config {
         const canvasRemote: Canvas | null = await canvasRemotePromise;
     
         if (canvasRemote && canvasLocal) {
-            let remoteUp = canvasRemote.timestamp > canvasLocal.timestamp;
+            let remoteUp = !canvasLocal.timestamp || canvasRemote.timestamp > canvasLocal.timestamp;
             
             if (remoteUp) console.debug('remote canvas loaded (2)');
             else console.debug('local canvas loaded (2)');
@@ -52,7 +54,7 @@ export class Config {
         }
     
         console.debug('new canvas loaded (0)');
-        return { isnew: true, content: '{}', colorIndex: 0, sharedCanvasId: '', timestamp: Date.now() };
+        return { isnew: true, content: '{}', colorIndex: 0, sharedCanvasId: ''};
     }
 
     public getPomodoroState(): PomodoroState {

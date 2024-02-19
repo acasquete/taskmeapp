@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (googleToken && !isTokenExpired(googleToken)) {
         signInWithFirebase(googleToken);
     } else {
+        console.debug('no auth token');
+        
         Sketch.loadCurrentDashboard(sharedId);
         localStorage.removeItem('googleToken');
     }

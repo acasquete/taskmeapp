@@ -68,6 +68,8 @@ export class CanvasController {
     }
 
     public assignCanvasEventListeners(): void {
+
+        console.debug('assign CANVAS events');
         
         this.canvas.on('mouse:over', (e: fabric.IEvent) => {
             const object = e.target;
@@ -842,9 +844,6 @@ export class CanvasController {
     }
 
     public getStagesColumnsConfiguration (): ColumnConfiguration[] {
-
-        console.debug('calc columns dynamic configuration');
-
         const colsObj = this.canvas.getObjects().filter(obj => obj.id && obj.id.startsWith('col'));
         let columns: ColumnConfiguration[] = [];
 
