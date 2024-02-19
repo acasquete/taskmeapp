@@ -59,12 +59,15 @@ const MenuController = (function () {
                         break;
                     case 'text-picker':
                         Sketch.changeColor('text');
+                        setActive(action);
                         break;
                     case 'pointer-picker':
                         Sketch.changeColor('pointer');
+                        setActive(action);
                         break;
                     case 'selection-picker':
                         Sketch.changeColor('selection');
+                        setActive(action);
                         break;
                     case 'aiadvisor-picker':
                         launchAIAdvisor();
@@ -75,6 +78,7 @@ const MenuController = (function () {
                         break;
                     case 'eraser-picker':
                         Sketch.changeColor('eraser');
+                        setActive(action);
                         break;
                     case 'green-picker':
                         Sketch.changeColor(3);
@@ -191,6 +195,7 @@ const MenuController = (function () {
     function updateTooltipPen () {
         selectedTooltip = 'Hold down the Shift key while drawing to create a straight line'
         tooltipContainer.textContent = selectedTooltip;
+        setActive('pen-picker');
     }
 
     function toggleHamMenu() {
@@ -305,12 +310,27 @@ const MenuController = (function () {
             const element = document.querySelector(`[data-action="${opt}"]`);
         
             if(element) {
-            const tooltipValue = element.getAttribute('data-tooltip');
-            selectedTooltip = tooltipValue;
-            updateTooltip(tooltipValue);
+                setActive(opt);
+                const tooltipValue = element.getAttribute('data-tooltip');
+                selectedTooltip = tooltipValue;
+                updateTooltip(tooltipValue);
             }
         }
-      }
+    }
+
+    function setActive(opt) {
+        const classBG = 'bg-teal-200';
+        const elements = document.querySelectorAll('[data-action]');
+    
+        elements.forEach(element => {
+            element.classList.remove(classBG);
+        });
+    
+        const activeElement = document.querySelector(`[data-action="${opt}"]`);
+        if (activeElement) { 
+            activeElement.classList.add(classBG);
+        }
+    }
 
     return { init, setOption, isModalOpen };
 

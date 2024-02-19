@@ -22,11 +22,11 @@
 }
 
 #hamburger-menu button:hover {
-    background-color: rgb(187 247 208);
+    background-color: rgb(153 246 228);
 }
 
 #hamburger-menu button:active {
-    border: 1px solid green;
+    border: 1px solid rgb(20 184 166);
 }
 
 #hamburger-menu i {
@@ -82,7 +82,7 @@
 }
 
 .tool:hover, .dash:hover {
-    background-color: rgb(187 247 208);;
+    background-color: rgb(153 246 228);
     color: black;
 }
 
