@@ -472,11 +472,14 @@ export class CanvasController {
     
     private assignUniqueIdToAddedObject(addedObject: fabric.Object): void {
         if (addedObject.virtual) return;
+
         const uniqueId = this.genId();
         if (!addedObject.id) addedObject.set({ id: uniqueId });
     }
     
     private sendObjectData(addedObject: fabric.Object): void {
+        if (addedObject.virtual) return;
+
         const objData = addedObject.toJSON(['id', 'virtual', 'left', 'top']);
         Data.sendCanvasObject({ a: 'oa', d: JSON.stringify(objData) });
     }
