@@ -686,7 +686,7 @@ const Sketch = (function () {
         for (let i = canvas.getObjects().length - 1; i >= 0; i--) {
             let obj = canvas.item(i);
             if (obj.type === 'path' || obj.cl === 'd') {
-                canvas.remove(obj);
+                canvasController.DeleteObject(obj);
             }
         }
         canvasController.saveCanvas();

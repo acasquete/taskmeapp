@@ -377,7 +377,7 @@ export class CanvasController {
                         easing: fabric.util.ease.easeOutExpo,
                         onChange: () => this.canvas.renderAll(),
                         onComplete: () => {
-                            this.canvas.remove(activeObject);
+                            this.DeleteObject(activeObject);
                             this.normalizeZIndex();
                             this.saveCanvas();
                         }
@@ -643,7 +643,7 @@ export class CanvasController {
 
 
 
-    private DeleteObject (object: fabric.Object) {
+    public DeleteObject (object: fabric.Object) {
         if (object.cl==='k' && object.id.includes('col')) return;
 
         if (object.cl==='k') {
