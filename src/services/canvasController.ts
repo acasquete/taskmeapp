@@ -286,6 +286,15 @@ export class CanvasController {
             this.updateNoteCounters();
         });
 
+        this.canvas.on('selection:created', (e: fabric.IEvent) => {
+            let selection = this.canvas.getActiveObject();
+
+            if (selection) {
+                selection.hasControls=false;
+                this.canvas.requestRenderAll();
+            }
+        });
+
         this.canvas.on('touch:drag', (e: fabric.IEvent) => {
             if (this.isEditKanbanMode || this.canvas.selection || this.canvas.isDrawingMode || this.pausePanning || e.e.layerX === undefined || e.e.layerY === undefined) {
                 
@@ -346,7 +355,7 @@ export class CanvasController {
 
             const movedObject = event.target;
         
-            if (movedObject && (movedObject.cl ==='t' || movedObject.id.startsWith('col'))) {
+            if (movedObject && (movedObject?.cl ==='t' || movedObject?.id?.startsWith('col'))) {
                 console.debug('object:modified column/text');
                 Data.sendCanvasObject({a:'cu', id: movedObject.id, d: movedObject?.text });
             }
@@ -355,7 +364,8 @@ export class CanvasController {
             if (movedObject && movedObject.cl === 'd') {
                 this.canvas.forEachObject((obj) => {
                     if (obj.cl === 'n' && obj.type === 'group' && checkIntersection(movedObject, obj)) {
-                        this.canvas.remove(movedObject);
+                        obj.force=true;
+                        this.DeleteObject(movedObject);
                         (obj as fabric.Group).addWithUpdate(movedObject);
                         this.canvas.renderAll();
                     }
@@ -366,7 +376,7 @@ export class CanvasController {
             if (activeObject && activeObject.type === 'group') {
                 this.canvas.bringToFront(activeObject);
 
-                // Delete notes 
+                // Delete notes on top of the board
                 if (activeObject.top && activeObject.top < 10) {
                     activeObject.evented = false;
                     activeObject.animate({
@@ -640,8 +650,6 @@ export class CanvasController {
         this.canvas.discardActiveObject();
         this.canvas.requestRenderAll();
     }
-
-
 
     public DeleteObject (object: fabric.Object) {
         if (object.cl==='k' && object.id.includes('col')) return;

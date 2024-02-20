@@ -840,7 +840,6 @@ const Sketch = (function () {
     }
 
     function download (format) {
-
         let stages = canvasController.getStagesColumnsConfiguration();
         let lastId = stages[stages.length-1].id;
 
@@ -956,8 +955,9 @@ const Sketch = (function () {
         if (Object.keys(updates).length > 0) {
             object.set(updates);
             object.setCoords();
+            canvas.bringToFront(object);
         }
-
+        
         canvasController.updateNoteCounters();
         canvas.requestRenderAll();
     }
@@ -1021,7 +1021,6 @@ const Sketch = (function () {
         }
 
         return sharedCanvasId;
-
     }
 
     function generateCompactGUID() {
@@ -1032,7 +1031,6 @@ const Sketch = (function () {
     }
 
     function addObjectRealTime(data) {
-
         console.debug(data.type);
     
         if (data.type==='group') {
@@ -1045,14 +1043,15 @@ const Sketch = (function () {
                     
                 });
                 group.set({virtual: true});
-                assignConfigToObject(group);
                 canvas.add(group);
+                assignConfigToObject(group);
                 canvas.renderAll();
             });
         } else if (data.type === 'path') {
             fabric.Path.fromObject(data, function(obj) {
                 obj.set({virtual: true});
                 canvas.add(obj);
+                assignConfigToObject(obj);
                 canvas.renderAll();
             });
         } else if (data.type === 'i-text') {
@@ -1060,6 +1059,7 @@ const Sketch = (function () {
             fabric.IText.fromObject(data, function(obj) {
                 obj.set({virtual: true});
                 canvas.add(obj);
+                assignConfigToObject(obj);
                 canvas.renderAll();
             });
         } else if (data.type === 'textbox') {
@@ -1071,8 +1071,16 @@ const Sketch = (function () {
                 canvas.renderAll();
             });
         } else if (data.type === 'line') {
-            console.debug('new text');
+            console.debug('new line');
             fabric.Line.fromObject(data, function(obj) {
+                obj.set({virtual: true});
+                canvas.add(obj);
+                assignConfigToObject(obj);
+                canvas.renderAll();
+            });
+        } else if (data.type === 'circle') {
+            console.debug('new circle');
+            fabric.Circle.fromObject(data, function(obj) {
                 obj.set({virtual: true});
                 canvas.add(obj);
                 assignConfigToObject(obj);

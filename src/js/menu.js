@@ -144,7 +144,8 @@ const MenuController = (function () {
     
         $(document).on('contextmenu', function(e) {
             e.preventDefault();
-            toggleHamMenu();
+            setTimeout(toggleHamMenu, 200);
+            e.stopPropagation();
         });
         
         $(document).on("click touchend", function(event) {
