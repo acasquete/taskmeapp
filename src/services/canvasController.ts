@@ -327,22 +327,17 @@ export class CanvasController {
         this.canvas.on('object:moving', this.onUpdatingObject.bind(this));
         this.canvas.on('object:rotating', this.onUpdatingObject.bind(this));
         
-        this.canvas.on('object:removed', () => {
-            if (this.isLoading) return;
-            this.canvasHistory.saveHistory()
-        } );
-
         this.canvas.on('object:added', (event: fabric.IEvent) => {
             if (this.isLoading) return;
 
             const addedObject = event.target;
+            
             if (!addedObject) return;
 
             this.handleNewStage(addedObject);
             this.assignUniqueIdToAddedObject(addedObject);
             this.sendObjectData(addedObject);
-
-            this.canvasHistory.saveHistory();
+          
         });
         
         this.canvas.on('object:modified', (event: fabric.IEvent) => {
@@ -393,16 +388,12 @@ export class CanvasController {
 
             this.normalizeZIndex();
             this.saveCanvas();
-
-            this.canvasHistory.saveHistory();
         });
 
         function checkIntersection(obj1: fabric.Object, obj2: fabric.Object): boolean {
-            // Obtener bounding rects para comparar
             const obj1BoundingRect = obj1.getBoundingRect();
             const obj2BoundingRect = obj2.getBoundingRect();
         
-            // Comprobar si hay intersección
             return (
                 obj1BoundingRect.left < obj2BoundingRect.left + obj2BoundingRect.width &&
                 obj1BoundingRect.left + obj1BoundingRect.width > obj2BoundingRect.left &&
@@ -432,20 +423,13 @@ export class CanvasController {
     private shouldAddNewStage(boundingRect: fabric.IRect, zoom: number, left: number): boolean {
         
         let stagesConfig = this.getStagesColumnsConfiguration();
-
         let lastSep = this.getObjectById('sep' + stagesConfig.length);
-
-        console.log( lastSep);
-
-
         let prop = (boundingRect.width / zoom) / (boundingRect.height / zoom);
-
-        console.debug('hand stage, p:' +  (boundingRect.width / zoom) / (boundingRect.height / zoom) + ' w:' + boundingRect.width / zoom + ' h:' + boundingRect.height / zoom + ' l:' + lastSep?.left);
-
-        console.debug(left > (lastSep ? lastSep?.left : 0));
 
         return (
             prop < 20 &&
+            (boundingRect.width / zoom) < 50 &&
+            (boundingRect.height / zoom) > 250 &&
             left > (lastSep ? lastSep?.left : 0)
         );
     }
@@ -478,10 +462,12 @@ export class CanvasController {
     }
     
     private sendObjectData(addedObject: fabric.Object): void {
+        console.debug('send data');
+        console.debug(addedObject);
         if (addedObject.virtual) return;
 
-        const objData = addedObject.toJSON(['id', 'virtual', 'left', 'top']);
-        Data.sendCanvasObject({ a: 'oa', d: JSON.stringify(objData) });
+        const objData = addedObject.toJSON(['id', 'cl', 'virtual', 'left', 'top']);
+        Data.sendCanvasObject({ a: 'oa', d: JSON.stringify(objData) }, addedObject?.force);
     }
 
     private addStage (column: ColumnConfiguration, left: number, width: number) {
@@ -507,7 +493,8 @@ export class CanvasController {
                 lockSkewingY: true,
                 hasControls: false,
                 hasBorders: true,
-                cl: 'k'
+                cl: 'k',
+                force: true
             });
     
             this.canvas.add(text);
@@ -517,7 +504,9 @@ export class CanvasController {
                 selectable: false,
                 strokeWidth: 6,
                 cl: 'k',
-                id: 'sep' + column.id
+                id: 'sep' + column.id,
+                force: true
+                
             });
 
             this.canvas.add(separator);
@@ -664,7 +653,7 @@ export class CanvasController {
             }
         }
 
-        Data.sendCanvasObject({a:'do', d: object.id })
+        Data.sendCanvasObject({a:'do', d: object.id }, true);
         this.canvas.remove(object);
     }
 
@@ -677,12 +666,11 @@ export class CanvasController {
             let id = parseInt(matchId[1], 10);
 
             let col = this.getObjectById(`col${id}`);
-            this.canvas.remove(col);
-            Data.sendCanvasObject({a:'do', d: col.id })
-
             let sep = this.getObjectById(`sep${id}`);
+
+            this.canvas.remove(col);
             this.canvas.remove(sep);
-            Data.sendCanvasObject({a:'do', d: sep.id })
+            Data.sendCanvasObject({a:'do', d: [ col?.id, sep?.id ] });
 
             this.organizeCanvasObjects();
             this.canvas.renderAll();
@@ -690,7 +678,7 @@ export class CanvasController {
         }
     }
 
-    private organizeCanvasObjects() {
+    public organizeCanvasObjects() {
         const colObjects: Object[] = [];
         const sepObjects: Object[] = [];
       
@@ -716,13 +704,7 @@ export class CanvasController {
         colObjects.forEach((colObj, index) => {
           const sepIndex = index; 
           const sepObj = index>0 ? sepObjects[sepIndex - 1] : null;
-      
           colObj.left = sepObj ? sepObj.left : 0;
-      
-          console.debug('ev ' + index);
-          console.debug(colObj.id);
-          console.debug(sepObj && index < sepObjects.length - 1);
-
           const nextSepObj = sepObjects[sepIndex];
           colObj.width = nextSepObj.left - colObj.left;
         });
@@ -1001,6 +983,7 @@ export class CanvasController {
         let storeCanvas = { sharedCanvasId: this.sharedCanvasId, colorIndex: this.currentColorIndex, content:  JSON.stringify(jsonCanvas), timestamp: Date.now() };     
         
         Config.saveCanvas(this.currentCanvasId, storeCanvas);
+        this.canvasHistory.saveHistory();
         this.canvas.isDrawingMode = currentMode;
     }
 

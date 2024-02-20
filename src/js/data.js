@@ -217,7 +217,7 @@ const Data = (function () {
     let lastEventTime = 0; 
     const throttleDelay = 100; 
 
-    function sendCanvasObject(data) {
+    function sendCanvasObject(data, force) {
 
         if (sharedCanvasId=='') return;
         
@@ -225,7 +225,7 @@ const Data = (function () {
 
         const currentTime = Date.now();
         
-        if (currentTime - lastEventTime > throttleDelay) {
+        if (force || currentTime - lastEventTime > throttleDelay) {
             lastEventTime = currentTime;
             
             let path = `s_${sharedCanvasId}`;

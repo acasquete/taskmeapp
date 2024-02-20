@@ -251,7 +251,8 @@ const Sketch = (function () {
             opacity: 1,
             cl: 'n',
             subTargetCheck: true,
-            id: genId()
+            id: genId(),
+            force: true
         });
 
         const noteWidth = 150;
@@ -424,7 +425,8 @@ const Sketch = (function () {
             hasBorders: false,
             cl: 'd',
             selectable: canvas.selection,
-            evented: canvas.selection
+            evented: canvas.selection,
+            force: true
         });
 
         circle.on('mousedblclick', removeDot);
@@ -960,14 +962,32 @@ const Sketch = (function () {
         canvas.requestRenderAll();
     }
 
-    function removeObjectRealTime (id)
-    {
+    function removeObjectRealTime(idOrArray) {
+        if (Array.isArray(idOrArray)) {
+            idOrArray.forEach(id => {
+                removeSingleObject(id); 
+            });
+
+            canvasController.organizeCanvasObjects();
+
+
+        } else {
+            removeSingleObject(idOrArray); 
+        }
+    }
+
+    function removeSingleObject(id) {
+        console.debug('remove object' + id);
         const object = canvas.getObjects().find(obj => obj.id === id);
 
-        canvas.remove(object);
+        if (object) { 
+            canvas.remove(object);
 
-        canvasController.updateNoteCounters();
-        canvas.requestRenderAll();
+            if (object.cl !== 'k') {
+                canvasController.updateNoteCounters();
+            }
+            canvas.requestRenderAll();
+        }
     }
 
     function updateNoteRealTime (id, newVal)
@@ -1040,6 +1060,22 @@ const Sketch = (function () {
             fabric.IText.fromObject(data, function(obj) {
                 obj.set({virtual: true});
                 canvas.add(obj);
+                canvas.renderAll();
+            });
+        } else if (data.type === 'textbox') {
+            console.debug('new text');
+            fabric.Textbox.fromObject(data, function(obj) {
+                obj.set({virtual: true});
+                canvas.add(obj);
+                assignConfigToObject(obj);
+                canvas.renderAll();
+            });
+        } else if (data.type === 'line') {
+            console.debug('new text');
+            fabric.Line.fromObject(data, function(obj) {
+                obj.set({virtual: true});
+                canvas.add(obj);
+                assignConfigToObject(obj);
                 canvas.renderAll();
             });
         }

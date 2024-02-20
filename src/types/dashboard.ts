@@ -10,6 +10,7 @@ declare module 'fabric' {
       cl: string;
       id: string;
       virtual: boolean;
+      force: boolean;
     }
   }
 }
