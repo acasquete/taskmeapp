@@ -215,10 +215,10 @@ export class CanvasController {
             this.isEditKanbanMode = false;
             
             if (this.isDraggingDot) {
-                let parentNoteId = this.circleToDrag.parent;
+                let parentNoteId = this.circleToDrag?.parent;
                 let noteObj = this.getObjectById (parentNoteId);
 
-                noteObj.set({
+                noteObj?.set({
                     lockMovementX: false,
                     lockMovementY: false
                 });
@@ -234,8 +234,7 @@ export class CanvasController {
                 this.saveCanvas();
             }
 
-
-            
+            this.editController.refreshMode();
         });
 
         this.canvas.on('mouse:wheel', (opt: fabric.IEvent) => {

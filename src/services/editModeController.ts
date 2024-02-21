@@ -29,6 +29,7 @@ export class EditModeController {
     }
 
     public setDrawingMode(colorIndex: number) : void {
+        this.currentColorIndex = colorIndex;
         this.editMode = 'Drawing';
         this.canvas.freeDrawingBrush.color = CanvasUtilities.getColorByIndex(colorIndex);
         this.canvas.isDrawingMode = true;
@@ -99,11 +100,31 @@ export class EditModeController {
                 this.setTextMode();
                 break;
             default:
-                this.currentColorIndex = color;
                 this.setDrawingMode(this.currentColorIndex);
                 break;
         }
 
         this.canvas.requestRenderAll();
     }
+
+    public refreshMode(): void {
+        switch (this.editMode) {
+            case 'Drawing':
+                this.setDrawingMode(this.currentColorIndex);
+                break;
+            case 'Selection':
+                this.setSelectionMode();
+                break;
+            case 'Eraser':
+                this.setEraserMode();
+                break;
+            case 'Text':
+                this.setTextMode();
+                break;
+            case 'Panning':
+                this.setPointerMode();
+                break;
+        }
+    }
+    
 }
