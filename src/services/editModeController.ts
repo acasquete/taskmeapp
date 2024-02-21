@@ -1,0 +1,109 @@
+import { CanvasUtilities } from "./canvasUtilities";
+
+export class EditModeController {
+    private canvas: fabric.Canvas;
+    private editMode: EditorMode = 'Selection';
+    private currentColorIndex: number = 0;
+
+    constructor(canvas: fabric.Canvas) {
+        this.canvas = canvas;
+        this.setSelectionMode();
+    }
+
+    public setSelectionMode(): void {
+        this.editMode = 'Selection';
+        this.canvas.isDrawingMode = false;
+        this.canvas.selection = true;
+        this.canvas.defaultCursor = 'default';
+
+        this.enableSelectable();
+    }
+
+    public setTextMode(): void {
+        this.editMode = 'Text';
+        this.canvas.isDrawingMode = false;
+        this.canvas.selection = false;
+        this.canvas.defaultCursor = 'crosshair';
+
+        this.disableSelectable();
+    }
+
+    public setDrawingMode(colorIndex: number) : void {
+        this.editMode = 'Drawing';
+        this.canvas.freeDrawingBrush.color = CanvasUtilities.getColorByIndex(colorIndex);
+        this.canvas.isDrawingMode = true;
+        this.canvas.selection = false;
+
+        this.disableSelectable();
+    }
+
+    public setPointerMode(): void {
+        this.editMode = 'Panning';
+        this.canvas.isDrawingMode = false;
+        this.canvas.selection = false;
+        this.canvas.defaultCursor = 'pointer';
+
+        this.disableSelectable();
+    }
+
+    public setEraserMode(): void {
+        this.editMode = 'Eraser';
+        this.canvas.isDrawingMode = false;
+        this.canvas.selection = true;
+        this.canvas.defaultCursor = 'crosshair';
+
+        this.enableSelectable();
+    }
+
+    private enableSelectable(): void {
+        this.canvas.forEachObject((obj) => {
+            if (!obj.id.startsWith('sep')) {
+                obj.selectable = true;
+                obj.evented = true;
+            }
+        });
+        this.canvas.requestRenderAll(); 
+    }
+
+    private disableSelectable(): void {
+        this.canvas.forEachObject((obj) => {
+            if (obj.selectable) {
+                obj.selectable = false;
+                obj.evented = false;
+            }
+        });
+        this.canvas.discardActiveObject();
+        this.canvas.requestRenderAll();
+    }
+
+    public getEditMode(): EditorMode {
+        return this.editMode;
+    }
+
+    public getCurrentColor(): number {
+        return this.currentColorIndex;
+    }
+
+    public changeColor(color: PointerMode): void {
+        switch (color) {
+            case 'pointer':
+                this.setPointerMode();
+                break;
+            case 'selection':
+                this.setSelectionMode();
+                break;
+            case 'eraser':
+                this.setEraserMode();
+                break;
+            case 'text':
+                this.setTextMode();
+                break;
+            default:
+                this.currentColorIndex = color;
+                this.setDrawingMode(this.currentColorIndex);
+                break;
+        }
+
+        this.canvas.requestRenderAll();
+    }
+}

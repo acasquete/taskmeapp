@@ -47,6 +47,14 @@ const Data = (function () {
         realTimeDb.ref(path).off('value');
     }
 
+    function stopListen() {
+        console.debug('stop listen #' + sharedCanvasId);
+        if (sharedCanvasId!='') {
+            stopListeningToRealtimeDatabase(`s_${sharedCanvasId}`);
+            sharedCanvasId = '';
+        }
+    }
+
     function saveToFirestore(collectionPath, docId, data) {
         return db.collection(collectionPath).doc(docId).set(data)
             .then(() => { console.debug(`${collectionPath}/${docId} saved`) })
@@ -244,7 +252,8 @@ const Data = (function () {
         saveCanvas: saveCanvas,
         setUserId: setUserId,
         sendCanvasObject: sendCanvasObject,
-        isLogged: isLogged
+        isLogged: isLogged,
+        stopListen: stopListen
     };
 })();
 

@@ -2,13 +2,12 @@ import { CanvasUtilities } from './canvasUtilities';
 import { Config } from './configService';
 import { CanvasHistory } from './canvasHistory';
 import { Object } from 'fabric/fabric-impl';
+import { EditModeController } from './editModeController';
 
 export class CanvasController {
-    
     private canvas: fabric.Canvas;
     public isLoading: boolean = true;
     private isEditKanbanMode: boolean = false;
-    private isEraserMode: boolean = false;
     private targetElement!: fabric.Object | null;
     private originalPosition: { x: number } = { x: 0 };
     private sepInitPositions: number[] = [];
@@ -20,25 +19,26 @@ export class CanvasController {
     private xChange: number = 0;
     private yChange: number = 0;
     private zoomStartScale: number = 0;
-    private currentColorIndex: number = 0;
     private currentCanvasId: number = 0;
     private sharedCanvasId: string = '';
-    private isTextMode = false;
     private shouldCancelMouseDown = false;
     private circleToDrag: fabric.Object | null = null;
     private isDraggingDot: boolean = false;
     private canvasHistory : CanvasHistory;
+    private editController : EditModeController;
     private lastTap = 0;
     private lastPY = 0;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
         this.canvasHistory = new CanvasHistory(canvas);
-        this.setSelectionMode();
+        this.editController = new EditModeController(canvas);
     }
 
     public reset () {
+        this.sharedCanvasId = '';
         this.canvas.clear();
+        this.editController.setSelectionMode();
     }
 
     isSeparatorElement(object: fabric.Object) : boolean {
@@ -165,9 +165,9 @@ export class CanvasController {
                 });
             }   
             
-            if (this.isTextMode && target == undefined) {
+            if (this.editController.getEditMode()==='Text' && target == undefined) {
                 this.addTextObject(options);
-            } if (this.isEraserMode) {
+            } if (this.editController.getEditMode()==='Eraser') {
                 this.deleteSelectedObjects(target);
             } else if (target && this.isSeparatorElement(target)) {
                 
@@ -177,8 +177,6 @@ export class CanvasController {
                 this.targetElement.selectable = false;
                 this.originalPosition = { x: target.left || 0 };
                 this.sepInitPositions = this.getSeparatorsPositionsArray(); 
-
-                
             }
         });
 
@@ -201,7 +199,7 @@ export class CanvasController {
 
                 let deltaX = pointer.x - this.originalPosition.x;
 
-                if (this.targetElement.left-prevTargetLeft+deltaX > 400 ) {
+                if (this.targetElement.left - prevTargetLeft + deltaX > 400 ) {
                     this.targetElement.set({left: pointer.x });
                     this.moveRelatedElements (pointer.x, this.targetElement.id, deltaX);
                 }
@@ -212,6 +210,8 @@ export class CanvasController {
 
         this.canvas.on('mouse:up', (options: fabric.IEvent) => {
             
+            console.debug ('mouse:up');
+
             this.isEditKanbanMode = false;
             
             if (this.isDraggingDot) {
@@ -233,6 +233,8 @@ export class CanvasController {
                 this.canvas.relativePan(new fabric.Point(-1, 0));
                 this.saveCanvas();
             }
+
+
             
         });
 
@@ -290,7 +292,10 @@ export class CanvasController {
             let selection = this.canvas.getActiveObject();
 
             if (selection) {
+
                 selection.hasControls=false;
+                selection.borderColor = 'gray';
+                selection.borderScaleFactor = selection.cl === 'k' ? 1: 2;
                 this.canvas.requestRenderAll();
             }
         });
@@ -331,7 +336,6 @@ export class CanvasController {
 
         });
 
-        
         this.canvas.on('object:scaling', this.onUpdatingObject.bind(this));
         this.canvas.on('object:moving', this.onUpdatingObject.bind(this));
         this.canvas.on('object:rotating', this.onUpdatingObject.bind(this));
@@ -883,102 +887,7 @@ export class CanvasController {
     }
 
     public changeColor(color: PointerMode): void {
-        switch (color) {
-            case 'pointer':
-                this.setPointerMode();
-                break;
-            case 'selection':
-                this.setSelectionMode();
-                break;
-            case 'eraser':
-                this.setEraserMode();
-                break;
-            case 'text':
-                this.setTextMode();
-                break;
-            default:
-                this.currentColorIndex = color;
-                this.setDrawingMode(this.currentColorIndex);
-                break;
-        }
-
-        this.canvas.requestRenderAll();
-    }
-
-    private setPointerMode(): void {
-        console.debug('pointer mode');
-        
-        this.canvas.isDrawingMode = false;
-        this.canvas.selection = false;
-        this.isTextMode = false;
-        this.canvas.defaultCursor = 'pointer';
-
-        this.disableSelectable();
-    }
-
-    public enableSelectable(): void {
-        this.canvas.forEachObject((obj) => {
-            if (!obj.id.startsWith('sep')) {
-                obj.selectable = true;
-                obj.evented = true;
-            }
-        });
-        this.canvas.requestRenderAll(); 
-      }
-
-    public disableSelectable(): void {
-        this.canvas.forEachObject((obj) => {
-          if (obj.selectable) {
-            obj.selectable = false;
-            obj.evented = false;
-          }
-        });
-        this.canvas.discardActiveObject();
-        this.canvas.requestRenderAll();
-    }
-
-    private setSelectionMode(): void {
-        console.debug('selection mode');
-
-        this.canvas.isDrawingMode = false;
-        this.canvas.selection = true;
-        this.isTextMode = false;
-        this.isEraserMode = false;
-        this.canvas.defaultCursor = 'default';
-
-        this.enableSelectable();
-    }
-
-    private setTextMode(): void {
-        console.debug('text mode');
-        
-        this.canvas.isDrawingMode = false;
-        this.canvas.selection = false;
-        this.isTextMode = true;
-        this.isEraserMode = false;
-        this.canvas.defaultCursor = 'crosshair';
-
-        this.disableSelectable();
-    }
-
-    private setDrawingMode(colorIndex: number) {
-        this.canvas.freeDrawingBrush.color = CanvasUtilities.getColorByIndex(colorIndex);
-        this.canvas.isDrawingMode = true;
-        this.canvas.selection = false;
-        this.isEraserMode = false;
-        this.isTextMode = false;
-
-        this.disableSelectable();
-    }
-
-    private setEraserMode(): void {
-        this.isEraserMode = true;
-        this.canvas.isDrawingMode = false;
-        this.canvas.selection = true;
-        this.isTextMode = false;
-        this.canvas.defaultCursor = 'crosshair';
-
-        this.enableSelectable();
+        this.editController.changeColor(color);
     }
 
     private saveCanvas() : void {
@@ -988,7 +897,12 @@ export class CanvasController {
         this.saveViewPortConfiguration();
 
         let jsonCanvas = this.canvas.toJSON(['cl', 'id']);
-        let storeCanvas = { sharedCanvasId: this.sharedCanvasId, colorIndex: this.currentColorIndex, content:  JSON.stringify(jsonCanvas), timestamp: Date.now() };     
+        let storeCanvas = { 
+            sharedCanvasId: this.sharedCanvasId, 
+            colorIndex: this.editController.getCurrentColor(), 
+            content:  JSON.stringify(jsonCanvas), 
+            timestamp: Date.now() 
+        };     
         
         Config.saveCanvas(this.currentCanvasId, storeCanvas);
         this.canvasHistory.saveHistory();
@@ -1010,7 +924,6 @@ export class CanvasController {
         this.isLoading = true;
         this.canvasHistory.redo();
         this.isLoading = false;
-
     }
 
     public getLastPositionY () : number {

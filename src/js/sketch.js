@@ -590,7 +590,7 @@ const Sketch = (function () {
         if ((e.ctrlKey || e.metaKey) && !isNaN(e.key)) {
             let num = parseInt(e.key);
             if (num >= 1 && num <= 5) {
-                switchDashboard(num);
+                switchDashboard(num, '', false);
                 e.preventDefault();
             }
         } else if ((e.metaKey || e.ctrlKey) && (e.keyCode===67)) {
@@ -649,13 +649,23 @@ const Sketch = (function () {
     function handleClearConfirm() {
 
         canvasController.isLoading = true;
+
         const modal = document.querySelector('#modal-clearall');
         modal.classList.add('hidden');
 
-        canvasController.reset();
-        initKanbanBoard();
-        adjustCanvasZoom(true);
-        canvasController.saveCanvas();
+
+        if (currentCanvasId==10) {
+            switchDashboard(1, '', false);
+        } else {
+            if (sharedCanvasId!='') {
+                Data.stopListen();
+                sharedCanvasId = '';
+            }
+            canvasController.reset();
+            initKanbanBoard();
+            adjustCanvasZoom(true);
+            canvasController.saveCanvas();
+        }
 
         canvasController.isLoading = false;
     }
