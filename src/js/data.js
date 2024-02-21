@@ -180,7 +180,15 @@ const Data = (function () {
         
         console.debug(`listen ${path}`);
 
+        let isFirstMessage = true;
+
         listenToRealtimeDatabase(path, (data) => {
+
+            if (isFirstMessage) {
+                isFirstMessage = false;
+                return;
+            }
+
             if (data.uid != externalId) {
 
                 console.debug(data);

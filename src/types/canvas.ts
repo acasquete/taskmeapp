@@ -2,6 +2,6 @@ export interface Canvas {
     sharedCanvasId: string;
     content: string;
     colorIndex: number;
-    timestamp: number;
+    timestamp?: number;
     isnew?: boolean;
 }

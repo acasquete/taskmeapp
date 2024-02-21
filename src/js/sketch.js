@@ -987,7 +987,8 @@ const Sketch = (function () {
     }
 
     function removeSingleObject(id) {
-        console.debug('remove object' + id);
+        console.debug('remove object #' + id);
+        
         const object = canvas.getObjects().find(obj => obj.id === id);
 
         if (object) { 

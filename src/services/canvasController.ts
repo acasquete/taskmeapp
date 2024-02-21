@@ -655,6 +655,8 @@ export class CanvasController {
     }
 
     public DeleteObject (object: fabric.Object) {
+        console.debug('delete object');
+        
         if (object.cl==='k' && object.id.includes('col')) return;
 
         if (object.cl==='k') {
@@ -669,8 +671,10 @@ export class CanvasController {
     }
 
     public deleteSeparator (sepId:string) {
-        const regex = /sep(\d+)/;
+        
+        console.debug('delete separator');
 
+        const regex = /sep(\d+)/;
         const matchId = sepId.match(regex);
 
         if (matchId) {
