@@ -1,104 +1,77 @@
 import * as d3 from 'd3';
 
-type CFDData = { date: string; ToDo: number; InProgress: number; Done: number; };
+interface DataSet {
+  todo: number[];
+  inProgress: number[];
+  done: number[];
+}
 
 export class CumulativeFlowDiagram {
   private canvas: fabric.Canvas;
-  private data: CFDData[];
-  private svg: any;
+  private data: DataSet;
+  private svgElement: SVGElement;
 
   constructor(canvas: fabric.Canvas) {
-    const sample: CFDData[] = [
-      { date: '2021-01-01', ToDo: 10, InProgress: 5, Done: 2 },
-      { date: '2021-01-02', ToDo: 7, InProgress: 8, Done: 4 },
-      { date: '2021-01-03', ToDo: 5, InProgress: 9, Done: 6 },
-      { date: '2021-01-04', ToDo: 3, InProgress: 10, Done: 8 },
-      { date: '2021-01-05', ToDo: 1, InProgress: 10, Done: 12 },
-    ];
-    
     this.canvas = canvas;
-    this.data = sample;
-    this.initializeSVG(); 
-    this.draw();
+    this.data = {
+      todo: [100, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+      inProgress: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+      done: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+    };
+
   }
 
-  private initializeSVG(): void {
-    const svgElement = document.createElement('svg');
+  public draw(): void {
+    const margin = { top: -500, right: 20, bottom: 30, left: 50 },
+      width = 1200 - margin.left - margin.right,
+      height = 400; // - margin.top - margin.bottom;
 
-    this.svg = d3.select(svgElement)
-                 .attr('width', 600)
-                 .attr('height', 400);
+    const x = d3.scaleBand().range([0, width]).padding(0.1);
+    const y = d3.scaleLinear().range([height, 0]);
 
-    fabric.loadSVGFromString(svgElement.outerHTML, (objects, options) => {
+    const svg = d3.create("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    x.domain(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Mon", "Tue", "Wed"]);
+    y.domain([0, d3.max([...this.data.todo, ...this.data.inProgress, ...this.data.done])!]);
+
+    svg.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x));
+
+    svg.append("g")
+      .call(d3.axisLeft(y));
+
+    this.drawArea(svg, this.data.todo, "todo", "steelblue");
+    this.drawArea(svg, this.data.inProgress, "inProgress", "orange");
+    this.drawArea(svg, this.data.done, "done", "green");
+
+    this.svgElement = svg.node()!;
+    this.loadSVG();
+  }
+
+  private drawArea(svg: d3.Selection<SVGGElement, unknown, null, undefined>, data: number[], className: string, color: string): void {
+    const area = d3.area<number>()
+      .x((d, i) => i * (1200 / 10))
+      .y0(400)
+      .y1(d => 400 - (d*4));
+
+    svg.append("path")
+      .data([data])
+      .attr("class", className)
+      .attr("d", area)
+      .attr("fill", color);
+  }
+
+  private loadSVG(): void {
+    const serializer = new XMLSerializer();
+    const svgStr = serializer.serializeToString(this.svgElement);
+    fabric.loadSVGFromString(svgStr, (objects, options) => {
       const obj = fabric.util.groupSVGElements(objects, options);
       this.canvas.add(obj).renderAll();
     });
   }
-
-  private prepareData(): any[] {
-    const stack = d3.stack().keys(["ToDo", "InProgress", "Done"]);
-    return stack(this.data);
-  }
-
-  public draw(): void {
-    const data = this.prepareData();
-    // Suponiendo que `data` es tu conjunto de datos y ya está preparado para ser utilizado con d3.stack()
-const svg = d3.select('body').append('svg')
-.attr('width', 600)
-.attr('height', 400);
-
-const margin = {top: 20, right: 20, bottom: 30, left: 50},
-  width = +svg.attr('width') - margin.left - margin.right,
-  height = +svg.attr('height') - margin.top - margin.bottom,
-  g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-const x = d3.scaleBand()
-.rangeRound([0, width])
-.padding(0.1)
-.domain(data.map(d => d.date));
-
-const y = d3.scaleLinear()
-.rangeRound([height, 0])
-.domain([0, d3.max(data, d => d.total)]);
-
-const z = d3.scaleOrdinal(d3.schemeCategory10); // Ajusta según tus necesidades
-
-// Líneas de cuadrícula para el eje Y
-g.append('g')
-.attr('class', 'grid')
-.call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(''));
-
-// Generador de área
-const area = d3.area()
-.x(d => x(d.data.date))
-.y0(d => y(d[0]))
-.y1(d => y(d[1]));
-
-const stack = d3.stack()
-.keys(/* tus claves de datos */);
-
-const layer = g.selectAll('.layer')
-.data(stack(data))
-.enter().append('g')
-.attr('class', 'layer');
-
-layer.append('path')
-.attr('class', 'area')
-.style('fill', (d, i) => z(i))
-.attr('d', area);
-
-
-// Convertir el SVG a string para su carga
-const svgString = new XMLSerializer().serializeToString(document.querySelector('svg'));
-
-// Carga el SVG en Fabric.js
-fabric.loadSVGFromString(svgString, (objects, options) => {
-    const obj = fabric.util.groupSVGElements(objects, options);
-    obj.set({ left: 0, top: 0, scaleX: 0.5, scaleY: 0.5 }); // Ajusta según necesidades
-    this.canvas.add(obj).renderAll();
-});
-
-
-  }
-  
 }
