@@ -3,6 +3,7 @@ import { Config } from './configService';
 import { CanvasHistory } from './canvasHistory';
 import { Object } from 'fabric/fabric-impl';
 import { EditModeController } from './editModeController';
+import { CumulativeFlowDiagram } from './cumulativeFlowDiagram';
 
 export class CanvasController {
     private canvas: fabric.Canvas;
@@ -26,6 +27,7 @@ export class CanvasController {
     private isDraggingDot: boolean = false;
     private canvasHistory : CanvasHistory;
     private editController : EditModeController;
+    private cfd : CumulativeFlowDiagram;
     private lastTap = 0;
     private lastPY = 0;
 
@@ -33,6 +35,7 @@ export class CanvasController {
         this.canvas = canvas;
         this.canvasHistory = new CanvasHistory(canvas);
         this.editController = new EditModeController(canvas);
+        this.cfd = new CumulativeFlowDiagram(canvas);
     }
 
     public reset () {
@@ -47,6 +50,7 @@ export class CanvasController {
 
     public switchDashboard(id: number, initial: boolean) {
         this.currentCanvasId = id;
+        //this.cfd.draw();
     }
 
     private triggerDblClick(event: MouseEvent | TouchEvent) {
@@ -64,7 +68,7 @@ export class CanvasController {
     }
 
     private isTouchDevice(): boolean {
-        return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+        return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
     }
 
     public assignCanvasEventListeners(): void {
@@ -94,7 +98,7 @@ export class CanvasController {
         this.canvas.on('mouse:down', (options: fabric.IEvent) => {
             const DOUBLE_TAP_DELAY = 300;
 
-            let target = this.canvas.findTarget(options.e);
+            let target = this.canvas.findTarget(options.e, true);
 
             if (this.isTouchDevice() && target && target.type === 'group' && target.cl === 'n') {
                 const currentTime = new Date().getTime();
@@ -300,6 +304,7 @@ export class CanvasController {
         });
 
         this.canvas.on('touch:drag', (e: fabric.IEvent) => {
+            console.debug('drag');
             if (this.isEditKanbanMode || this.canvas.selection || this.canvas.isDrawingMode || this.pausePanning || e.e.layerX === undefined || e.e.layerY === undefined) {
                 
                 if (e.e.layerX === undefined && e.e.layerY === undefined) {
@@ -656,7 +661,7 @@ export class CanvasController {
 
     public DeleteObject (object: fabric.Object) {
         console.debug('delete object');
-        
+
         if (object.cl==='k' && object.id.includes('col')) return;
 
         if (object.cl==='k') {

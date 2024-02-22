@@ -117,7 +117,6 @@ body {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
-    cursor: default;
 }
 
 #newbuttons .new-normal {
@@ -126,6 +125,7 @@ body {
     margin-top: 15px;
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     transform: rotate(3deg);
+    cursor: pointer;
 }
 
 #newbuttons .new-small {
@@ -134,15 +134,21 @@ body {
     margin-top: 10px;
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     transform: rotate(3deg);
+    cursor: pointer;
 }
 
 #newbuttons .new-dot {
-    width: 30px;
+    width: 40px;
     height: 30px;
     margin-top: 15px;
     border-radius: 15px;
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.4), inset 0 0 5px rgba(0, 0, 0, 0.1);
     margin-left: 10px;
+    cursor: pointer;
+}
+
+#newbuttons .first {
+    margin-top: 1.5rem;
 }
 
 .tomato { background-color: #FF6142; color: #fff; }

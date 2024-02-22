@@ -39,6 +39,8 @@ export class EditModeController {
     }
 
     public setPointerMode(): void {
+        console.debug('pointer mode');
+
         this.editMode = 'Panning';
         this.canvas.isDrawingMode = false;
         this.canvas.selection = false;
@@ -58,7 +60,7 @@ export class EditModeController {
 
     private enableSelectable(): void {
         this.canvas.forEachObject((obj) => {
-            if (!obj.id.startsWith('sep')) {
+            if (!obj?.id?.startsWith('sep')) {
                 obj.selectable = true;
                 obj.evented = true;
             }
@@ -100,7 +102,7 @@ export class EditModeController {
                 this.setTextMode();
                 break;
             default:
-                this.setDrawingMode(this.currentColorIndex);
+                this.setDrawingMode(color);
                 break;
         }
 
@@ -108,6 +110,7 @@ export class EditModeController {
     }
 
     public refreshMode(): void {
+        console.debug('refresh mode');
         switch (this.editMode) {
             case 'Drawing':
                 this.setDrawingMode(this.currentColorIndex);
