@@ -22,6 +22,7 @@ export class CumulativeFlowDiagram {
   }
 
   public draw(): void {
+    return;
     const margin = { top: 20, right: 0, bottom: 0, left: -1200 },
       width = 100 - margin.left - margin.right,
       height = 800;

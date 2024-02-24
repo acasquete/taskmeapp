@@ -247,7 +247,7 @@ const MenuController = (function () {
             this.update = function (dashboardNumber) {
                 var elementNumber = this.element.text();
 
-                //closeAllModals();
+                closeAllModals();
 
                 if (elementNumber === dashboardNumber.toString()) {
                     this.element.addClass('active');

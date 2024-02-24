@@ -169,6 +169,11 @@ const Data = (function () {
             return null;
         }
 
+        if (sharedCanvasId != '') {
+            console.debug(`stop listening ${sharedCanvasId}`);
+            stopListeningToRealtimeDatabase(`s_${sharedCanvasId}`);
+        }
+
         if (sharedId!='') {
             console.debug ('fetch shared document');
             sharedCanvasId = sharedId;
@@ -183,10 +188,8 @@ const Data = (function () {
             let result = await fetchWithRetry(`users/${userId}/canvas`, `c${id}`);
             
             if (result != null && result.sharedCanvasId) {
-                sharedCanvasId = result.sharedCanvasId;
-                
                 console.debug ('fetch shared document');
-                result = await fetchWithRetry(`shared`, `${sharedCanvasId}`);
+                result = await fetchWithRetry(`shared`, `${result.sharedCanvasId}`);
 
                 await listenSharedCanvas (result, sharedId, externalId);
             }
@@ -197,24 +200,15 @@ const Data = (function () {
 
     async function listenSharedCanvas(result, sharedId, externalId) {
        
-        if (sharedId != result.sharedCanvasId && sharedId != '') {
-            console.debug(`stop listening ${sharedId}`);
-            stopListeningToRealtimeDatabase(`s_${sharedId}`);
-        }
+        console.debug(`listed shared canvas ${sharedCanvasId} ${result.sharedCanvasId}`);
 
+        sharedCanvasId = result.sharedCanvasId;
         sharedId = result.sharedCanvasId;
         let path = `s_${sharedId}`;
         
         console.debug(`listen ${path}`);
 
-        let isFirstMessage = true;
-
         listenToRealtimeDatabase(path, (data) => {
-
-            if (isFirstMessage) {
-                isFirstMessage = false;
-                return;
-            }
 
             if (data.uid != externalId) {
 
