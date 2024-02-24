@@ -280,6 +280,7 @@ const MenuController = (function () {
     }
 
     function handleLiveShareClose() {
+        console.debug('handle live share close');
         document.querySelector('#modal-liveshare').classList.add('hidden');
     }
 

@@ -30,12 +30,14 @@ export class CanvasController {
     private cfd : CumulativeFlowDiagram;
     private lastTap = 0;
     private lastPY = 0;
+    private config: Config;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
         this.canvasHistory = new CanvasHistory(canvas);
         this.editController = new EditModeController(canvas);
         this.cfd = new CumulativeFlowDiagram(canvas);
+        this.config = new Config();
     }
 
     public reset () {
@@ -912,14 +914,15 @@ export class CanvasController {
             timestamp: Date.now() 
         };     
         
-        Config.saveCanvas(this.currentCanvasId, storeCanvas);
+        this.config.saveCanvas(this.currentCanvasId, storeCanvas);
         this.canvasHistory.saveHistory();
         this.canvas.isDrawingMode = currentMode;
     }
 
-    public setSharedId (sharedId: string) : void {
+    public async setSharedId (sharedId: string) : Promise<void> {
         this.sharedCanvasId = sharedId;
         this.saveCanvas();
+        this.config.getCanvas(this.currentCanvasId, sharedId);
     }
 
     public undo ():void {

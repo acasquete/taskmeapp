@@ -22,14 +22,14 @@ export class Config {
         localStorage.setItem("ad", id);
     }
 
-    public static saveCanvas(id: number, canvas: Canvas): void {
+    public saveCanvas(id: number, canvas: Canvas): void {
         console.debug('save local canvas');
         localStorage.setItem("c" + id, JSON.stringify(canvas));
         
         Data.saveCanvas(id, canvas);
     }
 
-    async getCanvas(id: string, sharedId: string): Promise<Canvas> {
+    public async getCanvas(id: number, sharedId: string): Promise<Canvas> {
         console.debug('getting canvas...');
         
         const canvasRemotePromise = Data.getCanvas(id, sharedId);

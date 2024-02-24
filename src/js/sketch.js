@@ -575,7 +575,7 @@ const Sketch = (function () {
         currentCanvasId = id;
         sharedCanvasId = sharedId
 
-        await loadCanvas(sharedCanvasId, initial);
+        await loadCanvas(sharedId, initial);
     }
 
     function addObserver (observer) {
