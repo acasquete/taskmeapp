@@ -193,7 +193,6 @@ const Data = (function () {
 
                 await listenSharedCanvas (result, sharedId, externalId);
             }
-
             return result;
         }
     }

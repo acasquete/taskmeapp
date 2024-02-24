@@ -364,10 +364,17 @@ export class CanvasController {
             
             if (!addedObject) return;
 
+            const objectsWithClN = this.canvas.getObjects().filter(obj => obj.cl === 'n');
+
+            if (objectsWithClN.length > 100) {
+                this.canvas.remove(addedObject);
+                this.canvas.discardActiveObject();
+            }
+
             this.handleNewStage(addedObject);
             this.assignUniqueIdToAddedObject(addedObject);
             this.sendObjectData(addedObject);
-          
+            this.saveCanvas();
         });
         
         this.canvas.on('object:modified', (event: fabric.IEvent) => {
