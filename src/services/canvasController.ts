@@ -52,7 +52,7 @@ export class CanvasController {
 
     public switchDashboard(id: number, initial: boolean) {
         this.currentCanvasId = id;
-        //this.cfd.draw();
+        this.cfd.draw();
     }
 
     private triggerDblClick(event: MouseEvent | TouchEvent) {
@@ -294,14 +294,25 @@ export class CanvasController {
         });
 
         this.canvas.on('selection:created', (e: fabric.IEvent) => {
-            let selection = this.canvas.getActiveObject();
+            let activeSelection = this.canvas.getActiveObject();
+            
+            if (!activeSelection) return;
 
-            if (selection) {
+            activeSelection.borderColor = 'blue';
+            activeSelection.borderScaleFactor = activeSelection.cl === 'k' ? 1: 2;
 
-                selection.hasControls=false;
-                selection.borderColor = 'gray';
-                selection.borderScaleFactor = selection.cl === 'k' ? 1: 2;
-                this.canvas.requestRenderAll();
+            if (activeSelection?.type === 'activeSelection') {
+
+                activeSelection.hasControls=false;
+
+                let objects = activeSelection.getObjects().filter(obj => obj.type == 'textbox');
+
+                if (objects.length > 0) {
+                    console.debug('column selected');
+                    this.canvas.discardActiveObject();
+                }
+
+            this.canvas.requestRenderAll();
             }
         });
 
@@ -551,6 +562,8 @@ export class CanvasController {
             top: pointer.y,
             lockSkewingX: true,
             lockSkewingY: true,
+            selectable: this.canvas.selection,
+            evented: this.canvas.selection,
             cl: 't',
             id: this.genId()
           });
@@ -559,6 +572,7 @@ export class CanvasController {
         this.canvas.add(text);
         
         this.canvas.setActiveObject(text);
+
         text.enterEditing();
         text.selectAll();
 
@@ -900,7 +914,7 @@ export class CanvasController {
         this.editController.changeColor(color);
     }
 
-    private saveCanvas() : void {
+    private saveCanvas(force?: boolean) : void {
         const currentMode = this.canvas.isDrawingMode;
         this.canvas.isDrawingMode = false;
         
@@ -914,14 +928,14 @@ export class CanvasController {
             timestamp: Date.now() 
         };     
         
-        this.config.saveCanvas(this.currentCanvasId, storeCanvas);
+        this.config.saveCanvas(this.currentCanvasId, storeCanvas, force);
         this.canvasHistory.saveHistory();
         this.canvas.isDrawingMode = currentMode;
     }
 
     public async setSharedId (sharedId: string) : Promise<void> {
         this.sharedCanvasId = sharedId;
-        this.saveCanvas();
+        this.saveCanvas(true);
         this.config.getCanvas(this.currentCanvasId, sharedId);
     }
 

@@ -20,12 +20,13 @@ export class EditModeController {
     }
 
     public setTextMode(): void {
+
         this.editMode = 'Text';
         this.canvas.isDrawingMode = false;
         this.canvas.selection = false;
         this.canvas.defaultCursor = 'crosshair';
 
-        this.disableSelectable();
+        this.enableSelectable();
     }
 
     public setDrawingMode(colorIndex: number) : void {
@@ -111,6 +112,7 @@ export class EditModeController {
 
     public refreshMode(): void {
         console.debug('refresh mode');
+
         switch (this.editMode) {
             case 'Drawing':
                 this.setDrawingMode(this.currentColorIndex);

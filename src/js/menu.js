@@ -247,7 +247,7 @@ const MenuController = (function () {
             this.update = function (dashboardNumber) {
                 var elementNumber = this.element.text();
 
-                closeAllModals();
+                //closeAllModals();
 
                 if (elementNumber === dashboardNumber.toString()) {
                     this.element.addClass('active');
@@ -280,7 +280,6 @@ const MenuController = (function () {
     }
 
     function handleLiveShareClose() {
-        console.debug('handle live share close');
         document.querySelector('#modal-liveshare').classList.add('hidden');
     }
 

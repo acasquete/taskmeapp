@@ -22,11 +22,11 @@ export class Config {
         localStorage.setItem("ad", id);
     }
 
-    public saveCanvas(id: number, canvas: Canvas): void {
+    public saveCanvas(id: number, canvas: Canvas, force?: boolean): void {
         console.debug('save local canvas');
         localStorage.setItem("c" + id, JSON.stringify(canvas));
         
-        Data.saveCanvas(id, canvas);
+        Data.saveCanvas(id, canvas, force);
     }
 
     public async getCanvas(id: number, sharedId: string): Promise<Canvas> {

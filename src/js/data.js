@@ -55,10 +55,13 @@ const Data = (function () {
         }
     }
 
-    function saveToFirestore(collectionPath, docId, data) {
-        return db.collection(collectionPath).doc(docId).set(data)
-            .then(() => { console.debug(`${collectionPath}/${docId} saved`) })
-            .catch((error) => { console.error(error) } );
+    async function saveToFirestore(collectionPath, docId, data) {
+        try {
+            await db.collection(collectionPath).doc(docId).set(data);
+            console.debug(`${collectionPath}/${docId} saved`);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     function getDocId(type, id) {
@@ -66,10 +69,11 @@ const Data = (function () {
         return `${prefix}${id}`;
     }
     
-    function processQueue() {
+    async function processQueue() {
+        console.debug('process queue');
         lastRequestTime = Date.now();
 
-        Object.values(queue).forEach(request => {
+        Object.values(queue).forEach(async request =>  {
 
             const { type, id, data } = request;
             let collectionPath;
@@ -78,26 +82,28 @@ const Data = (function () {
             if (data.sharedCanvasId) {
                 collectionPath = `shared`;
                 docId = data.sharedCanvasId;
-                saveToFirestore(collectionPath, docId, data);
+                await saveToFirestore(collectionPath, docId, data);
                 data.content = '{"shared":true}';
             }
              
             collectionPath =  `users/${userId}/${type}`;
             docId = getDocId(type, id);
-            saveToFirestore(collectionPath, docId, data);
+            await saveToFirestore(collectionPath, docId, data);
 
         });
 
         queue = {}; 
     }
 
-    function addToQueue(type, id, data) {
+    function addToQueue(type, id, data, force) {
         if (!userId) {
             return null;
         }
 
         queue[type] = { type, id, data };
         const currentTime = Date.now();
+
+        if (force) lastRequestTime = 0;
 
         if (timeoutId) {
             clearTimeout(timeoutId);
@@ -110,11 +116,11 @@ const Data = (function () {
         }
     }
 
-    function saveCanvas(id, canvasData) {
+    function saveCanvas(id, canvasData, force) {
         if (!userId) {
            return null;
         }
-        addToQueue('canvas', id, canvasData);
+        addToQueue('canvas', id, canvasData, force);
     }
 
     function fetchFirestoreDocument(collectionPath, docId) {
@@ -134,6 +140,27 @@ const Data = (function () {
             });
     }
 
+    async function fetchWithRetry(path, id, retries = 3, backoff = 500) {
+        for (let i = 0; i < retries; i++) {
+            try {
+                const result = await fetchFirestoreDocument(path, id);
+                if (result !== null) {
+                    return result; 
+                }
+                console.log(`null in attempt ${i + 1} for ${path}/${id}, retrying...`);
+            } catch (error) {
+                console.error(`error in attempt ${i + 1} for ${path}/${id}:`, error);
+            }
+            
+            if (i < retries - 1) {
+                await new Promise(resolve => setTimeout(resolve, backoff));
+                backoff *= 2; 
+            }
+        }
+    
+        return null;
+    }
+
     async function getCanvas(id, sharedId) {
         if (!userId) {
             if (sharedId!='') { 
@@ -145,7 +172,7 @@ const Data = (function () {
         if (sharedId!='') {
             console.debug ('fetch shared document');
             sharedCanvasId = sharedId;
-            let result = await fetchFirestoreDocument(`shared`, `${sharedId}`);
+            let result = await fetchWithRetry(`shared`, `${sharedId}`);
 
             if (result != null && result.sharedCanvasId) {
                 await listenSharedCanvas (result, sharedId, externalId);
@@ -153,13 +180,13 @@ const Data = (function () {
             return result;
         } else {
             console.debug ('fetch private document');
-            let result = await fetchFirestoreDocument(`users/${userId}/canvas`, `c${id}`);
+            let result = await fetchWithRetry(`users/${userId}/canvas`, `c${id}`);
             
             if (result != null && result.sharedCanvasId) {
                 sharedCanvasId = result.sharedCanvasId;
                 
                 console.debug ('fetch shared document');
-                result = await fetchFirestoreDocument(`shared`, `${sharedCanvasId}`);
+                result = await fetchWithRetry(`shared`, `${sharedCanvasId}`);
 
                 await listenSharedCanvas (result, sharedId, externalId);
             }
