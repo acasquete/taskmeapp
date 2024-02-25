@@ -248,16 +248,13 @@ const MenuController = (function () {
     class GridItem {
         constructor(element) {
             this.element = element;
-
             this.update = function (dashboardNumber) {
-                var elementNumber = this.element.text();
-
+                var elementNumber = this.element.textContent;
                 closeAllModals();
-
                 if (elementNumber === dashboardNumber.toString()) {
-                    this.element.addClass('active');
+                    this.element.classList.add('active');
                 } else {
-                    this.element.removeClass('active');
+                    this.element.classList.remove('active');
                 }
             };
         }

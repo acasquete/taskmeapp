@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 interface DataSet {
-  dates: string[];
+  date: string[];
   todo: number[];
   inProgress: number[];
   done: number[];
@@ -36,7 +36,7 @@ export class CumulativeFlowDiagram {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    x.domain(this.data.dates);
+    x.domain(this.data.date);
     y.domain([0, d3.max([...this.data.todo, ...this.data.inProgress, ...this.data.done])!]);
 
     svg.append("g")
