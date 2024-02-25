@@ -80,12 +80,12 @@
 
     function setTitleStatus() {
         var title = pomodoroType == "pomodoro" ? 'Pomodoro Time' : 'Resting time';
-        $("#status").text(title);
+        document.getElementById("status").textContent = title;
     }
 
     function drawTime() {
         var timeDifference = Utils.timeDifference(pomodoroEndTime, new Date());
-        $("#time").text(timeDifference);
+        document.getElementById("time").textContent = timeDifference;
     }
 
     function updateTimer() {
@@ -100,18 +100,16 @@
     function show() {
         isVisible = true;
         saveState();
-        $("#pomodoro").show();
-        $("#overlay").fadeIn(300);
-        return $(".layer").animate({ opacity: 1, top: -20 }, 200).promise();
+        document.getElementById("pomodoro").style.display = 'block';
+        document.getElementById("overlay").style.display = 'block';
+        return;
     }
 
     function hide() {
         isVisible = false;
         saveState();
-        $("#overlay").fadeOut(300);
-        return $(".layer").animate({ opacity: 0, top: 20 }, 200, function() {
-            $("#pomodoro").hide();
-        }).promise();
+        document.getElementById("overlay").style.display = 'none';
+        document.getElementById("pomodoro").style.display = 'none';
     }
 
     function cancel() {
@@ -121,13 +119,11 @@
     function finishPomodoro() {
         window.clearInterval(interval);
         Notifications.cancelNotification();
-
-        hide().then(function () {
-            $("#time").text("00:00");
-            pomodoroStartTime = null;
-            pomodoroEndTime = null;
-            saveState();
-        });
+        hide();
+        document.getElementById("time").textContent = "00:00";
+        pomodoroStartTime = null;
+        pomodoroEndTime = null;
+        saveState();
     }
 
     function getState() {
@@ -167,11 +163,8 @@
     }
 
     function setButtonHandlers() {
-        $("#cmdStartPomodoro").click(startPomodoro);
-        $("#cmdStartShortBreak").click(startShort);
-        $("#cmdStartLongBreak").click(startLong);
-        $("#butHide").click(hide);
-        $("#butCancel").click(cancel);
+        document.getElementById("butHide").addEventListener('click', hide);
+        document.getElementById("butCancel").addEventListener('click', cancel);
     }
 
     function init() {

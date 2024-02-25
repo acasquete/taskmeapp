@@ -61,7 +61,7 @@ export class EditModeController {
 
     private enableSelectable(): void {
         this.canvas.forEachObject((obj) => {
-            if (!obj?.id?.startsWith('sep')) {
+            if (!obj?.id?.startsWith('sep') && obj.id!=='cfd') {
                 obj.selectable = true;
                 obj.evented = true;
             }

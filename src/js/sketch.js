@@ -51,14 +51,15 @@ const Sketch = (function () {
 
         resizeCanvas();
 
-        $(window).on('resize orientationchange', resizeCanvas);
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('orientationchange', resizeCanvas);
         document.querySelector('#modal-clearall #close').addEventListener('click', handleClearClose);
         document.querySelector('#modal-clearall #confirm').addEventListener('click', handleClearConfirm);
     }
     
     function resizeCanvas() {
-        canvas.setWidth($(window).width());
-        canvas.setHeight($(window).height());
+        canvas.setWidth(window.innerWidth);
+        canvas.setHeight(window.innerHeight);
         canvas.requestRenderAll();
     }
 
@@ -110,9 +111,17 @@ const Sketch = (function () {
         console.debug('assign DOM events');
         document.addEventListener('keydown', onKeyPress);
         
-        $(".new-small").on('mousedown', onNew);
-        $('.new-normal').on('mousedown', onNew);
-        $('.new-dot').on('mousedown', onNewDot);
+        document.querySelectorAll(".new-small").forEach(element => {
+            element.addEventListener('mousedown', onNew);
+        });
+        
+        document.querySelectorAll('.new-normal').forEach(element => {
+            element.addEventListener('mousedown', onNew);
+        });
+        
+        document.querySelectorAll('.new-dot').forEach(element => {
+            element.addEventListener('mousedown', onNewDot);
+        });
     }
 
     function createWelcomeNote () {
@@ -192,7 +201,7 @@ const Sketch = (function () {
         
         let colors = CanvasUtilities.getColors();
 
-        let str = $(this).attr("class");
+        let str = this.className;
         let regex = /new-(\w+)\s+(\w+)/;
         
         let matches = str.match(regex);
@@ -397,7 +406,7 @@ const Sketch = (function () {
             },
         };
         
-        let str = $(this).attr("class");
+        let str = this.className;
         let regex = /new-(\w+)\s+(\w+)/;
         
         let matches = str.match(regex);
@@ -577,9 +586,11 @@ const Sketch = (function () {
     async function switchDashboard(id, sharedId, initial) {
         
         if (!initial) { 
-            $("#dashboard-number").stop(); 
-            $("#dashboard-number").text(id); 
-            $("#dashboard-number").fadeIn(100).delay(700).fadeOut(100);
+            document.getElementById("dashboard-number").textContent = id;
+            document.getElementById("dashboard-number").style.display = 'block';
+            setTimeout(() => {
+                document.getElementById("dashboard-number").style.display = 'none';
+            }, 700);
         }
 
         currentCanvasId = id;

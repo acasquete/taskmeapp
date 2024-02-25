@@ -142,45 +142,50 @@ const MenuController = (function () {
             });
         });
     
-        $(document).on('contextmenu', function(e) {
+        document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             setTimeout(toggleHamMenu, 200);
             e.stopPropagation();
         });
         
-        $(document).on("click touchend", function(event) {
+        document.addEventListener("click", hideMenus);
+        document.addEventListener("touchend", hideMenus);
+
+        function hideMenus(event) {
             if (!(event.target.matches(".hamburger-icon") || event.target.closest(".hamburger-icon"))) {
-                setTimeout( function () {
+                setTimeout(function() {
                     document.querySelector('#hamburger-menu').classList.add('hidden');
                 }, 100);
             }
 
             if (!(event.target.matches(".pen-icon") || event.target.closest(".pen-icon"))) {
-                setTimeout( function () {
+                setTimeout(function() {
                     document.querySelector('#pen-menu').classList.add('hidden');
                 }, 100);
             }
-        });
+        }
     
-        var toolboxGrid = $('.switch-dashboard');
-    
+        var toolboxGrid = document.querySelector('.switch-dashboard');
+
         for (var i = 1; i <= 5; i++) {
-            var toolDiv = $('<div>', {
-                'class': 'dash',
-                'data-action': 'switchDashboard',
-                'text': i
-            });
-        
-            toolDiv.on('click touchend', function(e) {
-                e.preventDefault();
-                var dashboardNumber = $(this).text();
-                Sketch.switchDashboard(dashboardNumber, '', false);
-            });
-        
+            var toolDiv = document.createElement('div');
+            toolDiv.className = 'dash'; 
+            toolDiv.setAttribute('data-action', 'switchDashboard'); 
+            toolDiv.textContent = i; 
+
+            toolDiv.addEventListener('click', handleEvent);
+            toolDiv.addEventListener('touchend', handleEvent);
+
+            function handleEvent(e) {
+                e.preventDefault(); 
+                var dashboardNumber = this.textContent; 
+                Sketch.switchDashboard(dashboardNumber, '', false); 
+            }
+
             var gridItem = new GridItem(toolDiv);
-            Sketch.addObserver(gridItem);
-            
-            toolboxGrid.append(toolDiv);
+            Sketch.addObserver(gridItem); 
+
+            toolboxGrid.appendChild(toolDiv);
         }
 
         document.querySelector('#modal-liveshare #copy').addEventListener('click', handleLiveShareCopy);

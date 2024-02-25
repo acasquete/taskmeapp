@@ -76,11 +76,11 @@ function signInWithFirebase(googleToken) {
 }
 
 function showStatusBarIcon() {
-    $("#localmode").show();
+    document.getElementById("localmode").style.display = "block";
 }
 
 function hideStatusBarIcon() {
-    $("#localmode").hide();
+    document.getElementById("localmode").style.display = "none";
 }
 
 function isTokenExpired(token) {

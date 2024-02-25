@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 
 interface DataSet {
+  dates: string[];
   todo: number[];
   inProgress: number[];
   done: number[];
@@ -14,15 +15,15 @@ export class CumulativeFlowDiagram {
   constructor(canvas: fabric.Canvas) {
     this.canvas = canvas;
     this.data = {
-      todo: [100, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-      inProgress: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
-      done: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+      date: ['19/1','20/2','21/2','22/2','23/2'],
+      todo: [100, 20, 30, 40, 50],
+      inProgress: [5, 10, 15, 20, 25],
+      done: [2, 4, 6, 8, 10]
     };
   }
 
   public draw(): void {
-    return;
-    const margin = { top: 20, right: 0, bottom: 0, left: -1200 },
+    const margin = { top: 50, right: 0, bottom: 0, left: -1200 },
       width = 100 - margin.left - margin.right,
       height = 800;
 
@@ -35,15 +36,25 @@ export class CumulativeFlowDiagram {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    x.domain(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]);
+    x.domain(this.data.dates);
     y.domain([0, d3.max([...this.data.todo, ...this.data.inProgress, ...this.data.done])!]);
 
     svg.append("g")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(x));
+      .call(d3.axisBottom(x))
+      .style("font-size", "1.5rem"); 
 
     svg.append("g")
-      .call(d3.axisLeft(y));
+      .call(d3.axisLeft(y))
+      .style("font-size", "30px"); 
+
+    svg.append("text")
+      .attr("x", (width / 2))             
+      .attr("y", "-0.5rem")
+      .attr("text-anchor", "middle")  
+      .style("font-size", "2rem") 
+      .style("font-family", "PermanentMarker")
+      .text("Cumulative Flow Diagram");
 
     this.drawArea(svg, this.data.todo, "todo", "steelblue");
     this.drawArea(svg, this.data.inProgress, "inProgress", "orange");
@@ -55,7 +66,7 @@ export class CumulativeFlowDiagram {
 
   private drawArea(svg: d3.Selection<SVGGElement, unknown, null, undefined>, data: number[], className: string, color: string): void {
     const area = d3.area<number>()
-      .x((d, i) => i * (1200 / 10))
+      .x((d, i) => i * (1200 / 5))
       .y0(800)
       .y1(d => 800 - (d*4));
 
@@ -72,6 +83,14 @@ export class CumulativeFlowDiagram {
 
     fabric.loadSVGFromString(svgStr, (objects, options) => {
       const obj = fabric.util.groupSVGElements(objects, options);
+      obj.id='cfd';
+      obj.selectable=false;
+
+      const existingObj = this.canvas.getObjects().find(o => o.id === 'cfd');
+      if (existingObj) {
+        this.canvas.remove(existingObj);
+      }
+
       this.canvas.add(obj).renderAll();
     });
   }
