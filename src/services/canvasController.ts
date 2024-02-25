@@ -52,6 +52,35 @@ export class CanvasController {
 
     public switchDashboard(id: number, initial: boolean) {
         this.currentCanvasId = id;
+
+        this.cfd.reset();
+
+        this.cfd.addOrUpdate('2/24', 'ToDo', 0);
+        this.cfd.addOrUpdate('2/24', 'In Progress', 0);
+        this.cfd.addOrUpdate('2/24', 'Done', 0);
+
+        this.updateCFD();
+    }
+
+    private updateCFD(): void {
+        console.debug('update cfd');
+    
+        let columns = this.getStagesColumnsConfiguration();
+    
+        const today = new Date();
+        const formattedDate = (today.getMonth() + 1) + '/' + today.getDate();
+    
+        for (const column of columns) {
+            const pattern = /^(.+?)(?: - .+)?$/;
+            const match = column.title.match(pattern);
+            
+            if (match && match[1]) {
+                const stageName = match[1].trim().toLocaleLowerCase(); 
+                console.log(stageName + ' ' + column.count);
+                this.cfd.addOrUpdate(formattedDate, stageName, column.count);
+            }
+        }
+    
         this.cfd.draw();
     }
 
@@ -600,8 +629,10 @@ export class CanvasController {
     }
 
     private onUpdatingObject (e: fabric.IEvent) {
-
+       
         const obj = e.target as fabric.Object & { cl?: string };
+        
+        if (obj.id === 'cfd') return;
         
         let objectData = { 
             id: obj.id, 
@@ -617,6 +648,7 @@ export class CanvasController {
 
         if (obj && obj.cl === 'n') {
             this.updateNoteCounters();
+            
         }
     }
 
@@ -823,20 +855,6 @@ export class CanvasController {
         const stageConf = this.getStagesColumnsConfiguration();
 
         if (stageConf.length==0) return;
-
-        const separators: fabric.Object[] = this.canvas.getObjects().filter(obj => (obj as any).id && (obj as any).id.startsWith('sep'));
-        
-        stageConf.forEach(stage => { stage.count = 0; });
-
-        this.canvas.getObjects().forEach(obj => {
-            if ((obj as any).cl === 'n') {
-                const columnIndex: number = separators.findIndex(sep => sep && (obj.left || 0) < (sep.left || 0));
-                
-                if (columnIndex > -1) {
-                    stageConf[columnIndex].count++;
-                }
-            }
-        });
         
         stageConf.forEach(column => {
             this.updateColumnTitle(column.id, column.count);
@@ -848,6 +866,8 @@ export class CanvasController {
                 this.setColorForColumn(column.id, 'default');
             }
         });
+
+        this.updateCFD();
     }
 
     public setColorForColumn(columnId: number, color: string): void {
@@ -894,6 +914,18 @@ export class CanvasController {
             columns.push(col);
         }
 
+        const separators: fabric.Object[] = this.canvas.getObjects().filter(obj => (obj as any).id && (obj as any).id.startsWith('sep'));
+        
+        this.canvas.getObjects().forEach(obj => {
+            if ((obj as any).cl === 'n') {
+                const columnIndex: number = separators.findIndex(sep => sep && (obj.left || 0) < (sep.left || 0));
+                
+                if (columnIndex > -1) {
+                    columns[columnIndex].count++;
+                }
+            }
+        });
+
         return columns;
     }
 
@@ -934,7 +966,7 @@ export class CanvasController {
             content:  JSON.stringify(jsonCanvas), 
             timestamp: Date.now() 
         };     
-        
+
         this.config.saveCanvas(this.currentCanvasId, storeCanvas, force);
         this.canvasHistory.saveHistory();
         this.canvas.isDrawingMode = currentMode;
