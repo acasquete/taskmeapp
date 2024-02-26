@@ -13,26 +13,25 @@ import './notificationsweb.js';
 import './sketch.js';
 import './data.js';
 
-let sharedId = '';
+let boardGUID = '';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
 
     var params = new URLSearchParams(window.location.search);
 
-    sharedId = params.get('sid') ?? '';
+    boardGUID = params.get('sid') ?? '';
 
     Notifications.init();
     MenuController.init();
     Pomodoro.init(); 
-    Sketch.init(sharedId);
+    await Sketch.init();
 
     const googleToken = localStorage.getItem('googleToken');
     if (googleToken && !isTokenExpired(googleToken)) {
         signInWithFirebase(googleToken);
     } else {
         console.debug('no auth token');
-        
-        Sketch.loadCurrentDashboard(sharedId);
+        Sketch.loadBoard(boardGUID);
         localStorage.removeItem('googleToken');
     }
     
@@ -63,10 +62,9 @@ function signInWithFirebase(googleToken) {
     const credential = firebase.auth.GoogleAuthProvider.credential(googleToken);
 
     firebase.auth().signInWithCredential(credential)
-        .then((result) => {
-            const user = result.user;
-            Sketch.loadCurrentDashboard(sharedId);
-            Data.setUserId(user.uid);
+        .then(async (result) => {
+            Data.setUserId(result.user.uid);
+            await Sketch.loadBoard(boardGUID);
             isSigned = true;
             hideStatusBarIcon();
         }).catch((error) => {

@@ -6,17 +6,16 @@ import { KanbanAdvisor } from '../services/kanbanAdvisor';
 
 const Sketch = (function () {
     "use strict";
-    let canvas, currentColorIndex;
-    let currentCanvasId;
     const CANVAS_WIDTH = 2000;
+    let canvas, currentColorIndex;
+    let activeBoardIndex = 0; // Current Selected Board (1-5)
     let observers = []; 
     let canvasController;
-    let sharedCanvasId = '';
     let kanbanAdvisor;
+    let _clipboard;  
 
-
-    async function init(sharedId) {
-        initCanvas();
+    async function init() {
+        await initCanvas();
         assignDOMEventListeners();
 
         canvasController = new CanvasController(canvas);
@@ -24,25 +23,7 @@ const Sketch = (function () {
         kanbanAdvisor = new KanbanAdvisor();
     }
 
-    async function loadCurrentDashboard(sharedId) {
-        if (sharedId && sharedId!='') {
-            sharedCanvasId = sharedId
-            currentCanvasId = 10; // 10 Start shared dashboards
-        } else {
-            currentCanvasId = Config.getActiveDashboard();
-
-            if (currentCanvasId>9) {
-                if (!Data.isLogged()) {
-                    Notifications.showAppNotification('You are working on local dashboard now!', 'regular', 8000);
-                    currentCanvasId = 1;
-                }
-            }
-        }
-
-        await switchDashboard(currentCanvasId, sharedCanvasId, true);
-    }
-
-    function initCanvas() { 
+   async function initCanvas() { 
         console.debug('init canvas');
 
         if (canvas) canvas.dispose();
@@ -55,12 +36,31 @@ const Sketch = (function () {
         window.addEventListener('orientationchange', resizeCanvas);
         document.querySelector('#modal-clearall #close').addEventListener('click', handleClearClose);
         document.querySelector('#modal-clearall #confirm').addEventListener('click', handleClearConfirm);
+
+        const font1 = new FontFace('Kalam', `url(${kalamFontURL})`);
+        const font2 = new FontFace('PermanentMarker', `url(${permanentMarkerFontURL})`);
+
+        let fontFace1 = await font1.load();
+        let fontFace2 = await font2.load();
+
+        document.fonts.add(fontFace1);
+        document.fonts.add(fontFace2);
     }
     
     function resizeCanvas() {
         canvas.setWidth(window.innerWidth);
         canvas.setHeight(window.innerHeight);
         canvas.requestRenderAll();
+    }
+
+    async function loadBoard(boardGUID) {
+        if (boardGUID) {
+            console.debug ('load sharing board: ' + boardGUID);
+            await loadCanvasAsync(boardGUID);
+        } else {
+            activeBoardIndex = Config.getActiveBoardIndex();
+            await switchDashboard(activeBoardIndex, true);
+        }
     }
 
     function toggleFullscreen ()
@@ -532,11 +532,7 @@ const Sketch = (function () {
             canvasController.saveCanvas();
         })
     }
-
     
-    
-    var _clipboard;  
-
     function Copy() {
         var activeObject = canvas.getActiveObject();
 
@@ -570,8 +566,8 @@ const Sketch = (function () {
                 canvas.add(clonedObj);
             }
 
-            _clipboard.top += 10;
-            _clipboard.left += 10;
+            _clipboard.top += 15;
+            _clipboard.left += 15;
         
             canvas.setActiveObject(clonedObj);
             canvas.requestRenderAll();
@@ -583,20 +579,19 @@ const Sketch = (function () {
        canvasController.changeColor(color);
     }
 
-    async function switchDashboard(id, sharedId, initial) {
+    async function switchDashboard(boardIndex, initial) {
         
         if (!initial) { 
-            document.getElementById("dashboard-number").textContent = id;
+            document.getElementById("dashboard-number").textContent = boardIndex;
             document.getElementById("dashboard-number").style.display = 'block';
             setTimeout(() => {
                 document.getElementById("dashboard-number").style.display = 'none';
             }, 700);
         }
 
-        currentCanvasId = id;
-        sharedCanvasId = sharedId
+        activeBoardIndex = boardIndex;
 
-        await loadCanvas(sharedId, initial);
+        await loadCanvasAsync();
     }
 
     function addObserver (observer) {
@@ -605,7 +600,7 @@ const Sketch = (function () {
 
     function notifyAllObservers () {
         observers.forEach(function(observer) {
-            observer.update(currentCanvasId);
+            observer.update(activeBoardIndex);
         });
     }
 
@@ -678,19 +673,10 @@ const Sketch = (function () {
         const modal = document.querySelector('#modal-clearall');
         modal.classList.add('hidden');
 
-
-        if (currentCanvasId==10) {
-            switchDashboard(1, '', false);
-        } else {
-            if (sharedCanvasId!='') {
-                Data.stopListen();
-                sharedCanvasId = '';
-            }
-            canvasController.reset();
-            initKanbanBoard();
-            adjustCanvasZoom(true);
-            canvasController.saveCanvas();
-        }
+        canvasController.reset();
+        initKanbanBoard();
+        adjustCanvasZoom(true);
+        canvasController.saveCanvas();
 
         canvasController.isLoading = false;
     }
@@ -729,6 +715,8 @@ const Sketch = (function () {
     }
       
     function Undo() {
+        debug.info('not implemented');
+        return;
         canvasController.undo();
         canvas.forEachObject(function(obj) {
             assignConfigToObject (obj);
@@ -736,6 +724,8 @@ const Sketch = (function () {
     }
     
     function Redo() {
+        debug.info('not implemented');
+        return;
         canvasController.redo();
         canvas.forEachObject(function(obj) {
             assignConfigToObject (obj);
@@ -802,38 +792,28 @@ const Sketch = (function () {
             currentLeft += columnWidth;
         });
 
-        if (currentCanvasId==1) createWelcomeNote();
+        if (activeBoardIndex===1) createWelcomeNote();
 
         canvasController.isLoading = false;
     }
    
-    async function loadCanvas(sharedId, initial) {
-        const font1 = new FontFace('Kalam', `url(${kalamFontURL})`);
-        const font2 = new FontFace('PermanentMarker', `url(${permanentMarkerFontURL})`);
-
-        const promesasDeCarga = [
-            font1.load(),
-            font2.load(),
-        ];
-    
-        Promise.all(promesasDeCarga).then((fuentesCargadas) => {
-            fuentesCargadas.forEach((fuente) => document.fonts.add(fuente));
-            loadCanvasAsync(sharedId, initial);
-        }).catch((error) => {
-            console.error("Error al cargar las fuentes", error);
-        });
-    }
-            
-    async function loadCanvasAsync(sharedId, initial) {
-
+           
+    async function loadCanvasAsync(guid) {
         canvasController.isLoading = true;
 
-        let storeCanvas = await Config.getCanvas(currentCanvasId, sharedId);
+        let storeCanvas;
+
+        if (guid) {
+            storeCanvas = await Config.getRemoteCanvas(guid);
+            if (!storeCanvas) {
+                Notifications.showAppNotification ('You need to log in to access a shared dashboard', 'regular', 8000);
+                return;
+            }
+        } else {
+            storeCanvas = await Config.getCanvas(activeBoardIndex);
+        }
 
         currentColorIndex = storeCanvas.colorIndex;
-        sharedCanvasId = storeCanvas.sharedCanvasId;
-        canvasController.sharedCanvasId = sharedCanvasId;
-
         canvas.freeDrawingBrush.width = 4;
         canvas.freeDrawingBrush.color = CanvasUtilities.getColorByIndex(currentColorIndex);
 
@@ -853,9 +833,12 @@ const Sketch = (function () {
             initKanbanBoard();
         }
 
-        canvasController.switchDashboard(currentCanvasId, sharedCanvasId, initial);
-        Config.saveActiveDashboard(currentCanvasId);
+        canvasController.switchDashboard(activeBoardIndex, storeCanvas.guid, storeCanvas.shared);
+        
+        Config.saveActiveBoardIndex(activeBoardIndex);
+
         notifyAllObservers();
+
         canvasController.isLoading = false;
     }
 
@@ -865,8 +848,7 @@ const Sketch = (function () {
     }
 
     function retrieveConfiguration(orientation) {
-        
-        const key = `c_${currentCanvasId}_${orientation}`;
+        const key = `c_${activeBoardIndex}_${orientation}`;
         const savedConfiguration = localStorage.getItem(key);
         if (savedConfiguration) {
             return JSON.parse(savedConfiguration);
@@ -1054,20 +1036,8 @@ const Sketch = (function () {
     }
 
     function createShareSketch () {
-
-        if (!sharedCanvasId) {
-            sharedCanvasId = generateCompactGUID();
-            canvasController.setSharedId(sharedCanvasId);
-        }
-
-        return sharedCanvasId;
-    }
-
-    function generateCompactGUID() {
-        return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-        });
+        let id = canvasController.shareBoard();
+        return id;
     }
 
     function addObjectRealTime(data) {
@@ -1129,8 +1099,8 @@ const Sketch = (function () {
         }
     }
     
-    return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
-        addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor, 
+    return { init, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
+        addObserver, notifyAllObservers, toggleFullscreen, loadBoard, switchDashboard, changeColor, 
         addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateNoteRealTime,
         createShareSketch, handleClearClose, nextAdvice, download, updateTextControlRealTime, openOption };
 })();

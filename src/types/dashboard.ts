@@ -1,9 +1,3 @@
-export interface Dashboard {
-    notes: any[];
-    dots: any[];
-    screenWidth: number | null;
-}
-
 declare module 'fabric' {
   namespace fabric {
     interface Object {

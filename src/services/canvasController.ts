@@ -7,6 +7,9 @@ import { CumulativeFlowDiagram } from './cumulativeFlowDiagram';
 
 export class CanvasController {
     private canvas: fabric.Canvas;
+    private boardGUID: string = '';
+    private boardIndex: number = 0;
+    private isShared: boolean = false;
     public isLoading: boolean = true;
     private isEditKanbanMode: boolean = false;
     private targetElement!: fabric.Object | null;
@@ -20,8 +23,6 @@ export class CanvasController {
     private xChange: number = 0;
     private yChange: number = 0;
     private zoomStartScale: number = 0;
-    private currentCanvasId: number = 0;
-    private sharedCanvasId: string = '';
     private shouldCancelMouseDown = false;
     private circleToDrag: fabric.Object | null = null;
     private isDraggingDot: boolean = false;
@@ -31,6 +32,7 @@ export class CanvasController {
     private lastTap = 0;
     private lastPY = 0;
     private config: Config;
+    
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
@@ -41,7 +43,7 @@ export class CanvasController {
     }
 
     public reset () {
-        this.sharedCanvasId = '';
+        this.isShared = false;
         this.canvas.clear();
         this.editController.setSelectionMode();
     }
@@ -50,12 +52,16 @@ export class CanvasController {
         return object.cl === 'k' && object.id?.startsWith('sep');
     }
 
-    public switchDashboard(id: number, initial: boolean) {
-        this.currentCanvasId = id;
+    public switchDashboard(index: number, guid: string, shared: boolean) {
+        console.debug('shared' + shared);
+        this.boardGUID = guid;
+        this.boardIndex = index;
+        this.isShared = shared ?? false;
 
-        console.debug(id);
-        this.cfd.init(id);
-        this.updateCFD();
+        console.debug('shared' + this.isShared);
+
+        //this.cfd.init(id);
+        //this.updateCFD();
     }
 
     private updateCFD(): void {
@@ -651,7 +657,6 @@ export class CanvasController {
 
         if (obj && obj.cl === 'n') {
             this.updateNoteCounters();
-            
         }
     }
 
@@ -660,7 +665,7 @@ export class CanvasController {
         const viewPortTransform = this.canvas.viewportTransform;
         const orientation: string = CanvasUtilities.getUserOrientation();
     
-        const key: string = `c_${this.currentCanvasId}_${orientation}`;
+        const key: string = `c_${this.boardIndex}_${orientation}`;
         const configuration: { zoom: number; vpt: any } = {
             zoom: zoom,
             vpt: viewPortTransform,
@@ -957,6 +962,10 @@ export class CanvasController {
         this.cfd.activate();
     }
 
+    public getBoardGUID () {
+        return this.boardGUID;
+    }
+    
     private saveCanvas(force?: boolean) : void {
         const currentMode = this.canvas.isDrawingMode;
         this.canvas.isDrawingMode = false;
@@ -965,22 +974,25 @@ export class CanvasController {
 
         let jsonCanvas = this.canvas.toJSON(['cl', 'id']);
         let storeCanvas = { 
-            sharedCanvasId: this.sharedCanvasId, 
+            guid: this.boardGUID, 
             colorIndex: this.editController.getCurrentColor(), 
             content:  JSON.stringify(jsonCanvas), 
-            timestamp: Date.now() 
+            timestamp: Date.now(),
+            cfd: null,
+            shared: this.isShared
         };     
 
-        this.config.saveCanvas(this.currentCanvasId, storeCanvas, force);
-        this.cfd.save();
+        this.config.saveCanvas(this.boardIndex, storeCanvas, force);
+        //this.cfd.save();
         this.canvasHistory.saveHistory();
         this.canvas.isDrawingMode = currentMode;
     }
 
-    public async setSharedId (sharedId: string) : Promise<void> {
-        this.sharedCanvasId = sharedId;
+    public shareBoard () : string {
+        this.isShared = true;
         this.saveCanvas(true);
-        this.config.getCanvas(this.currentCanvasId, sharedId);
+
+        return this.boardGUID;
     }
 
     public undo ():void {

@@ -43,7 +43,7 @@ export class CumulativeFlowDiagram {
     let dataStore = JSON.stringify(store);
 
     this.config.saveItem(key, dataStore);
-    this.config.saveDataItem('cfd', key, dataStore);
+    //this.config.saveDataItem('cfd', key, dataStore);
   }
 
   public getLastRecords(): Record<string, Record<string, number>> {
@@ -114,6 +114,7 @@ export class CumulativeFlowDiagram {
   }
 
   private updateGraph(svg: any) {
+    return;
     const last14DaysData = this.getLastRecords();
     const stages = this.getUniqueStages(last14DaysData);
     const colors = this.getStageColors();

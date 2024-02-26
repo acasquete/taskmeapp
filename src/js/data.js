@@ -2,12 +2,14 @@ const Data = (function () {
     "use strict";
 
     var userId = null;
-    var externalId = null;
+    var publicUserId = null;
+    var boardGUID = '';
     var lastRequestTime = 0;
     var queue = {};
     var timeoutId = null;
     const SAVE_INTERVAL = 3000;
-    var sharedCanvasId = '';
+    let lastEventTime = 0; 
+    const throttleDelay = 100; 
 
     const firebaseConfig = {
         apiKey: "AIzaSyAolhu6a8_LPL1UkVlmJxCYVAjylm-XGUI",
@@ -47,26 +49,13 @@ const Data = (function () {
         realTimeDb.ref(path).off('value');
     }
 
-    function stopListen() {
-        console.debug('stop listen #' + sharedCanvasId);
-        if (sharedCanvasId!='') {
-            stopListeningToRealtimeDatabase(`s_${sharedCanvasId}`);
-            sharedCanvasId = '';
-        }
-    }
-
     async function saveToFirestore(collectionPath, docId, data) {
         try {
-            await db.collection(collectionPath).doc(docId).set(data);
+            await db.collection(collectionPath).doc(docId).set(data, { merge: true} );
             console.debug(`${collectionPath}/${docId} saved`);
         } catch (error) {
             console.error(error);
         }
-    }
-
-    function getDocId(type, id) {
-        const prefix = type === 'dashboards' ? 'd' : 'c';
-        return `${prefix}${id}`;
     }
     
     async function processQueue() {
@@ -74,22 +63,16 @@ const Data = (function () {
         lastRequestTime = Date.now();
 
         Object.values(queue).forEach(async request =>  {
-
             const { type, id, data } = request;
-            let collectionPath;
-            let docId;
 
-            if (data.sharedCanvasId) {
-                collectionPath = `shared`;
-                docId = data.sharedCanvasId;
-                await saveToFirestore(collectionPath, docId, data);
-                data.content = '{"shared":true}';
+            switch (type) {
+                case 'board':
+                    await saveToFirestore(type, data.guid, data);
+                    break;
+                case 'user':
+                    await saveToFirestore(type, id, data);
+                    break;
             }
-             
-            collectionPath =  `users/${userId}/${type}`;
-            docId = getDocId(type, id);
-            await saveToFirestore(collectionPath, docId, data);
-
         });
 
         queue = {}; 
@@ -116,18 +99,15 @@ const Data = (function () {
         }
     }
 
-    function saveCanvas(id, canvasData, force) {
-        if (!userId) {
-           return null;
-        }
-        addToQueue('canvas', id, canvasData, force);
-    }
+    function saveCanvas(index, canvasData, force) {
+        if (!userId) return;
 
-    function saveItem(queue, id, data, force) {
-        if (!userId) {
-           return null;
+        addToQueue('board', canvasData.guid, canvasData, force);
+
+        if (index>0) {
+            let nameBoardId = `boardId${index}`;
+            addToQueue('user', userId, { [nameBoardId]: canvasData.guid }, true);
         }
-        addToQueue(queue, id, JSON.parse(data), force);
     }
 
     function fetchFirestoreDocument(collectionPath, docId) {
@@ -174,58 +154,46 @@ const Data = (function () {
         return result;
     }
 
-    async function getCanvas(id, sharedId) {
-        if (!userId) {
-            if (sharedId!='') { 
-                Notifications.showAppNotification('You need to log in to access a shared dashboard', 'regular');
-            }
-            return null;
-        }
+    async function getGUIDByIndex (index) {
+        if (!userId) return;
 
-        if (sharedCanvasId != '') {
-            console.debug(`stop listening ${sharedCanvasId}`);
-            stopListeningToRealtimeDatabase(`s_${sharedCanvasId}`);
-        }
-
-        if (sharedId!='') {
-            console.debug ('fetch shared document');
-            sharedCanvasId = sharedId;
-            let result = await fetchWithRetry(`shared`, `${sharedId}`);
-
-            if (result != null && result.sharedCanvasId) {
-                await listenSharedCanvas (result, sharedId, externalId);
-            }
-            return result;
-        } else {
-            console.debug ('fetch private document');
-            let result = await fetchWithRetry(`users/${userId}/canvas`, `c${id}`);
-            
-            if (result != null && result.sharedCanvasId) {
-                console.debug ('fetch shared document');
-                result = await fetchWithRetry(`shared`, `${result.sharedCanvasId}`);
-
-                await listenSharedCanvas (result, sharedId, externalId);
-            }
-            return result;
-        }
+        let result = await fetchWithRetry(`user`, `${userId}`);
+        let boardId = `boardId${index}`;
+        return result[boardId];
     }
 
-    async function listenSharedCanvas(result, sharedId, externalId) {
-       
-        console.debug(`listed shared canvas ${sharedCanvasId} ${result.sharedCanvasId}`);
+    async function getCanvas(newGUID) {
+        if (!userId) return;
 
-        sharedCanvasId = result.sharedCanvasId;
-        sharedId = result.sharedCanvasId;
-        let path = `s_${sharedId}`;
+        if (newGUID != '' && boardGUID!='') {
+            console.debug(`stop listening ${boardGUID}`);
+            stopListeningToRealtimeDatabase(`bs_${boardGUID}`);
+            boardGUID = '';
+        }
+
+        console.debug ('fetch document');
+        let result = await fetchWithRetry(`board`, `${newGUID}`);
+
+        if (result != null && result.shared) {
+            console.debug ('listening board: ' + newGUID);
+            await listenSharedCanvas (newGUID);
+        }
+        return result;
+    }
+
+    async function listenSharedCanvas(newGUID) {
+       
+        console.debug(`listed shared canvas ${newGUID}`);
+
+        boardGUID = newGUID;
+
+        let path = `bs_${newGUID}`;
         
         console.debug(`listen ${path}`);
 
         listenToRealtimeDatabase(path, (data) => {
 
-            if (data.uid != externalId) {
-
-                console.debug(data);
-
+            if (data.uid != publicUserId) {
                 switch (data.a) {
                     case 'om': // Object moving
                         Sketch.updatePositionRealTime(data);
@@ -254,21 +222,14 @@ const Data = (function () {
         });
     }
 
-    function genId() {
-        return Math.random().toString(36).substr(2, 9);
-    }
-
     function setUserId(newUserId) {
         userId = newUserId;
-        externalId = genId();
+        publicUserId = Math.random().toString(36).substr(2, 9);
+        console.debug('assigned user:' + userId);
     }
 
-    let lastEventTime = 0; 
-    const throttleDelay = 100; 
-
     function sendCanvasObject(data, force) {
-
-        if (sharedCanvasId=='') return;
+        if (!isLogged() || boardGUID === '') return;
         
         console.debug (data);
 
@@ -277,9 +238,8 @@ const Data = (function () {
         if (force || currentTime - lastEventTime > throttleDelay) {
             lastEventTime = currentTime;
             
-            let path = `s_${sharedCanvasId}`;
-            data.uid = externalId;
-
+            let path = `bs_${boardGUID}`;
+            data.uid = publicUserId;
             saveToRealtimeDatabase(path, data); 
         }
     }
@@ -294,9 +254,7 @@ const Data = (function () {
         setUserId: setUserId,
         sendCanvasObject: sendCanvasObject,
         isLogged: isLogged,
-        stopListen: stopListen,
-        saveItem: saveItem,
-        getItem: getItem
+        getGUIDByIndex: getGUIDByIndex
     };
 })();
 
