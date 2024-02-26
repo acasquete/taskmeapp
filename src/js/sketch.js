@@ -316,7 +316,7 @@ const Sketch = (function () {
 
     function  assignConfigToObject (obj) {
 
-        if (obj.type === 'group') {
+        if (obj.cl === 'n') {
             obj.set({
                 originX: 'center',
                 originY: 'top',
@@ -906,6 +906,10 @@ const Sketch = (function () {
         canvas.setViewportTransform(cvpt);
     }
 
+    function openOption (option) {
+        canvasController.openOption(option);
+    }
+
     /* TODO: Refactor AI methods */
     async function nextAdvice () {
         const kanbanContent = getKanbanContent();
@@ -1128,7 +1132,7 @@ const Sketch = (function () {
     return { init, loadCanvas, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
         addObserver, notifyAllObservers, toggleFullscreen, loadCurrentDashboard, switchDashboard, changeColor, 
         addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateNoteRealTime,
-        createShareSketch, handleClearClose, nextAdvice, download, updateTextControlRealTime };
+        createShareSketch, handleClearClose, nextAdvice, download, updateTextControlRealTime, openOption };
 })();
 
 window.Sketch = Sketch;

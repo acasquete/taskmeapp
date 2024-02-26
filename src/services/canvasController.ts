@@ -36,8 +36,8 @@ export class CanvasController {
         this.canvas = canvas;
         this.canvasHistory = new CanvasHistory(canvas);
         this.editController = new EditModeController(canvas);
-        this.cfd = new CumulativeFlowDiagram(canvas);
         this.config = new Config();
+        this.cfd = new CumulativeFlowDiagram(canvas, this.config);
     }
 
     public reset () {
@@ -53,17 +53,13 @@ export class CanvasController {
     public switchDashboard(id: number, initial: boolean) {
         this.currentCanvasId = id;
 
-        this.cfd.reset();
-
-        this.cfd.addOrUpdate('2/24', 'ToDo', 0);
-        this.cfd.addOrUpdate('2/24', 'In Progress', 0);
-        this.cfd.addOrUpdate('2/24', 'Done', 0);
-
+        console.debug(id);
+        this.cfd.init(id);
         this.updateCFD();
     }
 
     private updateCFD(): void {
-        console.debug('update cfd');
+        this.isLoading = true;
     
         let columns = this.getStagesColumnsConfiguration();
     
@@ -76,12 +72,13 @@ export class CanvasController {
             
             if (match && match[1]) {
                 const stageName = match[1].trim().toLocaleLowerCase(); 
-                console.log(stageName + ' ' + column.count);
+                
                 this.cfd.addOrUpdate(formattedDate, stageName, column.count);
             }
         }
     
         this.cfd.draw();
+        this.isLoading = false;
     }
 
     private triggerDblClick(event: MouseEvent | TouchEvent) {
@@ -319,6 +316,7 @@ export class CanvasController {
 
         this.canvas.on('selection:cleared', () => {
             this.pausePanning = false;
+            this.updateCFD();
             this.updateNoteCounters();
         });
 
@@ -346,9 +344,7 @@ export class CanvasController {
         });
 
         this.canvas.on('touch:drag', (e: fabric.IEvent) => {
-            console.debug('drag');
             if (this.isEditKanbanMode || this.canvas.selection || this.canvas.isDrawingMode || this.pausePanning || e.e.layerX === undefined || e.e.layerY === undefined) {
-                
                 if (e.e.layerX === undefined && e.e.layerY === undefined) {
                     this.lastX = 0;
                     this.lastY = 0;
@@ -385,6 +381,11 @@ export class CanvasController {
         this.canvas.on('object:scaling', this.onUpdatingObject.bind(this));
         this.canvas.on('object:moving', this.onUpdatingObject.bind(this));
         this.canvas.on('object:rotating', this.onUpdatingObject.bind(this));
+        this.canvas.on('object:deleted', (event: fabric.IEvent) => {
+            if (this.isLoading) return;
+
+            this.updateCFD();
+        });
         
         this.canvas.on('object:added', (event: fabric.IEvent) => {
             if (this.isLoading) return;
@@ -403,6 +404,7 @@ export class CanvasController {
             this.handleNewStage(addedObject);
             this.assignUniqueIdToAddedObject(addedObject);
             this.sendObjectData(addedObject);
+            this.updateCFD();
             this.saveCanvas();
         });
         
@@ -454,6 +456,7 @@ export class CanvasController {
             }
 
             this.normalizeZIndex();
+            this.updateCFD();
             this.saveCanvas();
         });
 
@@ -866,8 +869,6 @@ export class CanvasController {
                 this.setColorForColumn(column.id, 'default');
             }
         });
-
-        this.updateCFD();
     }
 
     public setColorForColumn(columnId: number, color: string): void {
@@ -919,7 +920,6 @@ export class CanvasController {
         this.canvas.getObjects().forEach(obj => {
             if ((obj as any).cl === 'n') {
                 const columnIndex: number = separators.findIndex(sep => sep && (obj.left || 0) < (sep.left || 0));
-                
                 if (columnIndex > -1) {
                     columns[columnIndex].count++;
                 }
@@ -953,6 +953,10 @@ export class CanvasController {
         this.editController.changeColor(color);
     }
 
+    public openOption (option: string) {
+        this.cfd.activate();
+    }
+
     private saveCanvas(force?: boolean) : void {
         const currentMode = this.canvas.isDrawingMode;
         this.canvas.isDrawingMode = false;
@@ -968,6 +972,7 @@ export class CanvasController {
         };     
 
         this.config.saveCanvas(this.currentCanvasId, storeCanvas, force);
+        this.cfd.save();
         this.canvasHistory.saveHistory();
         this.canvas.isDrawingMode = currentMode;
     }

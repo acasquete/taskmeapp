@@ -6,26 +6,34 @@ export class Config {
     constructor() {
     }
 
+    public saveItem(key:string, id: string): void {
+        localStorage.setItem(key, id);
+    }
+
+    public getItem(key:string): string | null {
+        return localStorage.getItem(key);
+    }
+
     public getLocalOpenAIAPIKey(): string | null {
-        return localStorage.getItem("openAIAPIKey");
+        return this.getItem("openAIAPIKey");
     }
 
     public saveLocalOpenAIAPIKey(apikey:string):void {
-        localStorage.setItem("openAIAPIKey", apikey);
+        this.saveItem("openAIAPIKey", apikey);
     }
 
     public getActiveDashboard(): string | number {
-        return localStorage.getItem("ad") ?? 1;
+        return this.getItem("ad") ?? 1;
     }
 
     public saveActiveDashboard(id: string): void {
-        localStorage.setItem("ad", id);
+        this.saveItem("ad", id);
     }
 
     public saveCanvas(id: number, canvas: Canvas, force?: boolean): void {
         console.debug('save local canvas');
-        localStorage.setItem("c" + id, JSON.stringify(canvas));
         
+        this.saveItem("c" + id, JSON.stringify(canvas));
         Data.saveCanvas(id, canvas, force);
     }
 
@@ -33,7 +41,7 @@ export class Config {
         console.debug('getting canvas...');
         
         const canvasRemotePromise = Data.getCanvas(id, sharedId);
-        const canvasLocalString = localStorage.getItem("c" + id);
+        const canvasLocalString = this.getItem("c" + id);
         const canvasLocal: Canvas | null = canvasLocalString ? JSON.parse(canvasLocalString) : null;
     
         const canvasRemote: Canvas | null = await canvasRemotePromise;
@@ -54,6 +62,7 @@ export class Config {
         }
     
         console.debug('new canvas loaded (0)');
+
         return { isnew: true, content: '{}', colorIndex: 0, sharedCanvasId: ''};
     }
 

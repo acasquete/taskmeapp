@@ -123,6 +123,9 @@ const MenuController = (function () {
                     case 'openGitHub':
                         window.open('https://github.com/acasquete/taskmeapp', '_blank');
                         break;
+                    case 'chart-picker':
+                        Sketch.openOption('chart-picker');
+                        break;
                     case 'downloadSVG':
                         Sketch.download('svg');
                             break;
