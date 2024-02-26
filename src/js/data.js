@@ -123,6 +123,13 @@ const Data = (function () {
         addToQueue('canvas', id, canvasData, force);
     }
 
+    function saveItem(queue, id, data, force) {
+        if (!userId) {
+           return null;
+        }
+        addToQueue(queue, id, JSON.parse(data), force);
+    }
+
     function fetchFirestoreDocument(collectionPath, docId) {
        
         return db.collection(collectionPath).doc(docId).get()
@@ -159,6 +166,12 @@ const Data = (function () {
         }
     
         return null;
+    }
+
+    async function getItem(object, id) {
+        console.debug (`fetch private ${object} ${id}`);
+        let result = await fetchWithRetry(`users/${userId}/${object}`, `c${id}`);
+        return result;
     }
 
     async function getCanvas(id, sharedId) {
@@ -281,7 +294,9 @@ const Data = (function () {
         setUserId: setUserId,
         sendCanvasObject: sendCanvasObject,
         isLogged: isLogged,
-        stopListen: stopListen
+        stopListen: stopListen,
+        saveItem: saveItem,
+        getItem: getItem
     };
 })();
 

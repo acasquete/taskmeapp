@@ -10,6 +10,10 @@ export class Config {
         localStorage.setItem(key, id);
     }
 
+    public saveDataItem(queue: string, key:string, data: string): void {
+        Data.saveItem(queue, key, data, false);
+    }
+
     public getItem(key:string): string | null {
         return localStorage.getItem(key);
     }
@@ -35,6 +39,27 @@ export class Config {
         
         this.saveItem("c" + id, JSON.stringify(canvas));
         Data.saveCanvas(id, canvas, force);
+    }
+
+    public async getItemTimestamp (object: string, key: string) {
+        console.debug('getting object...');
+
+        const objRemote = await Data.getItem(object, key);
+        const objLocalS  = this.getItem(key);
+        const objLocal  =  objLocalS ? JSON.parse(objLocalS) : null;
+        
+        if (objLocal && objRemote) { 
+            let remoteUp = !objLocal.timestamp || objRemote.timestamp > objLocal.timestamp;
+            if (remoteUp) console.debug('remote loaded (2)');
+            else console.debug('local loaded (2)');
+            return remoteUp ? objRemote : objLocal;
+        } else if (objRemote) {
+            console.debug('remote loaded (1)');
+            return objRemote;
+        } else if (objLocal) {
+            console.debug('local loaded (1)');
+            return objLocal;
+        }
     }
 
     public async getCanvas(id: number, sharedId: string): Promise<Canvas> {

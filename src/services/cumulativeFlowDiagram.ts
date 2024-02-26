@@ -23,14 +23,27 @@ export class CumulativeFlowDiagram {
     this.data[date][stateValue] = value;
   }
 
-  public init (id: number) {
+  public async init (id: number) {
     this.boardId = id;
-    this.data = JSON.parse(this.config.getItem('cfd'+id) ?? '{}');
-    console.debug(this.data);
+    let result = await this.config.getItemTimestamp('cfd', 'cfd' + id);
+    if (result) {
+      this.data = JSON.parse(result.content);
+    } else {
+      this.data = {};
+    }
   }
 
   public save () {
-    this.config.saveItem('cfd'+this.boardId, JSON.stringify(this.data));
+    let store = {
+      content: JSON.stringify(this.data),
+      timestamp: Date.now()
+    }
+
+    let key = 'cfd'+this.boardId;
+    let dataStore = JSON.stringify(store);
+
+    this.config.saveItem(key, dataStore);
+    this.config.saveDataItem('cfd', key, dataStore);
   }
 
   public getLastRecords(): Record<string, Record<string, number>> {
