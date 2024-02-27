@@ -3,15 +3,12 @@ import { Config } from './configService';
 
 export class CumulativeFlowDiagram {
   private canvas: fabric.Canvas;
-  private config: Config;
   private svgElement: SVGElement;
   private data: Record<string, Record<string, number>>;
-  private boardId: number = 0;
 
-  constructor(canvas: fabric.Canvas, config: Config) {
+  constructor(canvas: fabric.Canvas) {
     this.canvas = canvas;
     this.data = {};
-    this.config = config;
   }
 
   public addOrUpdate(date: string, state: string, value: number): void {
@@ -23,27 +20,12 @@ export class CumulativeFlowDiagram {
     this.data[date][stateValue] = value;
   }
 
-  public async init (id: number) {
-    this.boardId = id;
-    let result = await this.config.getItemTimestamp('cfd', 'cfd' + id);
-    if (result) {
-      this.data = JSON.parse(result.content);
-    } else {
-      this.data = {};
-    }
+  public async init (data: Record<string, Record<string, number>>) {
+      this.data = data;
   }
 
-  public save () {
-    let store = {
-      content: JSON.stringify(this.data),
-      timestamp: Date.now()
-    }
-
-    let key = 'cfd'+this.boardId;
-    let dataStore = JSON.stringify(store);
-
-    this.config.saveItem(key, dataStore);
-    //this.config.saveDataItem('cfd', key, dataStore);
+  public exportData () : Record<string, Record<string, number>> {
+    return this.data
   }
 
   public getLastRecords(): Record<string, Record<string, number>> {
@@ -114,7 +96,7 @@ export class CumulativeFlowDiagram {
   }
 
   private updateGraph(svg: any) {
-    return;
+    
     const last14DaysData = this.getLastRecords();
     const stages = this.getUniqueStages(last14DaysData);
     const colors = this.getStageColors();

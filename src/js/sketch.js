@@ -828,7 +828,7 @@ const Sketch = (function () {
             initKanbanBoard();
         }
 
-        canvasController.switchDashboard(activeBoardIndex, storeCanvas.guid, storeCanvas.shared);
+        canvasController.switchDashboard(activeBoardIndex, storeCanvas);
         
         Config.saveActiveBoardIndex(activeBoardIndex);
 
@@ -1031,9 +1031,7 @@ const Sketch = (function () {
     }
 
     async function createShareSketch () {
-        let guid = canvasController.shareBoard();
-        await Config.getRemoteCanvas(guid);
-        return guid;
+        return await canvasController.ensureShareBoard();
     }
 
     function addObjectRealTime(data) {

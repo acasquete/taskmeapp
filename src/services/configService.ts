@@ -1,4 +1,5 @@
 ﻿import { Canvas } from "../types/canvas";
+import "../types/extendedCanvasCFD";
 import { PomodoroState } from "../types/pomodoroState";
 
 export class Config {
@@ -57,7 +58,7 @@ export class Config {
         const canvasLocal: Canvas | null = canvasLocalString ? JSON.parse(canvasLocalString) : null;
     
         if (canvasRemote && canvasLocal) {
-            let remoteUp = !canvasLocal.timestamp || canvasRemote.timestamp > canvasLocal.timestamp;
+            let remoteUp = !canvasLocal.timestamp || canvasRemote.timestamp >= canvasLocal.timestamp;
             if (remoteUp) console.debug('remote canvas loaded (2)');
             else console.debug('local canvas loaded (2)');
             return remoteUp ? canvasRemote : canvasLocal;
@@ -72,7 +73,7 @@ export class Config {
         console.debug('new canvas loaded (0)');
 
         let guid = Utils.generateCompactGUID();
-        return { guid: guid, isnew: true, content: '{}', colorIndex: 0, shared: false };
+        return { guid: guid, isnew: true, content: '{}', colorIndex: 0, shared: false, cfd: {} };
     }
 
     public getPomodoroState(): PomodoroState {

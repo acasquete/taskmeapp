@@ -4,6 +4,8 @@ import { CanvasHistory } from './canvasHistory';
 import { Object } from 'fabric/fabric-impl';
 import { EditModeController } from './editModeController';
 import { CumulativeFlowDiagram } from './cumulativeFlowDiagram';
+import { Canvas } from '../types/canvas';
+import '../types/extendedCanvasCFD';
 
 export class CanvasController {
     private canvas: fabric.Canvas;
@@ -39,7 +41,9 @@ export class CanvasController {
         this.canvasHistory = new CanvasHistory(canvas);
         this.editController = new EditModeController(canvas);
         this.config = new Config();
-        this.cfd = new CumulativeFlowDiagram(canvas, this.config);
+
+        // Extension
+        this.cfd = new CumulativeFlowDiagram(canvas);
     }
 
     public reset () {
@@ -55,12 +59,13 @@ export class CanvasController {
         return object.cl === 'k' && object.id?.startsWith('sep');
     }
 
-    public switchDashboard(index: number, guid: string, shared: boolean) {
-        this.boardGUID = guid;
+    public switchDashboard(index: number, board: Canvas) {
+        this.boardGUID = board.guid;
         this.boardIndex = index;
-        this.isShared = shared ?? false;
-        //this.cfd.init(id);
-        //this.updateCFD();
+        this.isShared = board.shared ?? false;
+
+        this.cfd.init(board.cfd);
+        this.updateCFD();
     }
 
     private updateCFD(): void {
@@ -83,6 +88,7 @@ export class CanvasController {
         }
     
         this.cfd.draw();
+
         this.isLoading = false;
     }
 
@@ -977,24 +983,31 @@ export class CanvasController {
         this.saveViewPortConfiguration();
 
         let jsonCanvas = this.canvas.toJSON(['cl', 'id']);
+        
+        // Extension
+        let exportDataCFG = this.cfd.exportData();
+
         let storeCanvas = { 
             guid: this.boardGUID, 
             colorIndex: this.editController.getCurrentColor(), 
             content:  JSON.stringify(jsonCanvas), 
             timestamp: Date.now(),
-            cfd: null,
-            shared: this.isShared
+            shared: this.isShared,
+            cfd: exportDataCFG
         };     
 
         this.config.saveCanvas(this.boardIndex, storeCanvas, force);
-        //this.cfd.save();
         this.canvasHistory.saveHistory();
         this.canvas.isDrawingMode = currentMode;
     }
 
-    public shareBoard () : string {
-        this.isShared = true;
-        this.saveCanvas(true);
+    public async ensureShareBoard () : Promise<string> {
+        if (!this.isShared) {
+            console.debug('share board');
+            this.isShared = true;
+            this.saveCanvas(true);
+            await this.config.getRemoteCanvas(this.boardGUID);
+        }
         return this.boardGUID;
     }
 

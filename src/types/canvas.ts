@@ -6,3 +6,4 @@ export interface Canvas {
     timestamp?: number;
     isnew?: boolean;
 }
+
