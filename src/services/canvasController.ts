@@ -88,7 +88,6 @@ export class CanvasController {
         }
     
         this.cfd.draw();
-
         this.isLoading = false;
     }
 

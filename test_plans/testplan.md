@@ -2,6 +2,14 @@
 
 ## Test Cases
 
+| Test Case ID | Description                                                             | Result   |
+|--------------|-------------------------------------------------------------------------|----------|
+| 1            | Disallow BoardID Loading Without Shared Attribute Set to True           |          |
+| 2            | Owner Must Listen to Events Upon Sharing                                |          |
+| 3            | Stop Receiving Events When Switching Dashboards                         |          |
+| 4            | Any User Can Delete Everything                                          |          |
+| 5            | Event Listening Persists After Deletion                                 |          |
+
 ### 1. Disallow BoardID Loading Without Shared Attribute Set to True
 - **Goal**: To verify that the system prevents the loading of a BoardID unless its "shared" attribute is explicitly set to true.
 - **Expected Outcome**: The system rejects the attempt to load a BoardID with "shared" = false, displaying an error or rejection message.
