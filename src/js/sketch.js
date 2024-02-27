@@ -215,13 +215,13 @@ const Sketch = (function () {
                 x1: 75,
                 y1: noteHeight / 2,
                 x2: 75,
-                y2: noteHeight / 2,
-                r1: 60,
+                y2: 75,
+                r1: 150,
                 r2: noteHeight,
             },
             colorStops: [
-            { offset: 0, color: colors[color].primary }, // Color de inicio
-            { offset: 1, color:  colors[color].secondary }  // Color de fin
+            { offset: 0, color: colors[color].secondary }, // Color de inicio
+            { offset: 1, color:  colors[color].primary }  // Color de fin
             ]
         });
 
