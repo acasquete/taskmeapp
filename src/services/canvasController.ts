@@ -466,7 +466,7 @@ export class CanvasController {
                     return;
                 }
             }
-
+            
             this.normalizeZIndex();
             this.updateCFD();
             this.saveCanvas();

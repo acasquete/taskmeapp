@@ -312,6 +312,8 @@ const Sketch = (function () {
         assignConfigToObject (group);
 
         canvas.add(group);
+
+        canvasController.updateNoteCounters();
     }
 
     function  assignConfigToObject (obj) {
