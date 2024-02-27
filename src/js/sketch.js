@@ -209,15 +209,17 @@ const Sketch = (function () {
         let size = matches[1];
         let color = matches[2];
 
+        var noteHeight = size === 'small' ? 75 : 150; 
+
         var gradient = new fabric.Gradient({
             type: 'radial',
             coords: {
-                x1: 75,
-                y1: noteHeight / 2,
-                x2: 75,
-                y2: 75,
-                r1: 150,
-                r2: noteHeight,
+                x1: noteHeight /2,
+                y1: 0,
+                x2: noteHeight/2,
+                y2: noteHeight/2,
+                r1: noteHeight * 1.1,
+                r2: 0,
             },
             colorStops: [
             { offset: 0, color: colors[color].secondary }, // Color de inicio
