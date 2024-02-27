@@ -21,7 +21,8 @@ export class CumulativeFlowDiagram {
   }
 
   public async init (data: Record<string, Record<string, number>>) {
-      this.data = data;
+      console.debug('init cfd');
+      this.data = data ?? {};
   }
 
   public exportData () : Record<string, Record<string, number>> {
@@ -85,7 +86,7 @@ export class CumulativeFlowDiagram {
       });
     });
 
-    return maxValue;
+    return Math.max(maxValue, 10);
   }
 
   public activate () {
@@ -121,7 +122,9 @@ export class CumulativeFlowDiagram {
   }
 
   public draw(): void {
-     
+    console.debug('draw cfg');
+    console.debug(this.data);
+
     const margin = { top: 40, right: 0, bottom: 0, left: 0 },
       width = 1200,
       height = 600;
