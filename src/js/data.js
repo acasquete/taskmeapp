@@ -60,6 +60,7 @@ const Data = (function () {
     
     async function processQueue() {
         console.debug('process queue');
+
         lastRequestTime = Date.now();
 
         Object.values(queue).forEach(async request =>  {
@@ -83,6 +84,8 @@ const Data = (function () {
             return null;
         }
 
+        console.debug('add to queue ' + type);
+
         queue[type] = { type, id, data };
         const currentTime = Date.now();
 
@@ -102,11 +105,13 @@ const Data = (function () {
     function saveCanvas(index, canvasData, force) {
         if (!userId) return;
 
+        console.debug('save canvas');
+
         addToQueue('board', canvasData.guid, canvasData, force);
 
         if (index>0) {
             let nameBoardId = `boardId${index}`;
-            addToQueue('user', userId, { [nameBoardId]: canvasData.guid }, true);
+            addToQueue('user', userId, { [nameBoardId]: canvasData.guid }, force);
         }
     }
 
@@ -148,12 +153,6 @@ const Data = (function () {
         return null;
     }
 
-    async function getItem(object, id) {
-        console.debug (`fetch private ${object} ${id}`);
-        let result = await fetchWithRetry(`users/${userId}/${object}`, `c${id}`);
-        return result;
-    }
-
     async function getGUIDByIndex (index) {
         if (!userId) return;
 
@@ -189,9 +188,20 @@ const Data = (function () {
 
         let path = `bs_${newGUID}`;
         
+        const startTime = new Date().getTime();
+
         console.debug(`listen ${path}`);
 
         listenToRealtimeDatabase(path, (data) => {
+            const currentTime = new Date().getTime();
+            const elapsedTime = (currentTime - startTime) / 1000; 
+
+            if (elapsedTime < 1) {
+                console.debug("Discarding first event due to time constraint.");
+                return;
+            }
+
+            console.debug('event received: ' + JSON.stringify(data));
 
             if (data.uid != publicUserId) {
                 switch (data.a) {
@@ -216,6 +226,9 @@ const Data = (function () {
                         break;
                     case 'cu': // Column Text Update
                         Sketch.updateTextControlRealTime(data.id, data.d);
+                        break;
+                    case 'rb': // Reset Board
+                        Sketch.clearBoardRealTime();
                         break;
                 }
             }

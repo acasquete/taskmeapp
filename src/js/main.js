@@ -27,8 +27,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     await Sketch.init();
 
     const googleToken = localStorage.getItem('googleToken');
+
     if (googleToken && !isTokenExpired(googleToken)) {
-        signInWithFirebase(googleToken);
+        console.debug('auth token');
+        await signInWithFirebase(googleToken);
     } else {
         console.debug('no auth token');
         Sketch.loadBoard(boardGUID);
@@ -41,36 +43,49 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 let isSigned = false;
 
-function onSignIn(response) {
+async function onSignIn(response) {
+    console.debug('issigned: ' +isSigned);
     if (isSigned) return;
 
     const jwt = response.credential;
     localStorage.setItem('googleToken', jwt);
-
-    signInWithFirebase(jwt);
+    await signInWithFirebase(jwt);
 }
 
 window.onSignIn = onSignIn;
 
-function signInWithFirebase(googleToken) {
+async function signInWithFirebase(googleToken) {
     
     if (isTokenExpired(googleToken)) {
+        console.debug('token expired');
         localStorage.removeItem('googleToken');
         return;
     }
 
     const credential = firebase.auth.GoogleAuthProvider.credential(googleToken);
 
-    firebase.auth().signInWithCredential(credential)
-        .then(async (result) => {
-            Data.setUserId(result.user.uid);
-            await Sketch.loadBoard(boardGUID);
-            isSigned = true;
-            hideStatusBarIcon();
-        }).catch((error) => {
-            console.error("Authentication Error Firebase:", error);
-            showStatusBarIcon();
-        });
+    try {
+        let result = await firebase.auth().signInWithCredential(credential);
+
+        Data.setUserId(result.user.uid);
+        await Sketch.loadBoard(boardGUID);
+
+        var days = 7;
+
+        var f = new Date();
+        f.setTime(f.getTime() + (days * 24 * 60 * 60 * 1000));
+        var exp = "expires=" + f.toUTCString();
+        document.cookie = "sid=gt;" + exp + ";path=/";
+
+        isSigned = true;
+
+        hideStatusBarIcon();
+    }
+    catch(error)
+    {
+        console.error("Authentication Error Firebase:", error);
+        showStatusBarIcon();
+    }
 }
 
 function showStatusBarIcon() {
@@ -85,4 +100,3 @@ function isTokenExpired(token) {
     const payload = JSON.parse(atob(token.split('.')[1]));
     return payload.exp * 1000 < Date.now();
 }
-

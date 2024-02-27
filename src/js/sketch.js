@@ -310,8 +310,6 @@ const Sketch = (function () {
         assignConfigToObject (group);
 
         canvas.add(group);
-        canvasController.updateNoteCounters();
-        canvasController.saveCanvas();
     }
 
     function  assignConfigToObject (obj) {
@@ -454,10 +452,7 @@ const Sketch = (function () {
 
         circle.on('mousedblclick', removeDot);
         canvas.add(circle);
-        canvasController.saveCanvas();
     }
-
-
 
     function isOverlapping(note, space, width, height) {
         return note.left < space.left + width && 
@@ -1035,9 +1030,10 @@ const Sketch = (function () {
         canvas.requestRenderAll();
     }
 
-    function createShareSketch () {
-        let id = canvasController.shareBoard();
-        return id;
+    async function createShareSketch () {
+        let guid = canvasController.shareBoard();
+        await Config.getRemoteCanvas(guid);
+        return guid;
     }
 
     function addObjectRealTime(data) {
@@ -1098,11 +1094,16 @@ const Sketch = (function () {
             });
         }
     }
+
+    function clearBoardRealTime () {
+        handleClearConfirm();
+    }
     
     return { init, clearCanvas, clearAllCanvas, toggleNotesVisibility, createWelcomeNote, 
         addObserver, notifyAllObservers, toggleFullscreen, loadBoard, switchDashboard, changeColor, 
         addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateNoteRealTime,
-        createShareSketch, handleClearClose, nextAdvice, download, updateTextControlRealTime, openOption };
+        createShareSketch, handleClearClose, nextAdvice, download, updateTextControlRealTime, openOption,
+        clearBoardRealTime };
 })();
 
 window.Sketch = Sketch;

@@ -43,9 +43,12 @@ export class CanvasController {
     }
 
     public reset () {
+        console.debug('controller reset');
+        
         this.isShared = false;
         this.canvas.clear();
         this.editController.setSelectionMode();
+        Data.sendCanvasObject({a:'rb' });
     }
 
     isSeparatorElement(object: fabric.Object) : boolean {
@@ -53,13 +56,9 @@ export class CanvasController {
     }
 
     public switchDashboard(index: number, guid: string, shared: boolean) {
-        console.debug('shared' + shared);
         this.boardGUID = guid;
         this.boardIndex = index;
         this.isShared = shared ?? false;
-
-        console.debug('shared' + this.isShared);
-
         //this.cfd.init(id);
         //this.updateCFD();
     }
@@ -395,6 +394,8 @@ export class CanvasController {
         
         this.canvas.on('object:added', (event: fabric.IEvent) => {
             if (this.isLoading) return;
+
+            console.debug('object:added');
 
             const addedObject = event.target;
             
@@ -967,6 +968,9 @@ export class CanvasController {
     }
     
     private saveCanvas(force?: boolean) : void {
+
+        console.debug('controller save canvas');
+
         const currentMode = this.canvas.isDrawingMode;
         this.canvas.isDrawingMode = false;
         
@@ -991,7 +995,6 @@ export class CanvasController {
     public shareBoard () : string {
         this.isShared = true;
         this.saveCanvas(true);
-
         return this.boardGUID;
     }
 

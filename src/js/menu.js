@@ -34,10 +34,8 @@ const MenuController = (function () {
 
         var menus = document.querySelectorAll('.menu');
 
-
-
         menus.forEach(function(menu) {
-            menu.addEventListener('mouseup', function(event) {
+            menu.addEventListener('mouseup', async function(event) {
 
                 event.stopPropagation();
 
@@ -135,7 +133,7 @@ const MenuController = (function () {
                             return;
                         }
             
-                        let sharedId = Sketch.createShareSketch();
+                        let sharedId = await Sketch.createShareSketch();
                         showModalShare(sharedId);
                         break;
                 }
