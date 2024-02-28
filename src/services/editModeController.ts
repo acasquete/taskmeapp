@@ -1,4 +1,4 @@
-import { CanvasUtilities } from "./canvasUtilities";
+import { CanvasUtilities } from "./CanvasUtilities";
 
 export class EditModeController {
     private canvas: fabric.Canvas;

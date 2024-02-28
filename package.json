@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
-    "@types/fabric": "^5.3.7",
+    "@types/fabric": "^5.3.6",
     "@types/node": "^20.11.16",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.34",

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Config } from '../services/configService';
+import { Config } from './ConfigService';
 import { KanbanStage } from '../types/kanbanStage';
 
 export class KanbanAdvisor {

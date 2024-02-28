@@ -1,6 +1,6 @@
 ﻿import { Canvas } from "../types/canvas";
 import { PomodoroState } from "../types/pomodoroState";
-import { Helper } from "./helper";
+import { Helper } from "./Helper";
 
 export class Config {
     constructor() {

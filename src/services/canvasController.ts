@@ -1,10 +1,10 @@
-import { CanvasUtilities } from './canvasUtilities';
-import { Config } from './configService';
-import { CanvasHistory } from './canvasHistory';
-import { EditModeController } from './editModeController';
-import { CumulativeFlowDiagram } from './cumulativeFlowDiagram';
+import { CanvasUtilities } from './CanvasUtilities';
+import { Config } from './ConfigService';
+import { CanvasHistory } from './CanvasHistory';
+import { EditModeController } from './EditModeController';
+import { CumulativeFlowDiagram } from './CumulativeFlowDiagram';
 import { Canvas } from '../types/canvas';
-import { DividerManager } from './dividerManager';
+import { DividerManager } from './DividerManager';
 
 export class CanvasController {
     private canvas: fabric.Canvas;

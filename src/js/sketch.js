@@ -1,8 +1,8 @@
 ﻿import kalamFontURL from '../assets/fonts/Kalam-Regular.ttf';
 import permanentMarkerFontURL from '../assets/fonts/PermanentMarker-Regular.ttf';
-import { CanvasUtilities } from '../services/canvasUtilities.ts';
-import { CanvasController } from '../services/canvasController';
-import { KanbanAdvisor } from '../services/kanbanAdvisor';
+import { CanvasUtilities } from '../services/CanvasUtilities';
+import { CanvasController } from '../services/CanvasController';
+import { KanbanAdvisor } from '../services/KanbanAdvisor';
 
 const Sketch = (function () {
     "use strict";

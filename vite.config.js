@@ -6,7 +6,7 @@ export default {
   build: {
     outDir: '../dist',
     emptyOutDir: true,
-    sourcemap: true,
+    sourcemap: false,
     minify: true,
     rollupOptions: {
       input: 'src/index.html',
