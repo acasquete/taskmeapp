@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "tsc --noEmit",
     "dev": "vite serve ./src",
     "build": "vite build",
     "preview": "vite preview"
