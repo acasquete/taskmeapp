@@ -201,6 +201,7 @@ export class CumulativeFlowDiagram {
       }
 
       this.canvas.add(obj).renderAll();
+      obj.sendToBack();
     });
   }
 }

@@ -269,7 +269,7 @@ const Sketch = (function () {
         });
 
         const noteWidth = 150;
-        const margin = 5;
+        const margin = 15;
 
         text.set({ top: square.top + (square.height - text.getScaledHeight()) / 2});
 

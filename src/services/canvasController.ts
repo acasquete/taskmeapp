@@ -417,6 +417,7 @@ export class CanvasController {
             this.assignUniqueIdToAddedObject(addedObject);
             this.sendObjectData(addedObject);
             this.updateCFD();
+            this.normalizeZIndex();
             this.saveCanvas();
         });
         
@@ -466,9 +467,8 @@ export class CanvasController {
                     return;
                 }
             }
-            
-            this.normalizeZIndex();
             this.updateCFD();
+            this.normalizeZIndex();
             this.saveCanvas();
         });
 
@@ -903,8 +903,8 @@ export class CanvasController {
 
     public getDefaultColumnConfiguration(): ColumnConfiguration[] {
         return [
-            { id: 1, title: 'Todo', count: 0, proportion: 0.35 },
-            { id: 2, title: 'In Progress', count: 0, proportion: 0.35 },
+            { id: 1, title: 'Todo', count: 0, proportion: 0.38 },
+            { id: 2, title: 'In Progress', count: 0, proportion: 0.32 },
             { id: 3, title: 'Done', count: 0, proportion: 0.3 }
         ];
     }
@@ -941,20 +941,16 @@ export class CanvasController {
     }
 
     public normalizeZIndex(): void {
-        
-        let maxPathIndex = -1;
+        console.debug('normalize zindex');
+
         const objects = this.canvas.getObjects();
-    
-        objects.forEach((object, index) => {
-            if (object.type === 'path') {
-                maxPathIndex = Math.max(maxPathIndex, index);
-            }
+        
+        objects.filter(object => object.type === 'path').forEach(pathObject => {
+            this.canvas.sendBackwards(pathObject, true);
         });
-    
-        objects.forEach(object => {
-            if (object.type === 'group' && this.canvas.getObjects().indexOf(object) <= maxPathIndex) {
-                this.canvas.bringToFront(object);
-            }
+
+        objects.filter(object => object.cl === 'n' || object.cl === 'd').forEach(clObject => {
+            this.canvas.bringToFront(clObject);
         });
     
         this.canvas.requestRenderAll();
