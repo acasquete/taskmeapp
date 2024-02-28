@@ -130,12 +130,12 @@ const Sketch = (function () {
         var gradient = new fabric.Gradient({
             type: 'radial',
             coords: {
-                x1: 75,
-                y1: 150 / 2,
-                x2: 75,
-                y2: 150 / 2,
+                x1: 450,
+                y1: 250,
+                x2: 450,
+                y2: 250,
                 r1: 60,
-                r2: 300,
+                r2: 900,
             },
             colorStops: [
             { offset: 0, color: colors['yellow'].primary }, 
