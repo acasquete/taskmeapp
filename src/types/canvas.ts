@@ -5,5 +5,6 @@ export interface Canvas {
     shared: boolean;
     timestamp?: number;
     isnew?: boolean;
+    cfd?: Record<string, Record<string, number>>; 
 }
 

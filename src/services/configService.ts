@@ -1,6 +1,6 @@
 ﻿import { Canvas } from "../types/canvas";
-import "../types/extendedCanvasCFD";
 import { PomodoroState } from "../types/pomodoroState";
+import { Helper } from "./helper";
 
 export class Config {
     constructor() {
@@ -72,7 +72,7 @@ export class Config {
     
         console.debug('new canvas loaded (0)');
 
-        let guid = Utils.generateCompactGUID();
+        let guid = Helper.generateCompactGUID();
         return { guid: guid, isnew: true, content: '{}', colorIndex: 0, shared: false, cfd: {} };
     }
 

@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-import { Config } from './configService';
 
 export class CumulativeFlowDiagram {
   private canvas: fabric.Canvas;
@@ -172,9 +171,9 @@ export class CumulativeFlowDiagram {
     const days = this.getDatesWithDataLast14Days().length;
     
     const area = d3.area<number>()
-      .x((d, i) => i * (2400 / days))
+      .x((d, i: number) => i * (2400 / days))
       .y0(lenY)
-      .y1(d => lenY - (d * lenY / this.getMaxValue()));
+      .y1((d:number) => lenY - (d * lenY / this.getMaxValue()));
 
     svg.append("path")
       .data([data])

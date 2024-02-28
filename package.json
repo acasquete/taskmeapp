@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prebuild": "tsc --noEmit",
     "dev": "vite serve ./src",
     "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@types/fabric": "^5.3.6",
+    "@types/d3": "^7.4.3",
+    "@types/fabric": "^5.3.7",
     "@types/node": "^20.11.16",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.34",

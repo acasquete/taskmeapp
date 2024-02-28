@@ -84,7 +84,7 @@
     }
 
     function drawTime() {
-        var timeDifference = Utils.timeDifference(pomodoroEndTime, new Date());
+        var timeDifference = Helper.timeDifference(pomodoroEndTime, new Date());
         document.getElementById("time").textContent = timeDifference;
     }
 

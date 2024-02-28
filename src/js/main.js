@@ -7,7 +7,6 @@ import '../css/fa/css/solid.min.css';
 import '../services/configService.ts';
 import '../index.ts';
 import './menu.js';
-import './utils.js';
 import './pomodoro.js';
 import './notificationsweb.js';
 import './sketch.js';
