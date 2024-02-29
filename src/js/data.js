@@ -50,6 +50,7 @@ const Data = (function () {
     }
 
     async function saveToFirestore(collectionPath, docId, data) {
+        console.debug('save to firestore');
         try {
             await db.collection(collectionPath).doc(docId).set(data, { merge: true} );
             console.debug(`${collectionPath}/${docId} saved`);
@@ -63,7 +64,7 @@ const Data = (function () {
 
         lastRequestTime = Date.now();
 
-        Object.values(queue).forEach(async request =>  {
+        Object.values(queue).forEach(async (request) => {
             const { type, id, data } = request;
 
             switch (type) {
@@ -77,9 +78,12 @@ const Data = (function () {
         });
 
         queue = {}; 
+
+        console.debug('end process queue');
+
     }
 
-    function addToQueue(type, id, data, force) {
+    async function addToQueue(type, id, data, force) {
         if (!userId) {
             return null;
         }
@@ -87,13 +91,17 @@ const Data = (function () {
         console.debug('add to queue ' + type);
 
         queue[type] = { type, id, data };
-        const currentTime = Date.now();
-
-        if (force) lastRequestTime = 0;
 
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
+
+        if (force) {
+            console.debug('force process queue');
+            await processQueue();
+            return;
+        }
+        const currentTime = Date.now();
 
         if (currentTime - lastRequestTime >= SAVE_INTERVAL) {
             processQueue();
@@ -102,16 +110,16 @@ const Data = (function () {
         }
     }
 
-    function saveCanvas(index, canvasData, force) {
+    async function saveCanvas(index, canvasData, force) {
         if (!userId) return;
 
         console.debug('save canvas');
 
-        addToQueue('board', canvasData.guid, canvasData, force);
+        await addToQueue('board', canvasData.guid, canvasData, force);
 
         if (index>0) {
             let nameBoardId = `boardId${index}`;
-            addToQueue('user', userId, { [nameBoardId]: canvasData.guid }, force);
+            await addToQueue('user', userId, { [nameBoardId]: canvasData.guid }, force);
         }
     }
 

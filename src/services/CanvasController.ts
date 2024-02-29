@@ -672,7 +672,7 @@ export class CanvasController {
         return this.boardGUID;
     }
     
-    private saveCanvas(force?: boolean) : void {
+    private async saveCanvas(force?: boolean) : void {
 
         console.debug('controller save canvas');
 
@@ -695,7 +695,7 @@ export class CanvasController {
             cfd: exportDataCFG
         };     
 
-        this.config.saveCanvas(this.boardIndex, storeCanvas, force);
+        await this.config.saveCanvas(this.boardIndex, storeCanvas, force);
         this.canvasHistory.saveHistory();
         this.canvas.isDrawingMode = currentMode;
     }
@@ -704,7 +704,7 @@ export class CanvasController {
         if (!this.isShared) {
             console.debug('share board');
             this.isShared = true;
-            this.saveCanvas(true);
+            await this.saveCanvas(true);
             await this.config.getRemoteCanvas(this.boardGUID);
         }
         return this.boardGUID;

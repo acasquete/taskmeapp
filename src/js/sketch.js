@@ -586,6 +586,9 @@ const Sketch = (function () {
             setTimeout(() => {
                 document.getElementById("dashboard-number").style.display = 'none';
             }, 700);
+
+            console.debug('force save canvas before switch');
+            await canvasController.saveCanvas(true);
         }
 
         activeBoardIndex = boardIndex;

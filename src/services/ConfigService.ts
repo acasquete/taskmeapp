@@ -31,13 +31,13 @@ export class Config {
         this.saveItem("ab", index.toString());
     }
 
-    public saveCanvas(index: number, canvas: Canvas, force?: boolean): void {
+    public async saveCanvas(index: number, canvas: Canvas, force?: boolean): Promise<void> {
         console.debug('save local canvas');
         
         if (index>0) {
             this.saveItem("b" + index, JSON.stringify(canvas));
         }
-        Data.saveCanvas(index, canvas, force);
+        await Data.saveCanvas(index, canvas, force);
     }
 
     public async getRemoteCanvas(boardGUID: string): Promise<Canvas> {
