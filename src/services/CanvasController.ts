@@ -54,6 +54,10 @@ export class CanvasController {
         Data.sendCanvasObject({a:'rb' });
     }
 
+    public getDefaultColumnConfiguration () {
+        return this.dividerManager.getDefaultColumnConfiguration();
+    }
+    
     public updateNoteCounters () {
         this.dividerManager.updateNoteCounters();
     }
@@ -70,6 +74,7 @@ export class CanvasController {
     private updateCFD(): void {
         this.isLoading = true;
     
+        let stages: string[] = [];
         let columns = this.dividerManager.getStagesColumnsConfiguration();
     
         const today = new Date();
@@ -81,12 +86,13 @@ export class CanvasController {
             
             if (match && match[1]) {
                 const stageName = match[1].trim().toLocaleLowerCase(); 
-                
+                stages.push(stageName);
                 this.cfd.addOrUpdate(formattedDate, stageName, column.count);
             }
         }
     
-        this.cfd.draw();
+        this.cfd.draw(stages);
+
         this.isLoading = false;
     }
 
@@ -337,7 +343,6 @@ export class CanvasController {
             activeSelection.borderScaleFactor = activeSelection.cl === 'k' ? 1: 2;
 
             if (activeSelection?.type === 'activeSelection') {
-
                 activeSelection.hasControls=false;
 
                 let objects = activeSelection.getObjects().filter(obj => obj.type == 'textbox');
@@ -549,7 +554,6 @@ export class CanvasController {
     }
 
     private onUpdatingObject (e: fabric.IEvent) {
-       
         const obj = e.target as fabric.Object & { cl?: string };
         
         if (obj.id === 'cfd') return;

@@ -22,6 +22,7 @@ export class CumulativeFlowDiagram {
   public async init (data: Record<string, Record<string, number>>) {
       console.debug('init cfd');
       this.data = data ?? {};
+      console.debug(this.data);
   }
 
   public exportData () : Record<string, Record<string, number>> {
@@ -46,11 +47,13 @@ export class CumulativeFlowDiagram {
   }
 
   public getDataForD3(state: string): number[] {
-    const last14Days = this.getLastRecords();
+    
+    const records = this.getLastRecords();
     let result: number[] = [];
 
-    Object.keys(last14Days).forEach(date => {
-      const value = last14Days[date][state] || 0;
+    
+    Object.keys(records).forEach(date => {
+      const value = records[date][state] || 0;
       result.push(value);
     });
 
@@ -95,10 +98,7 @@ export class CumulativeFlowDiagram {
     this.canvas.setZoom(zoomLevel);
   }
 
-  private updateGraph(svg: any) {
-    
-    const last14DaysData = this.getLastRecords();
-    const stages = this.getUniqueStages(last14DaysData);
+  private updateGraph(svg: any, stages: string[]) {
     const colors = this.getStageColors();
 
     for (let i = 0; i < stages.length; i++) {
@@ -120,15 +120,14 @@ export class CumulativeFlowDiagram {
     return Array.from(stages);
   }
 
-  public draw(): void {
+  public draw(stages: string[]): void {
     console.debug('draw cfg');
-    console.debug(this.data);
 
     const margin = { top: 40, right: 0, bottom: 0, left: 0 },
       width = 1200,
       height = 600;
 
-    const x = d3.scaleBand().range([0, width]);
+    const x = d3.scaleBand().range([0, width]).paddingInner(1);
     const y = d3.scaleLinear().range([height, 0]);
 
     const svg = d3.create("svg")
@@ -140,6 +139,8 @@ export class CumulativeFlowDiagram {
     x.domain(this.getDatesWithDataLast14Days());
     y.domain([0,this.getMaxValue()]);
 
+    const yTicks = y.ticks().filter(tick => tick > 0);
+
     svg.append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(x))
@@ -148,7 +149,7 @@ export class CumulativeFlowDiagram {
       .selectAll("text");
 
     svg.append("g")
-      .call(d3.axisLeft(y))
+      .call(d3.axisLeft(y).tickValues(yTicks))
       .style("font-size", "30px")
       .style("font-family", "Kalam");
 
@@ -160,21 +161,20 @@ export class CumulativeFlowDiagram {
       .style("font-family", "PermanentMarker")
       .text("Cumulative Flow Diagram");
     
-    this.updateGraph(svg);
+    this.updateGraph(svg, stages);
     this.svgElement = svg.node()!;
     this.loadSVG();
   }
 
   private drawArea(svg: d3.Selection<SVGGElement, unknown, null, undefined>, data: number[], className: string, color: string): void {
-    
     const lenY = 600;
     const days = this.getDatesWithDataLast14Days().length;
-    
+
     const area = d3.area<number>()
-      .x((d, i: number) => i * (2400 / days))
+      .x((d, i: number) => days > 2 ? (i/(days-1)) * 1200 : 0 )
       .y0(lenY)
       .y1((d:number) => lenY - (d * lenY / this.getMaxValue()));
-
+ 
     svg.append("path")
       .data([data])
       .attr("class", className)
