@@ -22,7 +22,6 @@ export class CumulativeFlowDiagram {
   public async init (data: Record<string, Record<string, number>>) {
       console.debug('init cfd');
       this.data = data ?? {};
-      console.debug(this.data);
   }
 
   public exportData () : Record<string, Record<string, number>> {

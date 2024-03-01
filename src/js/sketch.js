@@ -796,6 +796,7 @@ const Sketch = (function () {
     }
            
     async function loadCanvasAsync(guid) {
+
         canvasController.isLoading = true;
 
         let storeCanvas;

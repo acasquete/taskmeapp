@@ -72,6 +72,10 @@ export class CanvasController {
     }
 
     private updateCFD(): void {
+        let oFlag = this.isLoading;
+        
+        this.isLoading = true;
+        
         let stages: string[] = [];
         let columns = this.dividerManager.getStagesColumnsConfiguration();
     
@@ -90,6 +94,8 @@ export class CanvasController {
         }
     
         this.cfd.draw(stages);
+
+        this.isLoading = oFlag;
     }
 
     private triggerDblClick(event: MouseEvent | TouchEvent) {
