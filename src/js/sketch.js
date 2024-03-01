@@ -736,8 +736,6 @@ const Sketch = (function () {
    
     function initKanbanBoard() {
 
-        canvasController.isLoading = true;
-
         let kanbanElements = canvas.getObjects().filter(obj => obj.cl === 'k');
         if (kanbanElements.length > 0) {
             console.debug('init existing kanban board');
@@ -795,10 +793,7 @@ const Sketch = (function () {
         });
 
         if (activeBoardIndex===1) createWelcomeNote();
-
-        canvasController.isLoading = false;
     }
-   
            
     async function loadCanvasAsync(guid) {
         canvasController.isLoading = true;

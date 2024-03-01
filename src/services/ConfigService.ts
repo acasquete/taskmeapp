@@ -37,7 +37,10 @@ export class Config {
         if (index>0) {
             this.saveItem("b" + index, JSON.stringify(canvas));
         }
+
         await Data.saveCanvas(index, canvas, force);
+
+        console.debug('end save local canvas');
     }
 
     public async getRemoteCanvas(boardGUID: string): Promise<Canvas> {
@@ -45,13 +48,16 @@ export class Config {
     }
 
     public async getCanvas(boardIndex: number): Promise<Canvas> {
-        console.debug('getting canvas...');
+        console.debug('getting canvas idx: ' + boardIndex);
         
         let canvasRemote;
         let boardGUID = await Data.getGUIDByIndex(boardIndex);
 
+        console.debug('remote guid: ' + boardGUID);
+
         if (boardGUID) {
             canvasRemote = await Data.getCanvas(boardGUID);
+            console.debug('loaded remote canvas: ' + boardGUID);
         }
         
         const canvasLocalString = this.getItem("b" + boardIndex);

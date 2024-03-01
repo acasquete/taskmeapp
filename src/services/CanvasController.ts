@@ -72,8 +72,6 @@ export class CanvasController {
     }
 
     private updateCFD(): void {
-        this.isLoading = true;
-    
         let stages: string[] = [];
         let columns = this.dividerManager.getStagesColumnsConfiguration();
     
@@ -92,8 +90,6 @@ export class CanvasController {
         }
     
         this.cfd.draw(stages);
-
-        this.isLoading = false;
     }
 
     private triggerDblClick(event: MouseEvent | TouchEvent) {
@@ -673,13 +669,12 @@ export class CanvasController {
     }
     
     private async saveCanvas(force?: boolean) : void {
-
         console.debug('controller save canvas');
 
         const currentMode = this.canvas.isDrawingMode;
         this.canvas.isDrawingMode = false;
         
-        this.saveViewPortConfiguration();
+        this.saveViewPortConfiguration();   
 
         let jsonCanvas = this.canvas.toJSON(['cl', 'id']);
         

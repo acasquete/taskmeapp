@@ -83,7 +83,7 @@ const Data = (function () {
 
     }
 
-    async function addToQueue(type, id, data, force) {
+    function addToQueue(type, id, data, force) {
         if (!userId) {
             return null;
         }
@@ -98,9 +98,10 @@ const Data = (function () {
 
         if (force) {
             console.debug('force process queue');
-            await processQueue();
+            processQueue();
             return;
         }
+        
         const currentTime = Date.now();
 
         if (currentTime - lastRequestTime >= SAVE_INTERVAL) {
@@ -115,11 +116,11 @@ const Data = (function () {
 
         console.debug('save canvas');
 
-        await addToQueue('board', canvasData.guid, canvasData, force);
+        addToQueue('board', canvasData.guid, canvasData, force);
 
         if (index>0) {
             let nameBoardId = `boardId${index}`;
-            await addToQueue('user', userId, { [nameBoardId]: canvasData.guid }, force);
+            addToQueue('user', userId, { [nameBoardId]: canvasData.guid }, force);
         }
     }
 
@@ -165,8 +166,12 @@ const Data = (function () {
         if (!userId) return;
 
         let result = await fetchWithRetry(`user`, `${userId}`);
-        let boardId = `boardId${index}`;
-        return result[boardId];
+        if (result) {
+            let boardId = `boardId${index}`;
+            return result[boardId] ?? null;
+        } else {
+            return null
+        }
     }
 
     async function getCanvas(newGUID) {
