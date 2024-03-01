@@ -5,6 +5,7 @@ import { EditModeController } from './EditModeController';
 import { CumulativeFlowDiagram } from './CumulativeFlowDiagram';
 import { Canvas } from '../types/canvas';
 import { DividerManager } from './DividerManager';
+import { CanvasStyleManager } from './CanvasStyleManager';
 
 export class CanvasController {
     private canvas: fabric.Canvas;
@@ -29,20 +30,21 @@ export class CanvasController {
     private canvasHistory : CanvasHistory;
     private editController : EditModeController;
     private dividerManager : DividerManager;
+    private canvasStyleManager : CanvasStyleManager;
     private cfd : CumulativeFlowDiagram;
     private lastTap = 0;
-    private lastPY = 0;
     private config: Config;
 
     constructor(canvas: fabric.Canvas) {
         this.canvas = canvas;
-        this.canvasHistory = new CanvasHistory(canvas);
-        this.editController = new EditModeController(canvas);
-        this.dividerManager = new DividerManager(canvas);
         this.config = new Config();
+        this.canvasHistory = new CanvasHistory(canvas);
+        this.canvasStyleManager = new CanvasStyleManager(canvas, this.config);
+        this.editController = new EditModeController(canvas, this.canvasStyleManager);
+        this.dividerManager = new DividerManager(canvas, this.canvasStyleManager);
 
         // Extension
-        this.cfd = new CumulativeFlowDiagram(canvas);
+        this.cfd = new CumulativeFlowDiagram(canvas, this.canvasStyleManager);
     }
 
     public reset () {
@@ -52,6 +54,15 @@ export class CanvasController {
         this.canvas.clear();
         this.editController.setSelectionMode();
         Data.sendCanvasObject({a:'rb' });
+        this.canvasStyleManager.applyPreference();
+    }
+
+    public getSeparatorColorByAppearance() {
+        return this.canvasStyleManager.getSeparatorColor();
+    }
+
+    public getTextColorByAppearance() {
+        return this.canvasStyleManager.getTextColor();
     }
 
     public getDefaultColumnConfiguration () {
@@ -69,6 +80,7 @@ export class CanvasController {
 
         this.cfd.init(board.cfd || {});
         this.updateCFD();
+        this.canvasStyleManager.applyPreference(); 
     }
 
     private updateCFD(): void {
@@ -232,8 +244,6 @@ export class CanvasController {
             
             let pointer = this.canvas.getPointer(options.e, false);
 
-            this.lastPY=pointer.y;
-
             if (this.isDraggingDot && this.circleToDrag) {
                 this.circleToDrag.set({
                     left: pointer.x,
@@ -341,7 +351,7 @@ export class CanvasController {
             
             if (!activeSelection) return;
 
-            activeSelection.borderColor = 'blue';
+            activeSelection.borderColor = this.canvasStyleManager.getSelectionColor();
             activeSelection.borderScaleFactor = activeSelection.cl === 'k' ? 1: 2;
 
             if (activeSelection?.type === 'activeSelection') {
@@ -520,7 +530,7 @@ export class CanvasController {
             fontSize: 36,
             fontFamily: 'Kalam',
             textAlign: 'center',
-            fill: 'black',
+            fill: this.canvasStyleManager.getTextColor(),
             left: pointer.x,
             top: pointer.y,
             lockSkewingX: true,
@@ -723,7 +733,7 @@ export class CanvasController {
         this.isLoading = false;
     }
 
-    public getLastPositionY () : number {
-        return this.lastPY;
+    public toggleMode () {
+        this.canvasStyleManager.toggleMode();
     }
 }

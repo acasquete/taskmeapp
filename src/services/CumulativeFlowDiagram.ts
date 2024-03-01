@@ -1,12 +1,15 @@
 import * as d3 from 'd3';
+import { CanvasStyleManager } from './CanvasStyleManager';
 
 export class CumulativeFlowDiagram {
   private canvas: fabric.Canvas;
+  private styleManager: CanvasStyleManager;
   private svgElement: SVGElement;
   private data: Record<string, Record<string, number>>;
 
-  constructor(canvas: fabric.Canvas) {
+  constructor(canvas: fabric.Canvas, styleManager: CanvasStyleManager) {
     this.canvas = canvas;
+    this.styleManager = styleManager;
     this.data = {};
   }
 
@@ -111,14 +114,6 @@ export class CumulativeFlowDiagram {
     return ['#f0e49e', '#e78175', '#00b9d6', '#bcda69', 'purple', 'brown', 'pink', 'gray', 'cyan', 'magenta'];
   }
 
-  private getUniqueStages(data: Record<string, Record<string, number>>): string[] {
-    const stages = new Set<string>();
-    Object.values(data).forEach(dayData => {
-      Object.keys(dayData).forEach(stage => stages.add(stage));
-    });
-    return Array.from(stages);
-  }
-
   public draw(stages: string[]): void {
     console.debug('draw cfg');
 
@@ -145,12 +140,12 @@ export class CumulativeFlowDiagram {
       .call(d3.axisBottom(x))
       .style("font-size", "1.5rem")
       .style("font-family", "Kalam")
-      .selectAll("text");
+      .selectAll("text")
 
     svg.append("g")
       .call(d3.axisLeft(y).tickValues(yTicks))
       .style("font-size", "30px")
-      .style("font-family", "Kalam");
+      .style("font-family", "Kalam")
 
     svg.append("text")
       .attr("x", width / 2)             
@@ -160,6 +155,12 @@ export class CumulativeFlowDiagram {
       .style("font-family", "PermanentMarker")
       .text("Cumulative Flow Diagram");
     
+      svg.selectAll(" text")
+      .style("fill", this.styleManager.getTextColor());
+
+      svg.selectAll(".domain, .tick line, text")
+      .style("stroke", this.styleManager.getTextColor())
+  
     this.updateGraph(svg, stages);
     this.svgElement = svg.node()!;
     this.loadSVG();

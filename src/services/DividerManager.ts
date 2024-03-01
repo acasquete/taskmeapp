@@ -1,9 +1,13 @@
+import { CanvasStyleManager } from './CanvasStyleManager';
+
 export class DividerManager {
     private canvas: fabric.Canvas;
     private sepInitPositions: number[] = [];
+    private styleManager: CanvasStyleManager;
 
-    constructor(canvas: fabric.Canvas) {
+    constructor(canvas: fabric.Canvas, styleMngr: CanvasStyleManager) {
         this.canvas = canvas;
+        this.styleManager = styleMngr;
     }
 
     public isSeparatorElement(object: fabric.Object) : boolean {
@@ -89,7 +93,7 @@ export class DividerManager {
             if (titleColumn.text?.toLowerCase().includes('in progress') && column.count > 3) {
                 this.setColorForColumn(column.id, '#ef3340');
             } else {
-                this.setColorForColumn(column.id, 'default');
+                this.setColorForColumn(column.id, this.styleManager.getTextColor());
             }
         });
     }

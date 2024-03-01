@@ -1,12 +1,15 @@
+import { CanvasStyleManager } from "./CanvasStyleManager";
 import { CanvasUtilities } from "./CanvasUtilities";
 
 export class EditModeController {
     private canvas: fabric.Canvas;
     private editMode: EditorMode = 'Selection';
     private currentColorIndex: number = 0;
+    private styleManager: CanvasStyleManager;
 
-    constructor(canvas: fabric.Canvas) {
+    constructor(canvas: fabric.Canvas, styleManager: CanvasStyleManager) {
         this.canvas = canvas;
+        this.styleManager = styleManager;
         this.setSelectionMode();
     }
 
@@ -32,7 +35,10 @@ export class EditModeController {
     public setDrawingMode(colorIndex: number) : void {
         this.currentColorIndex = colorIndex;
         this.editMode = 'Drawing';
-        this.canvas.freeDrawingBrush.color = CanvasUtilities.getColorByIndex(colorIndex);
+
+        let color = CanvasUtilities.getColorByIndex(colorIndex);
+
+        this.canvas.freeDrawingBrush.color = color === 'contrast' ? this.styleManager.getTextColor() : color;
         this.canvas.isDrawingMode = true;
         this.canvas.selection = false;
 

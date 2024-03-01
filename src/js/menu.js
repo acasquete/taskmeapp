@@ -136,6 +136,10 @@ const MenuController = (function () {
                         let sharedId = await Sketch.createShareSketch();
                         showModalShare(sharedId);
                         break;
+                    case 'darkMode':
+                        Sketch.toggleMode();
+                        e.preventDefault();
+                        return;
                 }
                 
                 if (action!='hamburguer-picker') document.querySelector('#hamburger-menu').classList.add('hidden');

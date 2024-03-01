@@ -27,8 +27,8 @@ export class CanvasUtilities {
     }
 
     static getColorByIndex(index: number): string {
-        const colors = ['#000000', '#0047bb', '#ef3340', '#00a651'];
-        return colors[index] || '#000000'; // Default color
+        const colors = ['contrast', '#0047bb', '#ef3340', '#00a651'];
+        return colors[index] || 'contrast';
     }
 
     static getColors() {

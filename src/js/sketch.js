@@ -282,7 +282,7 @@ const Sketch = (function () {
         let newTop = 150;
         let placed = false;
 
-        let initY = Math.max(canvasController.getLastPositionY() - 80, 80);
+        let initY =  Math.max(-canvas.viewportTransform[5] + 50, 80);
 
         for (let top = initY; ; top += margin) {
             for (let left = 150; left < separatorLeft - (noteWidth * 0.5); left += margin) {
@@ -435,7 +435,7 @@ const Sketch = (function () {
         let firstColWidth = separator1 ? separator1.left : canvas.width / 3; 
 
         let randomLeft = Math.random() * 150 + 150; 
-        let randomTop = Math.max(canvasController.getLastPositionY() - 20, 80) + (Math.random() * 80);
+        let randomTop = Math.max(-canvas.viewportTransform[5] +  (canvas.getHeight() / 2), 80) + (Math.random() * 80);
 
         var circle = new fabric.Circle({
             left: randomLeft, 
@@ -461,8 +461,8 @@ const Sketch = (function () {
     function isOverlapping(note, space, width, height) {
         return note.left < space.left + width && 
                note.left + note.width > space.left &&
-               note.top < space.top + height &&
-               note.top + note.height > space.top;
+               note.top + 10 < space.top + height &&
+               note.top + 10 + note.height > space.top;
     }
 
     function editNote (opt) {
@@ -774,7 +774,8 @@ const Sketch = (function () {
                 textAlign: 'center',
                 id: 'col' + column.id,
                 editable: true,
-                cl: 'k'
+                cl: 'k',
+                fill: canvasController.getTextColorByAppearance()
             });
     
             canvas.add(text);
@@ -888,6 +889,10 @@ const Sketch = (function () {
 
     function openOption (option) {
         canvasController.openOption(option);
+    }
+
+    function toggleMode () {
+        canvasController.toggleMode();
     }
 
     /* TODO: Refactor AI methods */
@@ -1104,7 +1109,7 @@ const Sketch = (function () {
         addObserver, notifyAllObservers, toggleFullscreen, loadBoard, switchDashboard, changeColor, 
         addObjectRealTime, updatePositionRealTime, removeObjectRealTime, updateNoteRealTime,
         createShareSketch, handleClearClose, nextAdvice, download, updateTextControlRealTime, openOption,
-        clearBoardRealTime };
+        clearBoardRealTime, toggleMode };
 })();
 
 window.Sketch = Sketch;
