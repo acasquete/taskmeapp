@@ -20,7 +20,7 @@ export class CanvasStyleManager {
     }
 
     getTextColor () {
-        return this.appliedMode === 'dark' ? '#ffffff' : '#000000';
+        return this.appliedMode === 'dark' ? '#ffffff' : '#121212';
     }
 
     getSelectionColor () {
@@ -28,11 +28,11 @@ export class CanvasStyleManager {
     }
 
     getBackgroundColor () {
-        return this.appliedMode === 'dark' ? '#000000' : '#ffffff';
+        return this.appliedMode === 'dark' ? '#121212' : '#ffffff';
     }
 
     getContrastColor () {
-        return this.appliedMode === 'dark' ? '#ffffff' : '#000000';
+        return this.appliedMode === 'dark' ? '#ffffff' : '#121212';
     }
  
     applyMode(mode:string) {
@@ -43,7 +43,7 @@ export class CanvasStyleManager {
         this.canvas.getObjects().forEach((obj) => {
           if (obj.type === 'path') {
             console.debug(obj.stroke);
-            if (obj.stroke === '#000000' || obj.stroke === '#ffffff') { 
+            if (obj.stroke === '#121212' || obj.stroke === '#000000' || obj.stroke === '#ffffff') { 
               obj.set({stroke: this.getTextColor()}); 
             }
           } else {

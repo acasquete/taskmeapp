@@ -138,7 +138,8 @@ export class DividerManager {
                 hasControls: false,
                 hasBorders: true,
                 cl: 'k',
-                force: true
+                force: true,
+                fill: this.styleManager.getTextColor()
             });
     
             this.canvas.add(text);
