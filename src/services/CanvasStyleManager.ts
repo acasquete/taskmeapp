@@ -50,6 +50,13 @@ export class CanvasStyleManager {
               obj.set({fill: this.getTextColor()}); 
           }
         });
+
+        if (mode==='dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+
         this.updateMenuOption();
         this.canvas.renderAll();
       }

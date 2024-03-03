@@ -4,8 +4,6 @@ const MenuController = (function () {
 
     function init () {
 
-        const tooltipContainer = document.getElementById('tooltipContainer');
-
         const buttons = document.querySelectorAll('.menu button');
 
         buttons.forEach(button => {
@@ -200,11 +198,13 @@ const MenuController = (function () {
     }
     
     function updateTooltip (text) {
+        const tooltipContainer = document.getElementById('tooltipContainer');
         tooltipContainer.textContent = text;
     }
 
     function updateTooltipPen () {
         selectedTooltip = 'Hold down the Shift key while drawing to create a straight line'
+        const tooltipContainer = document.getElementById('tooltipContainer');
         tooltipContainer.textContent = selectedTooltip;
         setActive('pen-picker');
     }
@@ -328,15 +328,18 @@ const MenuController = (function () {
 
     function setActive(opt) {
         const classBG = 'bg-teal-200';
+        const classDarkBG = 'dark:bg-teal-900';
         const elements = document.querySelectorAll('[data-action]');
     
         elements.forEach(element => {
             element.classList.remove(classBG);
+            element.classList.remove(classDarkBG);
         });
     
         const activeElement = document.querySelector(`[data-action="${opt}"]`);
         if (activeElement) { 
             activeElement.classList.add(classBG);
+            activeElement.classList.add(classDarkBG);
         }
     }
 

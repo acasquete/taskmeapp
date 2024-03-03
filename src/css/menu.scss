@@ -1,0 +1,107 @@
+$font-stack: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+$font-size-base: 0.8rem;
+$background-color-hover: rgb(153 246 228);
+$background-color-active: rgb(20 184 166);
+$background-color-dark-hover: rgb(19 78 74);
+$background-color-dark-active: rgb(15 118 110);
+$text-color-dark: #cccccc;
+$border-color: #ddd;
+$accent-color: var(--accent-color);
+
+@mixin button-style {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: $font-size-base;
+  border: 1px solid transparent;
+
+  &:hover {
+    background-color: $background-color-hover;
+  }
+
+  &:active {
+    border: 1px solid $background-color-active;
+  }
+}
+
+#toolbar, #hamburger-menu {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  font-family: $font-stack;
+  font-size: $font-size-base;
+
+  button {
+    @include button-style;
+  }
+
+  .toolbox-grid, .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px; 
+    margin: 0.125rem 0 0.5rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid $border-color;
+  }
+}
+
+.dark {
+  #hamburger-menu {
+    color: $text-color-dark;
+
+    button {
+      &:hover {
+        background-color: $background-color-dark-hover;
+      }
+
+      &:active {
+        border: 1px solid $background-color-dark-active;
+      }
+    }
+  }
+
+  .dash.active, .tool:hover, .dash:hover {
+    background-color: $background-color-dark-hover;
+    color: $text-color-dark;
+  }
+}
+
+.dash {
+    font-size: 1.2rem; 
+ }
+
+.tool, .dash {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 5px;
+  text-align: center;
+  gap: 0;
+  cursor: pointer;
+  height: 45px;
+  border-radius: 0.5rem;
+
+  &:hover {
+    background-color: $background-color-hover;
+    color: black;
+  }
+
+  &.active {
+    background-color: $accent-color;
+    color: white;
+  }
+
+  i {
+    display: block;
+    font-size: 1.2em;
+    margin-bottom: 3px;
+  }
+
+  span {
+    display: block;
+    font-size: 12px;
+  }
+}

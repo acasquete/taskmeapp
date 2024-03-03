@@ -1,6 +1,6 @@
-﻿import '../css/taskboard.css';
-import '../css/menu.css';
-import '../css/pomodoro.css';
+﻿import '../css/taskboard.scss';
+import '../css/menu.scss';
+import '../css/pomodoro.scss';
 import '../css/fa/css/fontawesome.min.css';
 import '../css/fa/css/brands.min.css';
 import '../css/fa/css/solid.min.css';
@@ -9,6 +9,7 @@ import '../js/menu.js';
 import '../js/notificationsweb.js';
 import '../js/sketch.js';
 import '../js/data.js';
+import { PomodoroService } from './PomodoroService';
 
 export class AppInitializer {
     private boardGUID: string = '';
@@ -24,7 +25,7 @@ export class AppInitializer {
 
         Notifications.init();
         MenuController.init();
-        Pomodoro.init();
+        PomodoroService.init();
         await Sketch.init();
 
         const googleToken = localStorage.getItem('googleToken');
