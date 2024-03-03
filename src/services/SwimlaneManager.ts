@@ -203,7 +203,7 @@ export class SwimlaneManager {
         const sepObjects: Object[] = [];
       
         this.canvas.getObjects().forEach((obj: Object) => {
-          if (obj.id.startsWith("swc")) {
+          if (obj.id.startsWith("swc") && obj.id !== 'swc1') {
             colObjects.push(obj);
           } else if (obj.id.startsWith("swl")) {
             sepObjects.push(obj);
@@ -214,11 +214,11 @@ export class SwimlaneManager {
         sepObjects.sort((a, b) => parseInt(a.id.substring(3)) - parseInt(b.id.substring(3)));
       
         colObjects.forEach((obj, index) => {
-            obj.id = `swc${index + 1}`;
+            obj.id = `swc${index + 2}`;
         });
 
         sepObjects.forEach((obj, index) => {
-            obj.id = `swl${index + 1}`; 
+            obj.id = `swl${index + 2}`; 
         });
     }
 
