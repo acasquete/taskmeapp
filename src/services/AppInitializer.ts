@@ -9,8 +9,6 @@ import '../js/menu.js';
 import '../js/notificationsweb.js';
 import '../js/sketch.js';
 import '../js/data.js';
-import { PomodoroService } from './PomodoroService';
-import { Config } from './ConfigService';
 
 export class AppInitializer {
     private boardGUID: string = '';

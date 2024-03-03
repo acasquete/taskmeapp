@@ -268,7 +268,7 @@ const Sketch = (function () {
         let newTop = 150;
         let placed = false;
 
-        let initY =  Math.max(-canvas.viewportTransform[5] + 50, 80);
+        let initY =  Math.max(-canvas.viewportTransform[5] + 50, 90);
 
         for (let top = initY; ; top += margin) {
             for (let left = 150; left < separatorLeft - (noteWidth * 0.5); left += margin) {
@@ -345,16 +345,10 @@ const Sketch = (function () {
             });
         } else if (obj.cl==='k' && obj.id.includes('swl')) {
             obj.set({
-                selectable: true,
-                lockMovementX: true,
-                lockMovementY: true,
-                lockRotation: true,
-                lockScalingFlip: true,
-                lockSkewingX: true,
-                lockScalingY: true,
-                lockSkewingY: true,
                 hasControls: false,
-                hasBorders: true,
+                hasBorders: false,
+                lockRotation: true,
+                selectable: false,
                 evented: true
             });
         } else if (obj.cl==='k' && (obj.id.includes('col') || obj.id.includes('swc')) ) {

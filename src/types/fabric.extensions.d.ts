@@ -7,5 +7,6 @@ declare module 'fabric/fabric-impl' {
     virtual: boolean;
     force: boolean;
     initleft?: number;
+    inittop?: number;
   }
 }

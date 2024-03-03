@@ -40,6 +40,10 @@ export class DividerManager {
         }
     }
 
+    public release() {
+        this.targetElement = null;
+    }
+
     public organizeCanvasObjects() {
         const colObjects: Object[] = [];
         const sepObjects: Object[] = [];
@@ -70,8 +74,7 @@ export class DividerManager {
           const nextSepObj = sepObjects[sepIndex];
           colObj.width = nextSepObj.left - colObj.left;
         });
-      
-      }
+    }
     
     public createNewStage(): ColumnConfiguration {
         const stagesConf = this.getStagesColumnsConfiguration();
@@ -177,6 +180,8 @@ export class DividerManager {
     }
 
     public moveDivider (x: number) {
+        if (!this.targetElement) return;
+        
         console.debug('move divider');
 
         let currentIdTarget = parseInt( this.targetElement.id?.replace(/[^\d]/g, '') || '1', 10);

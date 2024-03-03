@@ -6,6 +6,7 @@ import { CumulativeFlowDiagram } from './CumulativeFlowDiagram';
 import { Canvas } from '../types/canvas';
 import { DividerManager } from './DividerManager';
 import { CanvasStyleManager } from './CanvasStyleManager';
+import { SwimlaneManager } from './SwimlaneManager';
 
 export class CanvasController {
     private canvas: fabric.Canvas;
@@ -28,6 +29,7 @@ export class CanvasController {
     private canvasHistory : CanvasHistory;
     private editController : EditModeController;
     private dividerManager : DividerManager;
+    private swimlaneManager : SwimlaneManager;
     private canvasStyleManager : CanvasStyleManager;
     private cfd : CumulativeFlowDiagram;
     private lastTap = 0;
@@ -40,6 +42,7 @@ export class CanvasController {
         this.canvasHistory = new CanvasHistory(canvas);
         this.editController = new EditModeController(canvas, canvasStyleManager);
         this.dividerManager = new DividerManager(canvas, canvasStyleManager);
+        this.swimlaneManager = new SwimlaneManager(canvas, canvasStyleManager);
 
         // Extension
         this.cfd = new CumulativeFlowDiagram(canvas, this.canvasStyleManager);
@@ -220,8 +223,13 @@ export class CanvasController {
             } if (this.editController.getEditMode()==='Eraser') {
                 this.deleteSelectedObjects(target);
             } else if (target && this.dividerManager.isSeparatorElement(target)) {
+                console.debug('down sep');
                 this.isEditKanbanMode = true;
                 this.dividerManager.initSepPositions(target); 
+            } else if (target && this.swimlaneManager.isElement(target)) {
+                console.debug('down swimlane');
+                this.isEditKanbanMode = true;
+                this.swimlaneManager.initSepPositions(target); 
             }
         });
 
@@ -236,6 +244,7 @@ export class CanvasController {
                 });
             } else if (this.isEditKanbanMode) {
                 this.dividerManager.moveDivider(pointer.x);
+                this.swimlaneManager.moveDivider(pointer.y);
             } 
 
             this.canvas.requestRenderAll();
@@ -260,6 +269,9 @@ export class CanvasController {
 
             if (this.isEditKanbanMode) {
                 this.isEditKanbanMode = false;
+
+                this.dividerManager.release();
+                this.swimlaneManager.release();
 
                 //Kludge to force refresh
                 this.canvas.relativePan(new fabric.Point(1, 0));
@@ -383,7 +395,6 @@ export class CanvasController {
         this.canvas.on('object:rotating', this.onUpdatingObject.bind(this));
         this.canvas.on('object:deleted', (event: fabric.IEvent) => {
             if (this.isLoading) return;
-
             this.updateCFD();
         });
         
@@ -404,6 +415,7 @@ export class CanvasController {
             }
 
             this.dividerManager.handleNewStage(addedObject);
+            this.swimlaneManager.handleNewStage(addedObject);
             this.assignUniqueIdToAddedObject(addedObject);
             this.sendObjectData(addedObject);
             this.updateCFD();
