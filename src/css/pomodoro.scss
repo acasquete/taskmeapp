@@ -1,89 +1,97 @@
-﻿#pomodoro {
-    display: none;
+﻿// Definición de variables para colores, fuentes y otros valores reutilizables
+$background-overlay: rgba(0, 0, 0, 0.2);
+$background-layer: #fff;
+$text-color: tomato;
+$font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+$font-family-special: 'PermanentMarker';
+$shadow-base: 0 0 5px rgba(0, 0, 0, 0.4), 0 0 50px rgba(0, 0, 0, 0.1);
+$accent-color: var(--accent-color); // Asume que esta variable está definida en otro lugar
+$accent-light-color: var(--accent-light-color);
+$gray: gray;
+$lightgray: lightgray;
+$darkgray: darkgray;
+
+// Mixin para los estados de botones para reutilizar en diferentes botones
+@mixin button-states($bg-color, $border-color, $hover-bg-color, $hover-border-color) {
+  border-color: $border-color;
+  background-color: $bg-color;
+  
+  &:hover {
+    background-color: $hover-bg-color;
+    border-color: $hover-border-color;
+  }
 }
 
-#pomodoro #overlay {
+#pomodoro {
+  display: none;
+
+  #overlay {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: #000;
-    opacity: 0.2;
+    background: $background-overlay;
     display: none;
     z-index: 999;
-}
+  }
 
-#pomodoro .layer {
+  .layer {
     position: absolute;
     width: 100%;
-    background-color: #fff;
+    background-color: $background-layer;
     text-align: center;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4), 0 0 50px rgba(0, 0, 0, 0.1);
+    box-shadow: $shadow-base;
     opacity: 1;
     padding: 0;
     margin-top: 8em;
     z-index: 1000;
     user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
     cursor: default;
-}
+  }
 
-#pomodoro .content {
+  .content {
     text-align: center;
     width: 50%;
     margin: auto;
     padding: 3vw;
-}
 
-#pomodoro .content h2 {
-    margin: 0;
-}
+    h2 {
+      margin: 0;
+    }
 
-#pomodoro .content #status {
-    text-align: center;
-    font-family: "PermanentMarker" ;
-    font-size: 3vw;
-    color:tomato;
-}
+    #status {
+      text-align: center;
+      font-family: $font-family-special;
+      font-size: 3vw;
+      color: $text-color;
+    }
 
-#pomodoro .content #time {
-    font-size: 10vw;
-    margin: auto;
-    line-height: 10vw;
-    color: gray;
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+    #time {
+      font-size: 10vw;
+      margin: auto;
+      line-height: 10vw;
+      color: $gray;
+      font-family: $font-family-base;
+    }
 
-#pomodoro .content .buttons {
-    margin-top: 1vw;
-  
-}
+    .buttons {
+      margin-top: 1vw;
 
-#pomodoro .content .buttons #butHide {
-    border-color: var(--accent-light-color);
-    background-color: var(--accent-color);;
-}
+      button {
+        margin-left: 1vw;
+        font-size: 1em;
+        border-radius: 0.5vw;
+        padding: 1vw 3vw; 
+        border: 0;
 
-#pomodoro .content .buttons #butHide:hover {
-    background-color: var(--accent-light-color);
-    border-color:var(--accent-color);
-}
+        // Aplicando mixin para estados de botones
+        &#butHide {
+          @include button-states($accent-color, $accent-light-color, $accent-light-color, $accent-color);
+        }
 
-#pomodoro .content .buttons #butCancel {
-    border-color: gray;
-    background-color: gray;
+        &#butCancel {
+          @include button-states($gray, $gray, $lightgray, $darkgray);
+        }
+      }
+    }
+  }
 }
-
-#pomodoro .content .buttons #butCancel:hover {
-    background-color: lightgray;
-    border-color: darkgray;
-}
-
-#pomodoro .content .buttons button {
-    margin-left: 1vw;
-    font-size: 1em;
-    border-radius: 0.5vw;
-    padding: 1vw 3vw; 
-    border: 0;
-}
-

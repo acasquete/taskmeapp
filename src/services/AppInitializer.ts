@@ -25,7 +25,7 @@ export class AppInitializer {
 
         Notifications.init();
         MenuController.init();
-        PomodoroService.init();
+        //PomodoroService.init();
         await Sketch.init();
 
         const googleToken = localStorage.getItem('googleToken');
