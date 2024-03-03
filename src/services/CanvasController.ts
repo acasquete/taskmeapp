@@ -245,8 +245,6 @@ export class CanvasController {
             
             console.debug ('mouse:up');
 
-            this.isEditKanbanMode = false;
-            
             if (this.isDraggingDot) {
                 let parentNoteId = this.circleToDrag?.parent;
                 let noteObj = this.getObjectById (parentNoteId);
@@ -260,7 +258,7 @@ export class CanvasController {
                 this.isDraggingDot = false;
             }
 
-            if (!this.isEditKanbanMode) {
+            if (this.isEditKanbanMode) {
                 this.isEditKanbanMode = false;
 
                 //Kludge to force refresh
