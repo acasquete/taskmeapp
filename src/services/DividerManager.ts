@@ -4,6 +4,8 @@ export class DividerManager {
     private canvas: fabric.Canvas;
     private sepInitPositions: number[] = [];
     private styleManager: CanvasStyleManager;
+    private targetElement!: fabric.Object | null;
+    private originalPosition: { x: number } = { x: 0 };
 
     constructor(canvas: fabric.Canvas, styleMngr: CanvasStyleManager) {
         this.canvas = canvas;
@@ -14,7 +16,11 @@ export class DividerManager {
         return (object.cl === 'k' && object.id?.startsWith('sep')) ?? false;
     }
 
-    public initSepPositions() {
+    public initSepPositions(target: fabric.Object) {
+        this.canvas.selection = false;
+        this.targetElement = target;
+        this.targetElement.selectable = false;
+        this.originalPosition = { x: target.left || 0 }
         this.sepInitPositions = this.getSeparatorsPositionsArray(); 
     }
 
@@ -168,6 +174,21 @@ export class DividerManager {
             (boundingRect.height / zoom) > 250 &&
             left > (lastSep ? lastSep?.left : 0)
         );
+    }
+
+    public moveDivider (x: number) {
+        console.debug('move divider');
+
+        let currentIdTarget = parseInt( this.targetElement.id?.replace(/[^\d]/g, '') || '1', 10);
+        let prevIdTarget = currentIdTarget == 1 ? '' : 'sep' + (currentIdTarget - 1);
+        let prevTargetLeft = prevIdTarget =='' ? 0 : this.getObjectById(prevIdTarget)?.left;
+
+        let deltaX = x - this.originalPosition.x;
+
+        if (this.targetElement.left - prevTargetLeft + deltaX > 400 ) {
+            this.targetElement.set({left: x });
+            this.moveRelatedElements (x, this.targetElement.id, deltaX);
+        }
     }
 
     public moveRelatedElements(leftPosition: number, id: string, deltaX: number): void {

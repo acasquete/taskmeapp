@@ -343,7 +343,21 @@ const Sketch = (function () {
                 selectable: false,
                 evented: true
             });
-        } else if (obj.cl==='k' && obj.id.includes('col')) {
+        } else if (obj.cl==='k' && obj.id.includes('swl')) {
+            obj.set({
+                selectable: true,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockRotation: true,
+                lockScalingFlip: true,
+                lockSkewingX: true,
+                lockScalingY: true,
+                lockSkewingY: true,
+                hasControls: false,
+                hasBorders: true,
+                evented: true
+            });
+        } else if (obj.cl==='k' && (obj.id.includes('col') || obj.id.includes('swc')) ) {
             obj.set({
                 selectable: canvas.selection,
                 evented: canvas.selection,

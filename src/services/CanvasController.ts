@@ -14,8 +14,6 @@ export class CanvasController {
     private isShared: boolean = false;
     public isLoading: boolean = true;
     private isEditKanbanMode: boolean = false;
-    private targetElement!: fabric.Object | null;
-    private originalPosition: { x: number } = { x: 0 };
     private pausePanning: boolean = false;
     private currentX: number = 0;
     private currentY: number = 0;
@@ -222,13 +220,8 @@ export class CanvasController {
             } if (this.editController.getEditMode()==='Eraser') {
                 this.deleteSelectedObjects(target);
             } else if (target && this.dividerManager.isSeparatorElement(target)) {
-                
                 this.isEditKanbanMode = true;
-                this.canvas.selection = false;
-                this.targetElement = target;
-                this.targetElement.selectable = false;
-                this.originalPosition = { x: target.left || 0 };
-                this.dividerManager.initSepPositions(); 
+                this.dividerManager.initSepPositions(target); 
             }
         });
 
@@ -241,18 +234,8 @@ export class CanvasController {
                     left: pointer.x,
                     top: pointer.y,
                 });
-            } else if (this.isEditKanbanMode && this.targetElement) {
-               
-                let currentIdTarget = parseInt( this.targetElement.id?.replace(/[^\d]/g, '') || '1', 10);
-                let prevIdTarget = currentIdTarget == 1 ? '' : 'sep' + (currentIdTarget - 1);
-                let prevTargetLeft = prevIdTarget =='' ? 0 : this.getObjectById(prevIdTarget)?.left;
-
-                let deltaX = pointer.x - this.originalPosition.x;
-
-                if (this.targetElement.left - prevTargetLeft + deltaX > 400 ) {
-                    this.targetElement.set({left: pointer.x });
-                    this.dividerManager.moveRelatedElements (pointer.x, this.targetElement.id, deltaX);
-                }
+            } else if (this.isEditKanbanMode) {
+                this.dividerManager.moveDivider(pointer.x);
             } 
 
             this.canvas.requestRenderAll();
@@ -277,13 +260,15 @@ export class CanvasController {
                 this.isDraggingDot = false;
             }
 
-            if (this.targetElement) {
+            if (!this.isEditKanbanMode) {
+                this.isEditKanbanMode = false;
+
                 //Kludge to force refresh
                 this.canvas.relativePan(new fabric.Point(1, 0));
                 this.canvas.relativePan(new fabric.Point(-1, 0));
                 this.saveCanvas();
             }
-
+           
             this.editController.refreshMode();
         });
 

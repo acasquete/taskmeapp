@@ -43,7 +43,7 @@ export class KanbanBoard  {
     private drawSwimlanes () {
         let swimLaneConfigurations = this.getDefaultSwimlaneConfiguration();
         
-        let currentTop = 60; swimLaneConfigurations[0].proportion * this.canvas.height;
+        let currentTop = 50; swimLaneConfigurations[0].proportion * this.canvas.height;
 
         swimLaneConfigurations.forEach((swimlane, index) => {
 
@@ -51,7 +51,7 @@ export class KanbanBoard  {
             let text = new fabric.Textbox(swimlane.title, {
                 originX: 'left',
                 left: 50,
-                top: currentTop,
+                top: currentTop + 10,
                 fontSize: 50,
                 fontFamily: 'Kalam',
                 selectable: true,
@@ -65,7 +65,7 @@ export class KanbanBoard  {
                 hasControls: false,
                 hasBorders: true,
                 textAlign: 'center',
-                id: 'swim' + swimlane.id,
+                id: 'swl' + swimlane.id,
                 editable: true,
                 cl: 'k',
                 fill: this.styleManager.getTextColor()
@@ -73,7 +73,7 @@ export class KanbanBoard  {
     
             this.canvas.add(text);
 
-            let line = new fabric.Line([0, currentTop + 60, 4000, currentTop + 60], {
+            let line = new fabric.Line([0, currentTop, 4000, currentTop], {
                 stroke: 'red',
                 selectable: false,
                 strokeWidth: 8,
@@ -83,7 +83,7 @@ export class KanbanBoard  {
                 hasControls: false,
                 hasBorders: false,
                 cl: 'k',
-                id: 'swi' + swimlane.id
+                id: 'swc' + swimlane.id
             });
 
             this.canvas.add(line);
