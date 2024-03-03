@@ -590,7 +590,7 @@ export class CanvasController {
     deleteSelectedObjects(target): void {
         const activeObject = this.canvas.getActiveObject();
       
-        if (target && this.dividerManager.isSeparatorElement(target)) { 
+        if (target && (this.dividerManager.isSeparatorElement(target) || this.swimlaneManager.isElement(target))) { 
             this.DeleteObject(target);
         }
 
@@ -614,11 +614,16 @@ export class CanvasController {
     public DeleteObject (object: fabric.Object) {
         console.debug('delete object');
 
-        if (object.cl==='k' && object.id.includes('col')) return;
+        if (object.cl==='k' && (object.id.includes('col') || object.id.includes('swc'))) return;
 
         if (object.cl==='k') {
             if (object.id.includes('sep')) {
                 this.dividerManager.deleteSeparator(object.id);
+                return;
+            }
+
+            if (object.id.includes('swl')) {
+                this.swimlaneManager.deleteSeparator(object.id);
                 return;
             }
         }

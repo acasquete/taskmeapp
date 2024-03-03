@@ -74,7 +74,7 @@ export class KanbanBoard  {
 
             if (index > 0) {
                 let line = new fabric.Line([0, currentTop, 4000, currentTop], {
-                    stroke: 'red',
+                    stroke: '#ef3340',
                     selectable: false,
                     strokeWidth: 8,
                     hasControls: false,

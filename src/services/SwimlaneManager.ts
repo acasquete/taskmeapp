@@ -132,7 +132,7 @@ export class SwimlaneManager {
         let lastSep = this.getObjectById('swc' + (newStage.id - 1));
         let leftLastSep = lastSep ? lastSep.top : 0;
 
-        this.addStage(newStage, leftLastSep + 400, Math.max(400, positionLeft-leftLastSep));
+        this.addStage(newStage, leftLastSep, Math.max(400, positionLeft-leftLastSep));
     }
 
     private addStage (element: ColumnConfiguration, top: number, width: number) {
@@ -141,7 +141,7 @@ export class SwimlaneManager {
             originX: 'left',
             left: 65,
             width: 300,
-            top: top + 10,
+            top: top + width + 10,
             fontSize: 30,
             fontFamily: 'PermanentMarker',
             selectable: true,
@@ -163,8 +163,8 @@ export class SwimlaneManager {
 
         this.canvas.add(text);
 
-        let line = new fabric.Line([0, top, 4000, top], {
-            stroke: 'red',
+        let line = new fabric.Line([0, top + width, 4000, top + width], {
+            stroke: '#ef3340',
             selectable: false,
             strokeWidth: 8,
             hasControls: false,
@@ -174,6 +174,52 @@ export class SwimlaneManager {
         });
 
         this.canvas.add(line);
+    }
+
+    public deleteSeparator (sepId:string) {
+        
+        console.debug('delete swimlanes');
+
+        const regex = /swl(\d+)/;
+        const matchId = sepId.match(regex);
+
+        if (matchId) {
+            let id = parseInt(matchId[1], 10);
+
+            let col = this.getObjectById(`swl${id}`);
+            let sep = this.getObjectById(`swc${id}`);
+
+            this.canvas.remove(col);
+            this.canvas.remove(sep);
+            Data.sendCanvasObject({a:'do', d: [ col?.id, sep?.id ] });
+
+            this.organizeCanvasObjects();
+            this.canvas.renderAll();
+        }
+    }
+
+    public organizeCanvasObjects() {
+        const colObjects: Object[] = [];
+        const sepObjects: Object[] = [];
+      
+        this.canvas.getObjects().forEach((obj: Object) => {
+          if (obj.id.startsWith("swc")) {
+            colObjects.push(obj);
+          } else if (obj.id.startsWith("swl")) {
+            sepObjects.push(obj);
+          }
+        });
+      
+        colObjects.sort((a, b) => parseInt(a.id.substring(3)) - parseInt(b.id.substring(3)));
+        sepObjects.sort((a, b) => parseInt(a.id.substring(3)) - parseInt(b.id.substring(3)));
+      
+        colObjects.forEach((obj, index) => {
+            obj.id = `swc${index + 1}`;
+        });
+
+        sepObjects.forEach((obj, index) => {
+            obj.id = `swl${index + 1}`; 
+        });
     }
 
     private shouldAddNewStage(boundingRect: fabric.IRect, zoom: number, left: number): boolean {
