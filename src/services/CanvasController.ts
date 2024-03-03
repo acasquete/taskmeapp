@@ -35,13 +35,13 @@ export class CanvasController {
     private lastTap = 0;
     private config: Config;
 
-    constructor(canvas: fabric.Canvas) {
+    constructor(canvas: fabric.Canvas, config: Config, canvasStyleManager : CanvasStyleManager) {
         this.canvas = canvas;
-        this.config = new Config();
+        this.config = config;
+        this.canvasStyleManager = canvasStyleManager;
         this.canvasHistory = new CanvasHistory(canvas);
-        this.canvasStyleManager = new CanvasStyleManager(canvas, this.config);
-        this.editController = new EditModeController(canvas, this.canvasStyleManager);
-        this.dividerManager = new DividerManager(canvas, this.canvasStyleManager);
+        this.editController = new EditModeController(canvas, canvasStyleManager);
+        this.dividerManager = new DividerManager(canvas, canvasStyleManager);
 
         // Extension
         this.cfd = new CumulativeFlowDiagram(canvas, this.canvasStyleManager);
@@ -60,15 +60,7 @@ export class CanvasController {
     public getSeparatorColorByAppearance() {
         return this.canvasStyleManager.getSeparatorColor();
     }
-
-    public getTextColorByAppearance() {
-        return this.canvasStyleManager.getTextColor();
-    }
-
-    public getDefaultColumnConfiguration () {
-        return this.dividerManager.getDefaultColumnConfiguration();
-    }
-    
+   
     public updateNoteCounters () {
         this.dividerManager.updateNoteCounters();
     }

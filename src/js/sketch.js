@@ -3,24 +3,29 @@ import permanentMarkerFontURL from '../assets/fonts/PermanentMarker-Regular.ttf'
 import { CanvasUtilities } from '../services/CanvasUtilities';
 import { CanvasController } from '../services/CanvasController';
 import { KanbanAdvisor } from '../services/KanbanAdvisor';
+import { KanbanBoard } from '../services/KanbanBoard';
+import { CanvasStyleManager } from '../services/CanvasStyleManager';
 
 const Sketch = (function () {
     "use strict";
-    const CANVAS_WIDTH = 2000;
     let canvas, currentColorIndex;
     let activeBoardIndex = 0; // Current Selected Board (1-5)
     let observers = []; 
     let canvasController;
     let kanbanAdvisor;
+    let kanbanBoard;
+    let canvasStyleManager;
     let _clipboard;  
 
     async function init() {
         await initCanvas();
         assignDOMEventListeners();
 
-        canvasController = new CanvasController(canvas);
+        canvasStyleManager = new CanvasStyleManager(canvas, Config);
+        canvasController = new CanvasController(canvas, Config, canvasStyleManager);
         canvasController.assignCanvasEventListeners();
         kanbanAdvisor = new KanbanAdvisor();
+        kanbanBoard = new KanbanBoard(canvas, canvasStyleManager);
     }
 
    async function initCanvas() { 
@@ -88,25 +93,6 @@ const Sketch = (function () {
         }
     }
        
-    function adjustCanvasZoom(forceReset) {
-        var currentOrientation = CanvasUtilities.getUserOrientation(); 
-        var savedConfiguration = retrieveConfiguration(currentOrientation);
-
-        if (!forceReset && savedConfiguration) {
-            canvas.setViewportTransform(savedConfiguration.vpt);
-            canvas.setZoom(savedConfiguration.zoom);
-        } else {
-            defaultZoom();
-        }
-    }
-
-    function defaultZoom() {
-        let viewportWidth = window.innerWidth; 
-        let zoomLevel = viewportWidth / CANVAS_WIDTH;
-        canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-        canvas.setZoom(zoomLevel);
-    }
-
     function assignDOMEventListeners() {
         console.debug('assign DOM events');
         document.addEventListener('keydown', onKeyPress);
@@ -316,7 +302,7 @@ const Sketch = (function () {
         canvasController.updateNoteCounters();
     }
 
-    function  assignConfigToObject (obj) {
+    function assignConfigToObject (obj) {
 
         if (obj.cl === 'n') {
             obj.set({
@@ -676,8 +662,8 @@ const Sketch = (function () {
         modal.classList.add('hidden');
 
         canvasController.reset();
-        initKanbanBoard();
-        adjustCanvasZoom(true);
+        kanbanBoard.drawElements();
+        kanbanBoard.adjustCanvasZoom(activeBoardIndex, true);
         canvasController.saveCanvas();
 
         canvasController.isLoading = false;
@@ -733,71 +719,8 @@ const Sketch = (function () {
             assignConfigToObject (obj);
         });
     }
-   
-    function initKanbanBoard() {
-
-        let kanbanElements = canvas.getObjects().filter(obj => obj.cl === 'k');
-        if (kanbanElements.length > 0) {
-            console.debug('init existing kanban board');
-            return;
-        }
-        
-        console.debug('init new kanban board');
-
-        let separatorYPosition = 4000;
-        let columnConfigurations = canvasController.getDefaultColumnConfiguration();
-    
-        let currentLeft = 0;
-    
-        columnConfigurations.forEach((column, index) => {
-
-            let columnWidth = CANVAS_WIDTH * column.proportion;
-            let text = new fabric.Textbox(column.title, {
-                originX: 'left',
-                left: currentLeft,
-                top: 10,
-                fontSize: 30,
-                fontWeight: 'bold',
-                fontFamily: 'PermanentMarker',
-                selectable: true,
-                lockMovementX: true,
-                lockMovementY: true,
-                lockRotation: true,
-                lockScalingFlip: true,
-                lockSkewingX: true,
-                lockScalingY: true,
-                lockSkewingY: true,
-                lockSkewingX: true,
-                hasControls: false,
-                hasBorders: true,
-                width: columnWidth,
-                textAlign: 'center',
-                id: 'col' + column.id,
-                editable: true,
-                cl: 'k',
-                fill: canvasController.getTextColorByAppearance()
-            });
-    
-            canvas.add(text);
-    
-            let separator = new fabric.Line([currentLeft + columnWidth, 0, currentLeft + columnWidth, separatorYPosition], {
-                stroke: 'gray',
-                selectable: false,
-                strokeWidth: 6,
-                cl: 'k',
-                id: 'sep' + column.id
-            });
-
-            canvas.add(separator);
-    
-            currentLeft += columnWidth;
-        });
-
-        if (activeBoardIndex===1) createWelcomeNote();
-    }
            
     async function loadCanvasAsync(guid) {
-
         canvasController.isLoading = true;
 
         let storeCanvas;
@@ -816,7 +739,7 @@ const Sketch = (function () {
         canvas.freeDrawingBrush.width = 4;
         canvas.freeDrawingBrush.color = CanvasUtilities.getColorByIndex(currentColorIndex);
 
-        adjustCanvasZoom();
+        kanbanBoard.adjustCanvasZoom(activeBoardIndex);
 
         if (storeCanvas.content) {
             var jsonString = storeCanvas.content;
@@ -829,7 +752,7 @@ const Sketch = (function () {
         }
 
         if (storeCanvas.isnew) {
-            initKanbanBoard();
+            this.drawElements();
         }
 
         canvasController.switchDashboard(activeBoardIndex, storeCanvas);
@@ -846,14 +769,7 @@ const Sketch = (function () {
         canvas.remove(object);
     }
 
-    function retrieveConfiguration(orientation) {
-        const key = `c_${activeBoardIndex}_${orientation}`;
-        const savedConfiguration = localStorage.getItem(key);
-        if (savedConfiguration) {
-            return JSON.parse(savedConfiguration);
-        }
-        return null; 
-    }
+
 
     function download (format) {
         let stages = canvasController.getStagesColumnsConfiguration();

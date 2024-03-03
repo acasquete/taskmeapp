@@ -11,7 +11,7 @@ export class DividerManager {
     }
 
     public isSeparatorElement(object: fabric.Object) : boolean {
-        return object.cl === 'k' && object.id?.startsWith('sep');
+        return (object.cl === 'k' && object.id?.startsWith('sep')) ?? false;
     }
 
     public initSepPositions() {
@@ -31,7 +31,6 @@ export class DividerManager {
             const newStage = this.createNewStage();
             this.addStageToCanvas(newStage, addedObject?.left);
             this.canvas.remove(addedObject);
-            //this.saveCanvas();
         }
     }
 
@@ -314,13 +313,5 @@ export class DividerManager {
         });
 
         return columns;
-    }
-
-    public getDefaultColumnConfiguration(): ColumnConfiguration[] {
-        return [
-            { id: 1, title: 'Todo', count: 0, proportion: 0.38 },
-            { id: 2, title: 'In Progress', count: 0, proportion: 0.32 },
-            { id: 3, title: 'Done', count: 0, proportion: 0.3 }
-        ];
     }
 }
