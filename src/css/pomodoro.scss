@@ -1,17 +1,15 @@
-﻿// Definición de variables para colores, fuentes y otros valores reutilizables
-$background-overlay: rgba(0, 0, 0, 0.2);
+﻿$background-overlay: rgba(0, 0, 0, 0.2);
 $background-layer: #fff;
 $text-color: tomato;
 $font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 $font-family-special: 'PermanentMarker';
 $shadow-base: 0 0 5px rgba(0, 0, 0, 0.4), 0 0 50px rgba(0, 0, 0, 0.1);
-$accent-color: var(--accent-color); // Asume que esta variable está definida en otro lugar
+$accent-color: var(--accent-color); 
 $accent-light-color: var(--accent-light-color);
 $gray: gray;
 $lightgray: lightgray;
 $darkgray: darkgray;
 
-// Mixin para los estados de botones para reutilizar en diferentes botones
 @mixin button-states($bg-color, $border-color, $hover-bg-color, $hover-border-color) {
   border-color: $border-color;
   background-color: $bg-color;
@@ -83,7 +81,6 @@ $darkgray: darkgray;
         padding: 1vw 3vw; 
         border: 0;
 
-        // Aplicando mixin para estados de botones
         &#butHide {
           @include button-states($accent-color, $accent-light-color, $accent-light-color, $accent-color);
         }
