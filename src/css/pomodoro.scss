@@ -35,7 +35,6 @@ $darkgray: darkgray;
   .layer {
     position: absolute;
     width: 100%;
-    background-color: $background-layer;
     text-align: center;
     box-shadow: $shadow-base;
     opacity: 1;
@@ -67,7 +66,6 @@ $darkgray: darkgray;
       font-size: 10vw;
       margin: auto;
       line-height: 10vw;
-      color: $gray;
       font-family: $font-family-base;
     }
 

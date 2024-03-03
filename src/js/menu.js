@@ -136,7 +136,6 @@ const MenuController = (function () {
                         break;
                     case 'darkMode':
                         Sketch.toggleMode();
-                        e.preventDefault();
                         return;
                 }
                 

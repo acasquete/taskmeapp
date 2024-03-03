@@ -10,6 +10,7 @@ import '../js/notificationsweb.js';
 import '../js/sketch.js';
 import '../js/data.js';
 import { PomodoroService } from './PomodoroService';
+import { Config } from './ConfigService';
 
 export class AppInitializer {
     private boardGUID: string = '';
@@ -25,7 +26,7 @@ export class AppInitializer {
 
         Notifications.init();
         MenuController.init();
-        //PomodoroService.init();
+        Pomodoro.init();
         await Sketch.init();
 
         const googleToken = localStorage.getItem('googleToken');
