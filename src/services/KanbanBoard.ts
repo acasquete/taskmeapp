@@ -19,9 +19,16 @@ export class KanbanBoard  {
         ];
     }
 
-    public drawElements() :void {
+    private getDefaultSwimlaneConfiguration(): SwimlaneConfiguration[] {
+        return [
+            { id: 1, title: 'First', proportion: 0.5 },
+            { id: 3, title: 'Bugs', proportion: 0.3 }
+        ];
+    }
 
+    public drawElements() :void {
         let kanbanElements = this.canvas.getObjects().filter(obj => obj.cl === 'k');
+        
         if (kanbanElements.length > 0) {
             console.debug('init existing kanban board');
             return;
@@ -29,7 +36,66 @@ export class KanbanBoard  {
         
         console.debug('init new kanban board');
 
-        let separatorYPosition = 4000;
+        this.drawColumns(); 
+        this.drawSwimlanes();
+    }
+
+    private drawSwimlanes () {
+        let swimLaneConfigurations = this.getDefaultSwimlaneConfiguration();
+        
+        let currentTop = 60; swimLaneConfigurations[0].proportion * this.canvas.height;
+
+        swimLaneConfigurations.forEach((swimlane, index) => {
+
+
+            let text = new fabric.Textbox(swimlane.title, {
+                originX: 'left',
+                left: 50,
+                top: currentTop,
+                fontSize: 50,
+                fontFamily: 'Kalam',
+                selectable: true,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockRotation: true,
+                lockScalingFlip: true,
+                lockSkewingX: true,
+                lockScalingY: true,
+                lockSkewingY: true,
+                hasControls: false,
+                hasBorders: true,
+                textAlign: 'center',
+                id: 'swim' + swimlane.id,
+                editable: true,
+                cl: 'k',
+                fill: this.styleManager.getTextColor()
+            });
+    
+            this.canvas.add(text);
+
+            let line = new fabric.Line([0, currentTop + 60, 4000, currentTop + 60], {
+                stroke: 'red',
+                selectable: false,
+                strokeWidth: 8,
+                lockMovementX: true,
+                lockScalingY: true,
+                lockSkewingY: true,
+                hasControls: false,
+                hasBorders: false,
+                cl: 'k',
+                id: 'swi' + swimlane.id
+            });
+
+            this.canvas.add(line);
+    
+            currentTop += swimlane.proportion * this.canvas.height;;
+
+        });
+    }
+
+    private drawColumns () {
+
+        let sepHeight = 4000;
         let columnConfigurations = this.getDefaultColumnConfiguration();
     
         let currentLeft = 0;
@@ -64,7 +130,7 @@ export class KanbanBoard  {
     
             this.canvas.add(text);
     
-            let separator = new fabric.Line([currentLeft + columnWidth, 0, currentLeft + columnWidth, separatorYPosition], {
+            let separator = new fabric.Line([currentLeft + columnWidth, 0, currentLeft + columnWidth, sepHeight], {
                 stroke: 'gray',
                 selectable: false,
                 strokeWidth: 6,
@@ -76,8 +142,6 @@ export class KanbanBoard  {
     
             currentLeft += columnWidth;
         });
-
-        //if (activeBoardIndex===1) createWelcomeNote();
     }
 
     public adjustCanvasZoom(activeBoardIndex: string, forceReset: boolean) : void {
@@ -92,7 +156,7 @@ export class KanbanBoard  {
         }
     }
 
-    retrieveConfiguration(activeBoardIndex: string, orientation: string) : any {
+    private retrieveConfiguration(activeBoardIndex: string, orientation: string) : any {
         const key = `c_${activeBoardIndex}_${orientation}`;
         const savedConfiguration = localStorage.getItem(key);
         if (savedConfiguration) {

@@ -4,3 +4,9 @@ interface ColumnConfiguration {
     count: number;
     proportion: number;
 }
+
+interface SwimlaneConfiguration {
+    id: number;
+    title: string;
+    proportion: number;
+}

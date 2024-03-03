@@ -639,7 +639,7 @@ const Sketch = (function () {
             canvasController.deleteSelectedObjects();
             e.preventDefault();
         } else if (e.keyCode === 32) {
-            defaultZoom();
+            kanbanBoard.defaultZoom();
             e.preventDefault();
         }
     };
