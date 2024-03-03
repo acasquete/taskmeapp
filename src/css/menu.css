@@ -21,6 +21,18 @@
 
 }
 
+.dark #hamburger-menu button {
+    color: white;
+}
+
+.dark #hamburger-menu button:hover {
+    background-color: rgb(255 0 228);
+}
+
+.dark #hamburger-menu button:active {
+    border: 1px solid rgb(20 184 166);
+}
+
 #hamburger-menu button:hover {
     background-color: rgb(153 246 228);
 }

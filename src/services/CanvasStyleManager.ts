@@ -11,7 +11,7 @@ export class CanvasStyleManager {
     constructor(canvas: fabric.Canvas, config: Config) {
       this.canvas = canvas;
       this.config = config;
-      this.userPreference = this.config.getItem('appearance') as Preference || 'system';
+      this.userPreference = this.config.getItem('theme') as Preference || 'system';
       this.setupSystemModeListener();
     }
 
@@ -99,7 +99,7 @@ export class CanvasStyleManager {
         console.debug('toggle mode ' + preference);
 
         this.userPreference = preference;
-        this.config.saveItem('appearance', this.userPreference)
+        this.config.saveItem('theme', this.userPreference)
         this.applyPreference();
       }
     

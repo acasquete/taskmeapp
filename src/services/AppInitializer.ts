@@ -6,7 +6,6 @@ import '../css/fa/css/brands.min.css';
 import '../css/fa/css/solid.min.css';
 import './ConfigService';
 import '../js/menu.js';
-import '../js/pomodoro.js';
 import '../js/notificationsweb.js';
 import '../js/sketch.js';
 import '../js/data.js';

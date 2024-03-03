@@ -3,7 +3,7 @@ import { PomodoroState } from "../types/pomodoroState";
 import { Helper } from "./Helper";
 
 export class Config {
-    constructor() {
+    constrctor() {
     }
 
     public saveItem(key:string, id: string): void {
