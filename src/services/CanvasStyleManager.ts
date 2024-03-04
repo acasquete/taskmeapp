@@ -42,7 +42,6 @@ export class CanvasStyleManager {
         this.canvas.backgroundColor = this.getBackgroundColor ();
         this.canvas.getObjects().forEach((obj) => {
           if (obj.type === 'path') {
-            console.debug(obj.stroke);
             if (obj.stroke === '#121212' || obj.stroke === '#000000' || obj.stroke === '#ffffff') { 
               obj.set({stroke: this.getTextColor()}); 
             }
