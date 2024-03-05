@@ -50,45 +50,6 @@ export class AppInitializer {
         await this.signInWithFirebase(jwt);
     }
 
-    async function refreshAccessToken(refreshToken: string): Promise<void> {
-        const client_id = 'TU_CLIENT_ID'; // Proporcionado por la Google Cloud Console
-        const client_secret = 'TU_CLIENT_SECRET'; // Proporcionado por la Google Cloud Console
-        const grant_type = 'refresh_token';
-    
-        const tokenEndpoint = 'https://oauth2.googleapis.com/token';
-        const params = new URLSearchParams();
-        params.append('client_id', client_id);
-        params.append('client_secret', client_secret);
-        params.append('refresh_token', refreshToken);
-        params.append('grant_type', grant_type);
-    
-        try {
-            const response = await fetch(tokenEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: params.toString(),
-            });
-    
-            if (!response.ok) {
-                throw new Error(`Token refresh failed with status: ${response.status}`);
-            }
-    
-            const data: GoogleTokenResponse = await response.json();
-            const newAccessToken = data.access_token;
-            // Aquí puedes manejar el nuevo token de acceso, por ejemplo, almacenándolo para su uso posterior
-            console.log('New access token:', newAccessToken);
-    
-            if (data.refresh_token) {
-                console.log('New refresh token:', data.refresh_token);
-            }
-    
-        } catch (error) {
-            console.error('Error refreshing access token:', error);
-        }
-    }
-
     private async signInWithFirebase(googleToken: string): Promise<void> {
         if (this.isTokenExpired(googleToken)) {
             console.debug('token expired');
