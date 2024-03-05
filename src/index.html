@@ -34,13 +34,16 @@
             console.debug('head dark');
             document.documentElement.classList.add('dark');
             
-            var style = document.createElement('style');
-            style.innerHTML = 'html.dark { background-color: #121212; }';
-            document.head.appendChild(style);
+            // var style = document.createElement('style');
+            // style.innerHTML = 'html.dark { background-color: #121212; }';
+            // document.head.appendChild(style);
         } else {
             document.documentElement.classList.remove('dark');
         }
     </script>
+    <style>
+        html.dark { background-color: #121212; }
+    </style>
     </head>
     <body style="display: none;">
         <div id="tooltipContainer" class="pointer-events-none select-none cursor-default outline-1 transform -translate-x-1/2 mx-auto left-1/2 text-center bottom-20 md:bottom-28 fixed text-gray-400 text-sm w-screen z-[2000]"></div>
