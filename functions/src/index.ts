@@ -6,8 +6,8 @@
  *
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
-// import {onRequest} from "firebase-functions/v2/https";
-// import * as logger from "firebase-functions/logger";
+import {onRequest} from "firebase-functions/v2/https";
+import * as logger from "firebase-functions/logger";
 import * as functions from "firebase-functions";
 import axios from "axios";
 
@@ -18,16 +18,13 @@ interface TokenResponse {
     refresh_token?: string;
 }
 
-exports.refreshAccessToken = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
-        throw new functions.https.HttpsError("unauthenticated",
-            "The function must be called while authenticated.");
-    }
+export const refreshAccessToken = onRequest(async (request, response) => {
+    logger.info("Hello logs!", {structuredData: true});
 
-    const {RefreshToken}= data;
+    const { RefreshToken } = request.body; 
 
-    const ClientId = "TU_CLIENT_ID";
-    const ClientSecret = "TU_CLIENT_SECRET";
+    const ClientId = "YOUR_CLIENT_ID"; 
+    const ClientSecret = "YOUR_CLIENT_SECRET"; 
     const GrantType = "refresh_token";
 
     const params = new URLSearchParams();
@@ -37,21 +34,14 @@ exports.refreshAccessToken = functions.https.onCall(async (data, context) => {
     params.append("grant_type", GrantType);
 
     try {
-        const response = await axios.post<TokenResponse>("https://oauth2.googleapis.com/token", params, {
+        const tokenResponse = await axios.post<TokenResponse>("https://oauth2.googleapis.com/token", params, {
             headers: {"Content-Type": "application/x-www-form-urlencoded"},
         });
 
-        return {newAccessToken: response.data.access_token};
+        response.json({newAccessToken: tokenResponse.data.access_token});
     } catch (error) {
-        console.error("Error refreshing access token:", error);
-        throw new functions.https.HttpsError("internal",
-            "Failed to refresh access token");
+        logger.error("Error refreshing access token:", error);
+        response.status(500).send("Failed to refresh access token");
     }
 });
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });

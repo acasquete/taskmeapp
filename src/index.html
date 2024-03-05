@@ -32,9 +32,13 @@
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             console.debug('head dark');
-            document.documentElement.classList.add('dark')
+            document.documentElement.classList.add('dark');
+            
+            var style = document.createElement('style');
+            style.innerHTML = 'html.dark { background-color: #121212; }';
+            document.head.appendChild(style);
         } else {
-            document.documentElement.classList.remove('dark')
+            document.documentElement.classList.remove('dark');
         }
     </script>
     </head>
