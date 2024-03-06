@@ -760,7 +760,7 @@ const Sketch = (function () {
         }
 
         if (storeCanvas.isnew) {
-            this.drawElements();
+            kanbanBoard.drawElements();
         }
 
         canvasController.switchDashboard(activeBoardIndex, storeCanvas);
