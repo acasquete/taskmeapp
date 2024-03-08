@@ -356,7 +356,7 @@ export class CanvasController {
         });
 
         this.canvas.on('touch:drag', (e: fabric.IEvent) => {
-            if (this.isEditKanbanMode || this.canvas.selection || this.canvas.isDrawingMode || this.pausePanning || e.e.layerX === undefined || e.e.layerY === undefined) {
+            if (this.isEditKanbanMode || this.canvas.isDrawingMode || this.pausePanning || e.e.layerX === undefined || e.e.layerY === undefined) {
                 if (e.e.layerX === undefined && e.e.layerY === undefined) {
                     this.lastX = 0;
                     this.lastY = 0;
@@ -537,6 +537,9 @@ export class CanvasController {
         text.selectAll();
 
         this.saveCanvas();
+
+        MenuController.setOption('selection-picker');
+        this.changeColor('selection');
     }
 
     public isEditingMode(): boolean {
@@ -609,6 +612,9 @@ export class CanvasController {
         this.saveCanvas();
         this.canvas.discardActiveObject();
         this.canvas.requestRenderAll();
+
+        MenuController.setOption('selection-picker');
+        this.changeColor('selection');
     }
 
     public DeleteObject (object: fabric.Object) {
