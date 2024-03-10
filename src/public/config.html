@@ -5,7 +5,6 @@
     <script src="https://statics.teams.cdn.office.net/sdk/v1.11.0/js/MicrosoftTeams.min.js"></script>
 </head>
 <body>
-    <h1>Configura tu pestaña</h1>
     <form id="configForm">
         <label for="contentUrl">URL del contenido:</label>
         <input type="text" id="contentUrl" name="contentUrl">
@@ -18,23 +17,19 @@
         document.getElementById('configForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Recoge el valor del formulario
             const contentUrl = document.getElementById('contentUrl').value;
 
             if(contentUrl) {
-                // Configura la pestaña con los detalles proporcionados
                 microsoftTeams.settings.setSettings({
                     entityId: "tuEntidad", // Un identificador único para tu pestaña
                     contentUrl: contentUrl, // La URL que se mostrará en la pestaña
-                    suggestedDisplayName: "Nombre de la Pestaña", // Nombre sugerido para la pestaña
+                    suggestedDisplayName: "TaskMe", // Nombre sugerido para la pestaña
                     websiteUrl: contentUrl // Opcional, URL si la pestaña también está disponible fuera de Teams
                 });
 
-                // Indica a Teams que la configuración es válida y habilita el botón de guardar
                 microsoftTeams.settings.setValidityState(true);
             }
 
-            // Al guardar, Teams cierra automáticamente la ventana de configuración
             microsoftTeams.settings.registerOnSaveHandler(function(saveEvent) {
                 // Aquí puedes hacer validaciones adicionales si es necesario
                 saveEvent.notifySuccess(); // Notifica a Teams que la configuración se guardó correctamente
