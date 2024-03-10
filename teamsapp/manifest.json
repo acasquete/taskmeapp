@@ -2,7 +2,7 @@
     "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.13/MicrosoftTeams.schema.json",
     "manifestVersion": "1.13",
     "version": "1.0.0",
-    "id": "fe7b0a22-be6d-4495-83d8-3ca64ea4ab3c",
+    "id": "90c454c4-5d0e-498f-834c-af868fe5dd5e",
     "packageName": "com.taskme.app",
     "developer": {
       "name": "Task Me App",

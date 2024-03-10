@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Página de configuración de la pestaña</title>
+    <title>TaskMe Setup</title>
     <script src="https://statics.teams.cdn.office.net/sdk/v1.11.0/js/MicrosoftTeams.min.js"></script>
 </head>
 <body>
-    <form id="configForm">
-        <label for="contentUrl">URL del contenido:</label>
-        <input type="text" id="contentUrl" name="contentUrl">
-        <button type="submit">Guardar</button>
-    </form>
-
     <script>
         microsoftTeams.initialize();
 
-        document.getElementById('configForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        microsoftTeams.initialize();
 
-            const contentUrl = document.getElementById('contentUrl').value;
+        microsoftTeams.getContext(function(context) {
+            var userId = context.userObjectId; 
+            var userName = context.userPrincipalName; 
+            var userDisplayName = context.userDisplayName; 
+            var channelId = context.channelId;
+            var channelName = context.channelName;
+            var teamId = context.teamId;
 
-            if(contentUrl) {
-                microsoftTeams.settings.setSettings({
-                    entityId: "tuEntidad", // Un identificador único para tu pestaña
-                    contentUrl: contentUrl, // La URL que se mostrará en la pestaña
-                    suggestedDisplayName: "TaskMe", // Nombre sugerido para la pestaña
-                    websiteUrl: contentUrl // Opcional, URL si la pestaña también está disponible fuera de Teams
-                });
+            var uuid = channelId.split('@')[0];
 
-                microsoftTeams.settings.setValidityState(true);
-            }
+            const contentUrl = 'https://taskmeapp.com/?sid=' + uuid;
+
+            microsoftTeams.settings.setSettings({
+                    entityId: "tuEntidad", 
+                    contentUrl: contentUrl,
+                    suggestedDisplayName: "TaskMe",
+                    websiteUrl: contentUrl
+            });
+
+            microsoftTeams.settings.setValidityState(true);
 
             microsoftTeams.settings.registerOnSaveHandler(function(saveEvent) {
-                // Aquí puedes hacer validaciones adicionales si es necesario
-                saveEvent.notifySuccess(); // Notifica a Teams que la configuración se guardó correctamente
+                saveEvent.notifySuccess(); 
             });
         });
     </script>
