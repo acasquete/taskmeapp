@@ -18,6 +18,7 @@
     <meta name="twitter:image" content="https://taskmeapp.com/images/apple-touch-icon.png">
     <meta name="twitter:site" content="@taskmeapp">
     <meta name="robots" content="index, follow">
+    <script src="https://statics.teams.cdn.office.net/sdk/v1.11.0/js/MicrosoftTeams.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async></script>
     <script src="/js/fabric.min.js"></script>
     <script type="module" src="/index.ts"></script>
@@ -39,6 +40,21 @@
         } else {
             document.documentElement.classList.remove('dark');
         }
+    </script>
+    <script>
+        microsoftTeams.initialize();
+
+        microsoftTeams.getContext(function(context) {
+            var userId = context.userObjectId; // ID único del usuario dentro de Azure AD
+            var userName = context.userPrincipalName; // Nombre principal del usuario (puede ser su dirección de correo electrónico)
+            var userDisplayName = context.userDisplayName; // Nombre para mostrar del usuario
+
+            alert(`
+                <p>User ID: ${userId}</p>
+                <p>User Name: ${userName}</p>
+                <p>Display Name: ${userDisplayName}</p>
+            `);
+        });
     </script>
     </head>
     <body style="display: none;">
