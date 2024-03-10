@@ -49,15 +49,16 @@
             var userName = context.userPrincipalName; // Nombre principal del usuario (puede ser su dirección de correo electrónico)
             var userDisplayName = context.userDisplayName; // Nombre para mostrar del usuario
 
-            alert(`
+            document.getElementById('userInfo').innerHTML = `
                 <p>User ID: ${userId}</p>
                 <p>User Name: ${userName}</p>
                 <p>Display Name: ${userDisplayName}</p>
-            `);
+            `;
         });
     </script>
     </head>
     <body style="display: none;">
+        <div id="userInfo"></div>
         <div id="tooltipContainer" class="pointer-events-none select-none cursor-default outline-1 transform -translate-x-1/2 mx-auto left-1/2 text-center bottom-20 md:bottom-28 fixed text-gray-400 text-sm w-screen z-[2000]"></div>
         <div class="opacity-100 hover:opacity-100 drop-shadow-lg m-auto fixed w-11/12 sm:w-96 inset-x-0 bottom-6 md:bottom-12 bg-white dark:bg-slate-800 py-1 rounded-lg border dark:border-gray-900 border-gray z-[2000] menu">
             <div class="flex justify-center items-center space-x-1" >
