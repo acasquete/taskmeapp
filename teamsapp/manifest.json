@@ -1,0 +1,47 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.13/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.13",
+    "version": "1.0.0",
+    "id": "fe7b0a22-be6d-4495-83d8-3ca64ea4ab3c",
+    "packageName": "com.taskme.app",
+    "developer": {
+      "name": "Task Me App",
+      "websiteUrl": "https://taskmeapp.com",
+      "privacyUrl": "https://taskmeapp.com/privacy",
+      "termsOfUseUrl": "https://taskmeapp.com/privacy"
+    },
+    "icons": {
+      "color": "app-icon.png",
+      "outline": "app-icon.png"
+    },
+    "name": {
+      "short": "TaskMe",
+      "full": "TaskMe: The Natural KanBan Way"
+    },
+    "description": {
+      "short": "Descripción corta de la aplicación",
+      "full": "Descripción larga de la aplicación"
+    },
+    "accentColor": "#FFFFFF",
+    "staticTabs": [
+      {
+        "entityId": "id-entidad",
+        "name": "TaskMe",
+        "contentUrl": "https://taskmeapp.com",
+        "websiteUrl": "https://taskmeapp.com",
+        "scopes": ["personal"]
+      }
+    ],
+    "configurableTabs": [
+      {
+        "configurationUrl": "https://taskmeapp.com/config.html",
+        "canUpdateConfiguration": true,
+        "scopes": ["team", "groupchat"]
+      }
+    ],
+    "bots": [],
+    "composeExtensions": [],
+    "permissions": ["identity", "messageTeamMembers"],
+    "validDomains": ["taskmeapp.com"]
+  }
+  
