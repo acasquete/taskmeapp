@@ -84,9 +84,9 @@ const Data = (function () {
     }
 
     function addToQueue(type, id, data, force) {
-        if (!userId) {
-            return null;
-        }
+        // if (!userId) {
+        //     return null;
+        // }
 
         console.debug('add to queue ' + type);
 
@@ -112,9 +112,9 @@ const Data = (function () {
     }
 
     async function saveCanvas(index, canvasData, force) {
-        if (!userId) return;
+        //if (!userId) return;
 
-        console.debug('save canvas');
+        console.debug('save canvas online ' + canvasData.guid);
 
         addToQueue('board', canvasData.guid, canvasData, force);
 
@@ -175,7 +175,7 @@ const Data = (function () {
     }
 
     async function getCanvas(newGUID) {
-        if (!userId) return;
+        //if (!userId) return;
 
         if (newGUID != '' && boardGUID!='') {
             console.debug(`stop listening ${boardGUID}`);

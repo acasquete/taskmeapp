@@ -735,10 +735,14 @@ const Sketch = (function () {
 
         if (guid) {
             storeCanvas = await Config.getRemoteCanvas(guid);
+
             if (!storeCanvas) {
-                Notifications.showAppNotification ('You need to log in to access a shared dashboard', 'regular', 8000);
-                return;
+                storeCanvas = { guid: guid, isnew: true, content: '{}', colorIndex: 0, shared: false, cfd: {} }
             }
+            // if (!storeCanvas) {
+            //     Notifications.showAppNotification ('You need to log in to access a shared dashboard', 'regular', 8000);
+            //     return;
+            // }
         } else {
             storeCanvas = await Config.getCanvas(activeBoardIndex);
         }

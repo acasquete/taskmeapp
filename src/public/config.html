@@ -18,7 +18,8 @@
             var channelName = context.channelName;
             var teamId = context.teamId;
 
-            var uuid = channelId.split('@')[0];
+            const regex = /:(.*?)@/;
+            const uuid = channelId.match(regex);
 
             const contentUrl = 'https://taskmeapp.com/?sid=' + uuid;
 
