@@ -16,10 +16,11 @@
             var userDisplayName = context.userDisplayName; 
             var channelId = context.channelId;
             var channelName = context.channelName;
+            var chatId = context.chatId;
             var teamId = context.teamId;
 
             const regex = /:(.*?)@/;
-            const uuid = channelId.match(regex);
+            const uuid = chatId.match(regex);
 
             const contentUrl = 'https://taskmeapp.com/?sid=' + uuid;
 
