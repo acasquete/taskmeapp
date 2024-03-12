@@ -737,7 +737,7 @@ const Sketch = (function () {
             storeCanvas = await Config.getRemoteCanvas(guid);
 
             if (!storeCanvas) {
-                storeCanvas = { guid: guid, isnew: true, content: '{}', colorIndex: 0, shared: false, cfd: {} }
+                storeCanvas = { guid: guid, isnew: true, content: '{}', colorIndex: 0, shared: true, cfd: {} }
             }
             // if (!storeCanvas) {
             //     Notifications.showAppNotification ('You need to log in to access a shared dashboard', 'regular', 8000);
