@@ -20,7 +20,7 @@
             var teamId = context.teamId;
 
             const regex = /:(.*?)@/;
-            const uuid = chatId.match(regex);
+            const uuid = chatId ? chatId.match(regex) : channelId.match(regex) ;
 
             const contentUrl = 'https://taskmeapp.com/?sid=' + uuid;
 
