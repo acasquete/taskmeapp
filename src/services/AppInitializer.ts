@@ -22,6 +22,29 @@ export class AppInitializer {
         const params = new URLSearchParams(window.location.search);
         this.boardGUID = params.get('sid') ?? '';
 
+        microsoftTeams.initialize();
+
+        microsoftTeams.getContext(function(context) {
+            var userId = context.userObjectId; 
+            var userName = context.userPrincipalName; 
+            var userDisplayName = context.userDisplayName; 
+            var channelId = context.channelId;
+            var channelName = context.channelName;
+            var teamId = context.teamId;
+
+            // document.getElementById('teamsInfo').innerHTML = `
+            //     Info
+            //     <p>User ID: ${userId}</p>
+            //     <p>User Name: ${userName}</p>
+            //     <p>Display Name: ${userDisplayName}</p>
+            //     <p>Channel ID: ${channelId}</p>
+            //     <p>Channel Name: ${channelName}</p>
+            //     <p>Team ID: ${teamId}</p>
+            // `;
+
+            Data.setUserId(userId);
+        });
+        
         Notifications.init();
         MenuController.init();
         Pomodoro.init();

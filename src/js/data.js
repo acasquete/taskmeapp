@@ -216,7 +216,7 @@ const Data = (function () {
 
             console.debug('event received: ' + JSON.stringify(data));
 
-            //if (data.uid != publicUserId) {
+            if (data.uid != publicUserId) {
                 switch (data.a) {
                     case 'om': // Object moving
                         Sketch.updatePositionRealTime(data);
@@ -244,7 +244,7 @@ const Data = (function () {
                         Sketch.clearBoardRealTime();
                         break;
                 }
-            //}
+            }
         });
     }
 
