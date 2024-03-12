@@ -216,7 +216,7 @@ const Data = (function () {
 
             console.debug('event received: ' + JSON.stringify(data));
 
-            if (data.uid != publicUserId) {
+            //if (data.uid != publicUserId) {
                 switch (data.a) {
                     case 'om': // Object moving
                         Sketch.updatePositionRealTime(data);
@@ -244,7 +244,7 @@ const Data = (function () {
                         Sketch.clearBoardRealTime();
                         break;
                 }
-            }
+            //}
         });
     }
 
@@ -255,7 +255,7 @@ const Data = (function () {
     }
 
     function sendCanvasObject(data, force) {
-        if (!isLogged() || boardGUID === '') return;
+        if (boardGUID === '') return;
         
         console.debug (data);
 
@@ -270,16 +270,11 @@ const Data = (function () {
         }
     }
     
-    function isLogged () {
-        return userId != null;
-    }
-
     return {
         getCanvas: getCanvas,
         saveCanvas: saveCanvas,
         setUserId: setUserId,
         sendCanvasObject: sendCanvasObject,
-        isLogged: isLogged,
         getGUIDByIndex: getGUIDByIndex
     };
 })();
