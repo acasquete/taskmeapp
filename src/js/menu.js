@@ -126,9 +126,8 @@ const MenuController = (function () {
                         Sketch.download('svg');
                             break;
                     case 'shareBoardButton':
-                        Notifications.showAppNotification ('You need to log in to share a dashboard', 'regular', 8000)
-                        return;
-            
+                        //Notifications.showAppNotification ('You need to log in to share a dashboard', 'regular', 8000)
+                        //return;
                         let sharedId = await Sketch.createShareSketch();
                         showModalShare(sharedId);
                         break;
