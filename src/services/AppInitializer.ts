@@ -31,18 +31,6 @@ export class AppInitializer {
             var channelId = context.channelId;
             var channelName = context.channelName;
             var teamId = context.teamId;
-
-            // document.getElementById('teamsInfo').innerHTML = `
-            //     Info
-            //     <p>User ID: ${userId}</p>
-            //     <p>User Name: ${userName}</p>
-            //     <p>Display Name: ${userDisplayName}</p>
-            //     <p>Channel ID: ${channelId}</p>
-            //     <p>Channel Name: ${channelName}</p>
-            //     <p>Team ID: ${teamId}</p>
-            // `;
-
-            Data.setUserId(userId);
         });
         
         Notifications.init();

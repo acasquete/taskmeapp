@@ -26,6 +26,8 @@ const Data = (function () {
     let db = firebase.firestore();
     let realTimeDb = firebase.database();
 
+    setUserId( Math.random().toString(36).substr(2, 9));
+
     function saveToRealtimeDatabase(path, data) {
         realTimeDb.ref(path).set(data, error => {
             if (error) {
