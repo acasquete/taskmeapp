@@ -10,6 +10,16 @@ import '../js/notificationsweb.js';
 import '../js/sketch.js';
 import '../js/data.js';
 
+interface TeamsContext {
+    userObjectId: string;
+    userPrincipalName: string;
+    userDisplayName: string;
+    channelId: string;
+    channelName: string;
+    teamId: string;
+}
+
+
 export class AppInitializer {
     private boardGUID: string = '';
     private isSigned: boolean = false;
@@ -24,13 +34,15 @@ export class AppInitializer {
 
         microsoftTeams.initialize();
 
-        microsoftTeams.getContext(function(context) {
+        microsoftTeams.getContext( context => {
             var userId = context.userObjectId; 
             var userName = context.userPrincipalName; 
             var userDisplayName = context.userDisplayName; 
             var channelId = context.channelId;
             var channelName = context.channelName;
             var teamId = context.teamId;
+
+            this.prepareTeamsLayout();
         });
         
         Notifications.init();
@@ -50,6 +62,11 @@ export class AppInitializer {
         }
 
         document.body.style.display = 'block';
+    }
+
+    private prepareTeamsLayout () : void {
+        document.getElementById('labelBoards')!.style.display = 'none';
+        document.getElementById('layerBoards')!.style.display = 'none';
     }
 
     public async onSignIn(response: any): Promise<void> {

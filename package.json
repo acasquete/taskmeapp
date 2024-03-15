@@ -12,6 +12,7 @@
   "devDependencies": {
     "@types/d3": "^7.4.3",
     "@types/fabric": "^5.3.6",
+    "@types/microsoftteams": "^1.9.6",
     "@types/node": "^20.11.16",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "autoprefixer": "^10.4.17",
